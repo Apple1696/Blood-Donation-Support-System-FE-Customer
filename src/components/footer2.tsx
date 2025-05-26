@@ -27,9 +27,9 @@ interface Footer2Props {
 
 const Footer2 = ({
   logo = {
-    src: "https://shadcnblocks.com/images/block/block-1.svg",
+    src: "src/assets/HeartLogo.jpg",
     alt: "blocks for shadcn/ui",
-    title: "Shadcnblocks.com",
+    title: "BloodLink",
     url: "https://www.shadcnblocks.com",
   },
   tagline = "Components made easy.",
@@ -116,7 +116,7 @@ const Footer2 = ({
                 </div>
               ))}
             </div>
-            <div className="mt-24 flex flex-col justify-between gap-4 border-t border-border pt-8 text-sm font-medium text-muted-foreground md:flex-row md:items-center">
+            {/* <div className="mt-24 flex flex-col justify-between gap-4 border-t border-border pt-8 text-sm font-medium text-muted-foreground md:flex-row md:items-center">
               <p>{copyright}</p>
               <ul className="flex gap-4">
                 {bottomLinks.map((link, linkIdx) => (
@@ -125,7 +125,7 @@ const Footer2 = ({
                   </li>
                 ))}
               </ul>
-            </div>
+            </div> */}
           </footer>
         </div>
       </section>

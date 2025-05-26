@@ -30,28 +30,27 @@ interface Hero151Props {
 }
 
 const Hero151 = ({
-  heading = "Blocks built with Shadcn & Tailwind",
-  description = "Finely crafted components built with React, Tailwind and Shadcn UI. Developers can copy and paste these blocks directly into their project.",
+  heading = "Give the Gift of Life: Donate Blood Today",
+  description = "Every drop counts. Your blood donation can save up to three lives. Join our community of lifesavers and make a difference in someone's story.",
   button = {
-    text: "Get Started",
+    text: "Donate Now",
     url: "#",
   },
   testimonial = {
-    quote: "Focused strategy, swift delivery",
-    author: "John Doe",
-    role: "CEO",
-    company: "Company",
+    quote: "Donating blood was one of the most rewarding experiences of my life",
+    author: "Sarah Chen",
+    role: "Regular Donor",
+    company: "100+ Lives Saved",
     avatars: [
-      { image: "https://shadcnblocks.com/images/block/avatar-1.webp", fallback: "AB" },
-      { image: "https://shadcnblocks.com/images/block/avatar-2.webp", fallback: "CD" },
-      { image: "https://shadcnblocks.com/images/block/avatar-3.webp", fallback: "EF" },
+      { image: "src/assets/Sarah-Chen-web-1024x991.jpg", fallback: "SC" },
+    
     ],
   },
   images = {
-    first: "https://shadcnblocks.com/images/block/placeholder-1.svg",
-    second: "https://shadcnblocks.com/images/block/placeholder-dark-2.svg",
-    third: "https://shadcnblocks.com/images/block/placeholder-dark-3.svg",
-    fourth: "https://shadcnblocks.com/images/block/placeholder-dark-7-tall.svg",
+    first: "src/assets/Doctor.jpg",
+    second: "src/assets/Syringe.jpg",
+    third: "src/assets/Phlebotomy.jpg",
+    fourth: "src/assets/BedPatient.jpg",
   },
 }: Hero151Props) => {
   return (
@@ -96,53 +95,36 @@ const Hero151 = ({
             </div>
           </div>
           <div className="w-full flex-1">
-            <div className="w-full max-w-[50rem]">
+            <div className="w-full">
               <AspectRatio ratio={1 / 1} className="h-full w-full">
-                <div className="grid h-full w-full grid-cols-2 grid-rows-2 gap-[3.5%]">
-                  <div className="overflow-hidden rounded-[5.2%] border border-muted bg-muted">
+                <div className="grid h-full w-full grid-cols-2 grid-rows-2 gap-4">
+                  <div className="overflow-hidden rounded-lg border border-muted bg-muted">
                     <img
                       src={images.first}
                       alt=""
-                      className="object-fit h-full w-full object-center"
+                      className="h-full w-full object-cover"
                     />
                   </div>
-                  <div className="relative overflow-hidden rounded-[5.2%] border border-muted bg-muted">
-                    <div className="absolute top-1/2 left-[5%] w-[110%] max-w-[25rem] -translate-y-1/2 overflow-hidden rounded-md">
-                      <AspectRatio ratio={1.739130435 / 1}>
-                        <img
-                          src={images.second}
-                          alt=""
-                          className="size-full object-cover object-center"
-                        />
-                      </AspectRatio>
-                    </div>
+                  <div className="overflow-hidden rounded-lg border border-muted bg-muted">
+                    <img
+                      src={images.second}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
                   </div>
-                  <div className="relative overflow-hidden rounded-[5.2%] border border-muted bg-muted">
-                    <div className="absolute top-[9%] left-[9%] w-[200%] max-w-[37.5rem] overflow-hidden rounded-md">
-                      <AspectRatio ratio={1.6 / 1}>
-                        <img
-                          src={images.third}
-                          alt=""
-                          className="size-full object-cover object-center"
-                        />
-                      </AspectRatio>
-                    </div>
+                  <div className="overflow-hidden rounded-lg border border-muted bg-muted">
+                    <img
+                      src={images.third}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
                   </div>
-                  <div className="relative overflow-hidden rounded-[5.2%] border border-muted bg-muted">
-                    <div className="relative top-[12%] left-[50%] w-[70%] max-w-[17.5rem] -translate-x-[50%]">
-                      <AspectRatio ratio={0.52 / 1}>
-                        <img
-                          src="https://shadcnblocks.com/images/block/mockups/phone-1.png"
-                          alt=""
-                          className="absolute z-20 w-full"
-                        />
-                        <img
-                          src={images.fourth}
-                          alt=""
-                          className="absolute z-10 w-full rounded-[16%]"
-                        />
-                      </AspectRatio>
-                    </div>
+                  <div className="overflow-hidden rounded-lg border border-muted bg-muted">
+                    <img
+                      src={images.fourth}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
                   </div>
                 </div>
               </AspectRatio>

@@ -54,77 +54,75 @@ interface Navbar1Props {
 const Navbar1 = ({
   logo = {
     url: "",
-    src: "https://shadcnblocks.com/images/block/logos/shadcnblockscom-icon.svg",
+    src: "src/assets/HeartLogo.jpg",
     alt: "logo",
-    title: "Shadcnblocks.com",
+    title: "BloodLink",
   },
   menu = [
     { title: "Home", url: "#" },
+    { title: "About us", url: "#" },
     {
-      title: "Products",
+      title: "Eligibility ",
       url: "#",
       items: [
         {
-          title: "Blog",
-          description: "The latest industry news, updates, and info",
+          title: "Who Can Donate?",
+          description: "A simple breakdown of general eligibility so users quickly know if they’re likely to qualify.",
           icon: <Book className="size-5 shrink-0" />,
           url: "#",
         },
         {
-          title: "Company",
-          description: "Our mission is to innovate and empower the world",
+          title: "Health Requirements",
+          description: " List conditions that may prevent or delay donations.",
           icon: <Trees className="size-5 shrink-0" />,
           url: "#",
         },
         {
-          title: "Careers",
-          description: "Browse job listing and discover our workspace",
+          title: "Travel & Medication Restrictions",
+          description: "This helps people who’ve traveled recently or are on medications understand their status.",
           icon: <Sunset className="size-5 shrink-0" />,
           url: "#",
         },
         {
-          title: "Support",
+          title: "FAQs",
           description:
-            "Get in touch with our support team or visit our community forums",
+            "This is your support hub. Include short, reassuring answers to common concerns.",
           icon: <Zap className="size-5 shrink-0" />,
           url: "#",
         },
       ],
     },
     {
-      title: "Resources",
+      title: "Schedule Appointment",
       url: "#",
       items: [
         {
-          title: "Help Center",
+          title: "Find a Donation Center",
           description: "Get all the answers you need right here",
           icon: <Zap className="size-5 shrink-0" />,
           url: "#",
         },
         {
-          title: "Contact Us",
+          title: "Book Appointment",
           description: "We are here to help you with any questions you have",
           icon: <Sunset className="size-5 shrink-0" />,
           url: "#",
         },
         {
-          title: "Status",
+          title: "First-Time Donor Info",
           description: "Check the current status of our services and APIs",
           icon: <Trees className="size-5 shrink-0" />,
           url: "#",
         },
-        {
-          title: "Terms of Service",
-          description: "Our terms and conditions for using our services",
-          icon: <Book className="size-5 shrink-0" />,
-          url: "#",
-        },
+        // {
+        //   title: "Terms of Service",
+        //   description: "Our terms and conditions for using our services",
+        //   icon: <Book className="size-5 shrink-0" />,
+        //   url: "#",
+        // },
       ],
     },
-    {
-      title: "Pricing",
-      url: "#",
-    },
+  
     {
       title: "Blog",
       url: "#",
@@ -136,7 +134,7 @@ const Navbar1 = ({
   },
 }: Navbar1Props) => {
   return (
-    <section className="py-4">
+    <section className="py-4" style={{ backgroundColor: '#B03F4A' }}>
       <div className="container">
         {/* Desktop Menu */}
         <nav className="hidden justify-between lg:flex">
@@ -144,7 +142,7 @@ const Navbar1 = ({
             {/* Logo */}
             <a href={logo.url} className="flex items-center gap-2">
               <img src={logo.src} className="max-h-8" alt={logo.alt} />
-              <span className="text-lg font-semibold tracking-tighter">
+              <span className="text-lg font-semibold tracking-tighter text-white">
                 {logo.title}
               </span>
             </a>
@@ -157,10 +155,10 @@ const Navbar1 = ({
             </div>
           </div>
           <div className="flex gap-2">
-            <Button asChild variant="outline" size="sm">
+            <Button asChild variant="outline" size="sm" className="bg-white/10 text-white border-white/20 hover:bg-white/20">
               <a href={auth.login.url}>{auth.login.title}</a>
             </Button>
-            <Button asChild size="sm">
+            <Button asChild size="sm" className="bg-white text-[#B03F4A] hover:bg-white/90">
               <a href={auth.signup.url}>{auth.signup.title}</a>
             </Button>
           </div>
@@ -172,10 +170,13 @@ const Navbar1 = ({
             {/* Logo */}
             <a href={logo.url} className="flex items-center gap-2">
               <img src={logo.src} className="max-h-8" alt={logo.alt} />
+              <span className="text-lg font-semibold tracking-tighter text-white">
+                {logo.title}
+              </span>
             </a>
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="outline" size="icon">
+                <Button variant="outline" size="icon" className="bg-white/10 text-white border-white/20 hover:bg-white/20">
                   <Menu className="size-4" />
                 </Button>
               </SheetTrigger>
@@ -218,8 +219,10 @@ const renderMenuItem = (item: MenuItem) => {
   if (item.items) {
     return (
       <NavigationMenuItem key={item.title}>
-        <NavigationMenuTrigger>{item.title}</NavigationMenuTrigger>
-        <NavigationMenuContent className="bg-popover text-popover-foreground">
+        <NavigationMenuTrigger className="text-white bg-transparent hover:bg-white/10">
+          {item.title}
+        </NavigationMenuTrigger>
+        <NavigationMenuContent className="bg-white text-foreground">
           <div className="grid w-[600px] gap-3 p-4 md:grid-cols-2">
             {item.items.map((subItem) => (
               <NavigationMenuLink asChild key={subItem.title}>
@@ -236,7 +239,7 @@ const renderMenuItem = (item: MenuItem) => {
     <NavigationMenuItem key={item.title}>
       <NavigationMenuLink
         href={item.url}
-        className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-accent-foreground"
+        className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/10"
       >
         {item.title}
       </NavigationMenuLink>
