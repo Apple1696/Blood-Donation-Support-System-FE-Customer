@@ -21,7 +21,7 @@ interface Hero45Props {
 const Hero45 = ({
   badge = "Blood Donation Support System",
   heading = "Your Blood Donation Journey Starts Here",
-  imageSrc = "src/assets/Hands.jpg",
+  imageSrc = "/images/HomePage/Hands.jpg",
   imageAlt = "Blood donation illustration",
   features = [
     {

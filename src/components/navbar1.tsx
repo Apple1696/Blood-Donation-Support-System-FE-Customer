@@ -1,4 +1,5 @@
 import { Book, Menu, Sunset, Trees, Zap } from "lucide-react";
+import { useUser, useClerk } from "@clerk/clerk-react";
 
 import {
   Accordion,
@@ -22,6 +23,14 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface MenuItem {
   title: string;
@@ -53,13 +62,13 @@ interface Navbar1Props {
 
 const Navbar1 = ({
   logo = {
-    url: "",
-    src: "src/assets/HeartLogo.jpg",
+    url: "/",
+    src: "/images/HomePage/HeartLogo.jpg",
     alt: "logo",
     title: "BloodLink",
   },
   menu = [
-    { title: "Home", url: "#" },
+    { title: "Home", url: "/" },
     { title: "About us", url: "#" },
     {
       title: "Eligibility ",
@@ -67,7 +76,7 @@ const Navbar1 = ({
       items: [
         {
           title: "Who Can Donate?",
-          description: "A simple breakdown of general eligibility so users quickly know if they’re likely to qualify.",
+          description: "A simple breakdown of general eligibility so users quickly know if they're likely to qualify.",
           icon: <Book className="size-5 shrink-0" />,
           url: "#",
         },
@@ -79,7 +88,7 @@ const Navbar1 = ({
         },
         {
           title: "Travel & Medication Restrictions",
-          description: "This helps people who’ve traveled recently or are on medications understand their status.",
+          description: "This helps people who've traveled recently or are on medications understand their status.",
           icon: <Sunset className="size-5 shrink-0" />,
           url: "#",
         },
@@ -106,7 +115,7 @@ const Navbar1 = ({
           title: "Book Appointment",
           description: "We are here to help you with any questions you have",
           icon: <Sunset className="size-5 shrink-0" />,
-          url: "#",
+          url: "/book-appointment",
         },
         {
           title: "First-Time Donor Info",
@@ -129,10 +138,48 @@ const Navbar1 = ({
     },
   ],
   auth = {
-    login: { title: "Login", url: "#" },
-    signup: { title: "Sign up", url: "#" },
+    login: { title: "Login", url: "/login" },
+    signup: { title: "Sign up", url: "/login?signup=true" },
   },
 }: Navbar1Props) => {
+  const { user } = useUser();
+  const { signOut } = useClerk();
+
+  const handleSignOut = () => {
+    signOut();
+  };
+
+  const UserAvatar = () => {
+    if (!user) return null;
+
+    const initials = user.firstName && user.lastName
+      ? `${user.firstName[0]}${user.lastName[0]}`
+      : user.emailAddresses[0].emailAddress[0].toUpperCase();
+
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Avatar className="cursor-pointer">
+            <AvatarImage src={user.imageUrl} />
+            <AvatarFallback className="bg-primary text-primary-foreground">
+              {initials}
+            </AvatarFallback>
+          </Avatar>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem className="gap-2">
+            <span>Signed in as</span>
+            <span className="font-medium">{user.emailAddresses[0].emailAddress}</span>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={handleSignOut}>
+            Sign out
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  };
+
   return (
     <section className="py-4" style={{ backgroundColor: '#B03F4A' }}>
       <div className="container">
@@ -154,13 +201,19 @@ const Navbar1 = ({
               </NavigationMenu>
             </div>
           </div>
-          <div className="flex gap-2">
-            <Button asChild variant="outline" size="sm" className="bg-white/10 text-white border-white/20 hover:bg-white/20">
-              <a href={auth.login.url}>{auth.login.title}</a>
-            </Button>
-            <Button asChild size="sm" className="bg-white text-[#B03F4A] hover:bg-white/90">
-              <a href={auth.signup.url}>{auth.signup.title}</a>
-            </Button>
+          <div className="flex gap-2 items-center">
+            {user ? (
+              <UserAvatar />
+            ) : (
+              <>
+                <Button asChild variant="outline" size="sm" className="bg-white/10 text-white border-white/20 hover:bg-white/20">
+                  <a href={auth.login.url}>{auth.login.title}</a>
+                </Button>
+                <Button asChild size="sm" className="bg-white text-[#B03F4A] hover:bg-white/90">
+                  <a href={auth.signup.url}>{auth.signup.title}</a>
+                </Button>
+              </>
+            )}
           </div>
         </nav>
 
@@ -198,12 +251,18 @@ const Navbar1 = ({
                   </Accordion>
 
                   <div className="flex flex-col gap-3">
-                    <Button asChild variant="outline">
-                      <a href={auth.login.url}>{auth.login.title}</a>
-                    </Button>
-                    <Button asChild>
-                      <a href={auth.signup.url}>{auth.signup.title}</a>
-                    </Button>
+                    {user ? (
+                      <UserAvatar />
+                    ) : (
+                      <>
+                        <Button asChild variant="outline">
+                          <a href={auth.login.url}>{auth.login.title}</a>
+                        </Button>
+                        <Button asChild>
+                          <a href={auth.signup.url}>{auth.signup.title}</a>
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </div>
               </SheetContent>

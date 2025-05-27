@@ -27,7 +27,7 @@ interface Footer2Props {
 
 const Footer2 = ({
   logo = {
-    src: "src/assets/HeartLogo.jpg",
+    src: "/images/HomePage/HeartLogo.jpg",
     alt: "blocks for shadcn/ui",
     title: "BloodLink",
     url: "https://www.shadcnblocks.com",

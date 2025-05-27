@@ -42,15 +42,14 @@ const Hero151 = ({
     role: "Regular Donor",
     company: "100+ Lives Saved",
     avatars: [
-      { image: "src/assets/Sarah-Chen-web-1024x991.jpg", fallback: "SC" },
-    
+      { image: "/images/HomePage/Sarah-Chen.jpg", fallback: "SC" },
     ],
   },
   images = {
-    first: "src/assets/Doctor.jpg",
-    second: "src/assets/Syringe.jpg",
-    third: "src/assets/Phlebotomy.jpg",
-    fourth: "src/assets/BedPatient.jpg",
+    first: "/images/HomePage/Doctor.jpg",
+    second: "/images/HomePage/Syringe.jpg",
+    third: "/images/HomePage/Phlebotomy.jpg",
+    fourth: "/images/HomePage/BedPatient.jpg",
   },
 }: Hero151Props) => {
   return (

@@ -1,27 +1,91 @@
 "use client"
 
+import { useState } from "react"
 import type React from "react"
-
+import { useSignIn } from "@clerk/clerk-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useNavigate } from "react-router-dom"
 
 interface LoginFormProps extends React.ComponentPropsWithoutRef<"form"> {
   onSwitchToSignup?: () => void
 }
 
 export function LoginForm({ className, onSwitchToSignup, ...props }: LoginFormProps) {
+  const { isLoaded, signIn, setActive } = useSignIn();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  if (!isLoaded) {
+    return null;
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const result = await signIn.create({
+        identifier: email,
+        password,
+      });
+
+      if (result.status === "complete") {
+        await setActive({ session: result.createdSessionId });
+        navigate("/home");
+      } else {
+        console.error("Sign in failed", result);
+        setError("Sign in failed. Please check your credentials.");
+      }
+    } catch (err) {
+      console.error("Error:", err);
+      setError("An error occurred during sign in.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await signIn.authenticateWithRedirect({
+        strategy: "oauth_google",
+        redirectUrl: "/sso-callback",
+        redirectUrlComplete: "/",
+      });
+    } catch (err) {
+      console.error("Error:", err);
+      setError("An error occurred with Google sign in.");
+    }
+  };
+
   return (
-    <form className={cn("flex flex-col gap-6", className)} {...props}>
+    <form onSubmit={handleSubmit} className={cn("flex flex-col gap-6", className)} {...props}>
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-2xl font-bold">Login to your account</h1>
         <p className="text-balance text-sm text-muted-foreground">Enter your email below to login to your account</p>
       </div>
+      {error && (
+        <div className="text-sm text-red-500 text-center">
+          {error}
+        </div>
+      )}
       <div className="grid gap-6">
         <div className="grid gap-2">
           <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" placeholder="abc@gmail.com" required />
+          <Input 
+            id="email" 
+            type="email" 
+            placeholder="abc@gmail.com" 
+            required 
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
         </div>
         <div className="grid gap-2">
           <div className="flex items-center">
@@ -30,15 +94,27 @@ export function LoginForm({ className, onSwitchToSignup, ...props }: LoginFormPr
               Forgot your password?
             </a>
           </div>
-          <Input id="password" type="password" required />
+          <Input 
+            id="password" 
+            type="password" 
+            required 
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
         </div>
-        <Button type="submit" className="w-full">
-          Login
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading ? "Signing in..." : "Login"}
         </Button>
         <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
           <span className="relative z-10 bg-background px-2 text-muted-foreground">Or continue with</span>
         </div>
-        <Button variant="outline" className="w-full">
+        <Button 
+          type="button"
+          variant="outline" 
+          className="w-full"
+          onClick={handleGoogleSignIn}
+          disabled={isLoading}
+        >
           <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
             <path
               d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
