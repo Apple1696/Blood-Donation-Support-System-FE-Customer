@@ -275,6 +275,16 @@ const Navbar1 = ({
 };
 
 const renderMenuItem = (item: MenuItem) => {
+  const { user } = useUser();
+
+  // Special handling for Book Appointment submenu item
+  const handleBookAppointmentClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!user) {
+      e.preventDefault();
+      window.location.href = '/login';
+    }
+  };
+
   if (item.items) {
     return (
       <NavigationMenuItem key={item.title}>
@@ -285,7 +295,21 @@ const renderMenuItem = (item: MenuItem) => {
           <div className="grid w-[600px] gap-3 p-4 md:grid-cols-2">
             {item.items.map((subItem) => (
               <NavigationMenuLink asChild key={subItem.title}>
-                <SubMenuLink item={subItem} />
+                <a
+                  className="flex select-none flex-row gap-4 rounded-md p-4 no-underline outline-none transition-colors hover:bg-muted hover:text-accent-foreground"
+                  href={subItem.url}
+                  onClick={subItem.title === "Book Appointment" ? handleBookAppointmentClick : undefined}
+                >
+                  <div className="text-foreground">{subItem.icon}</div>
+                  <div className="flex flex-col gap-1">
+                    <div className="text-base font-medium leading-none">{subItem.title}</div>
+                    {subItem.description && (
+                      <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                        {subItem.description}
+                      </p>
+                    )}
+                  </div>
+                </a>
               </NavigationMenuLink>
             ))}
           </div>
@@ -307,6 +331,16 @@ const renderMenuItem = (item: MenuItem) => {
 };
 
 const renderMobileMenuItem = (item: MenuItem) => {
+  const { user } = useUser();
+
+  // Special handling for Book Appointment submenu item
+  const handleBookAppointmentClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!user) {
+      e.preventDefault();
+      window.location.href = '/login';
+    }
+  };
+
   if (item.items) {
     return (
       <AccordionItem key={item.title} value={item.title} className="border-b-0">
@@ -315,7 +349,22 @@ const renderMobileMenuItem = (item: MenuItem) => {
         </AccordionTrigger>
         <AccordionContent className="mt-2">
           {item.items.map((subItem) => (
-            <SubMenuLink key={subItem.title} item={subItem} />
+            <a
+              key={subItem.title}
+              href={subItem.url}
+              onClick={subItem.title === "Book Appointment" ? handleBookAppointmentClick : undefined}
+              className="flex select-none flex-row gap-4 rounded-md p-4 no-underline outline-none transition-colors hover:bg-muted hover:text-accent-foreground"
+            >
+              <div className="text-foreground">{subItem.icon}</div>
+              <div className="flex flex-col gap-1">
+                <div className="text-base font-medium leading-none">{subItem.title}</div>
+                {subItem.description && (
+                  <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                    {subItem.description}
+                  </p>
+                )}
+              </div>
+            </a>
           ))}
         </AccordionContent>
       </AccordionItem>
@@ -329,23 +378,23 @@ const renderMobileMenuItem = (item: MenuItem) => {
   );
 };
 
-const SubMenuLink = ({ item }: { item: MenuItem }) => {
-  return (
-    <a
-      className="flex select-none flex-row gap-4 rounded-md p-4 no-underline outline-none transition-colors hover:bg-muted hover:text-accent-foreground"
-      href={item.url}
-    >
-      <div className="text-foreground">{item.icon}</div>
-      <div className="flex flex-col gap-1">
-        <div className="text-base font-medium leading-none">{item.title}</div>
-        {item.description && (
-          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-            {item.description}
-          </p>
-        )}
-      </div>
-    </a>
-  );
-};
+// const SubMenuLink = ({ item }: { item: MenuItem }) => {
+//   return (
+//     <a
+//       className="flex select-none flex-row gap-4 rounded-md p-4 no-underline outline-none transition-colors hover:bg-muted hover:text-accent-foreground"
+//       href={item.url}
+//     >
+//       <div className="text-foreground">{item.icon}</div>
+//       <div className="flex flex-col gap-1">
+//         <div className="text-base font-medium leading-none">{item.title}</div>
+//         {item.description && (
+//           <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+//             {item.description}
+//           </p>
+//         )}
+//       </div>
+//     </a>
+//   );
+// };
 
 export { Navbar1 };

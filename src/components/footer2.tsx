@@ -17,11 +17,6 @@ interface Footer2Props {
   };
   tagline?: string;
   menuItems?: MenuItem[];
-  copyright?: string;
-  bottomLinks?: {
-    text: string;
-    url: string;
-  }[];
   isDark?: boolean;
 }
 
@@ -73,11 +68,6 @@ const Footer2 = ({
       ],
     },
   ],
-  copyright = "© 2024 Shadcnblocks.com. All rights reserved.",
-  bottomLinks = [
-    { text: "Terms and Conditions", url: "#" },
-    { text: "Privacy Policy", url: "#" },
-  ],
   isDark = false,
 }: Footer2Props) => {
   return (
@@ -116,16 +106,6 @@ const Footer2 = ({
                 </div>
               ))}
             </div>
-            {/* <div className="mt-24 flex flex-col justify-between gap-4 border-t border-border pt-8 text-sm font-medium text-muted-foreground md:flex-row md:items-center">
-              <p>{copyright}</p>
-              <ul className="flex gap-4">
-                {bottomLinks.map((link, linkIdx) => (
-                  <li key={linkIdx} className="underline hover:text-primary transition-colors">
-                    <a href={link.url}>{link.text}</a>
-                  </li>
-                ))}
-              </ul>
-            </div> */}
           </footer>
         </div>
       </section>
