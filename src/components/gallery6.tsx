@@ -67,7 +67,7 @@ const Gallery6 = ({
 
   return (
     <section className="py-32">
-      <div className="container">
+      <div className="container mx-auto">
         <div className="mb-8 flex flex-col items-center text-center justify-center md:mb-14 lg:mb-16">
           <div>
             <h2 className="mb-3 text-3xl font-semibold md:mb-4 md:text-4xl lg:mb-6">

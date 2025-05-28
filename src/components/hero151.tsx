@@ -54,7 +54,7 @@ const Hero151 = ({
 }: Hero151Props) => {
   return (
     <section className="py-12 md:py-20">
-      <div className="container">
+      <div className="container mx-auto ">
         <div className="flex flex-col items-center gap-8 md:flex-row">
           <div className="flex-1">
             <div className="flex flex-col gap-4 lg:gap-8">

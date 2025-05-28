@@ -182,7 +182,7 @@ const Navbar1 = ({
 
   return (
     <section className="py-4" style={{ backgroundColor: '#B03F4A' }}>
-      <div className="container">
+      <div className="container  mx-auto">
         {/* Desktop Menu */}
         <nav className="hidden justify-between lg:flex">
           <div className="flex items-center gap-6">

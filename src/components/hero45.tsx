@@ -48,7 +48,7 @@ const Hero45 = ({
 }: Hero45Props) => {
   return (
     <section className="py-32" style={{ backgroundColor: '#BB404B' }}>
-      <div className="container overflow-hidden">
+      <div className="container overflow-hidden  mx-auto">
         <div className="mb-20 flex flex-col items-center gap-6 text-center">
           <Badge variant="outline" className="border-white text-white">{badge}</Badge>
           <h1 className="text-4xl font-semibold lg:text-5xl text-white">{heading}</h1>

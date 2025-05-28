@@ -73,7 +73,7 @@ const Footer2 = ({
   return (
     <div className={`${styles.customTheme} ${isDark ? styles.dark : ''}`}>
       <section className="py-32 bg-background text-foreground">
-        <div className="container">
+        <div className="container  mx-auto">
           <footer>
             <div className="grid grid-cols-2 gap-8 lg:grid-cols-6">
               <div className="col-span-2 mb-8 lg:mb-0">
