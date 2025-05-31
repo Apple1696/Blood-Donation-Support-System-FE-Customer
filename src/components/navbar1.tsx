@@ -63,9 +63,9 @@ interface Navbar1Props {
 const Navbar1 = ({
   logo = {
     url: "/",
-    src: "/images/HomePage/HeartLogo.jpg",
+    src: "/images/navbar/2.png",
     alt: "logo",
-    title: "BloodLink",
+    title: "Blood Donation"
   },
   menu = [
     { title: "Home", url: "/" },
@@ -168,10 +168,13 @@ const Navbar1 = ({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem className="gap-2">
-            <span>Signed in as</span>
-            <span className="font-medium">{user.emailAddresses[0].emailAddress}</span>
+            {/* <span>Signed in as</span> */}
+            <span className="font-medium">{`${user.firstName} ${user.lastName}`}</span>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
+          <DropdownMenuItem asChild>
+            <a href="/profile">Profile</a>
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={handleSignOut}>
             Sign out
           </DropdownMenuItem>
@@ -188,10 +191,7 @@ const Navbar1 = ({
           <div className="flex items-center gap-6">
             {/* Logo */}
             <a href={logo.url} className="flex items-center gap-2">
-              <img src={logo.src} className="max-h-8" alt={logo.alt} />
-              <span className="text-lg font-semibold tracking-tighter text-white">
-                {logo.title}
-              </span>
+              <img src={logo.src} className="max-h-12 transform scale-350" alt={logo.alt} />
             </a>
             <div className="flex items-center">
               <NavigationMenu>
@@ -222,10 +222,7 @@ const Navbar1 = ({
           <div className="flex items-center justify-between">
             {/* Logo */}
             <a href={logo.url} className="flex items-center gap-2">
-              <img src={logo.src} className="max-h-8" alt={logo.alt} />
-              <span className="text-lg font-semibold tracking-tighter text-white">
-                {logo.title}
-              </span>
+              <img src={logo.src} className="max-h-12 transform scale-350" alt={logo.alt} />
             </a>
             <Sheet>
               <SheetTrigger asChild>
@@ -237,7 +234,7 @@ const Navbar1 = ({
                 <SheetHeader>
                   <SheetTitle>
                     <a href={logo.url} className="flex items-center gap-2">
-                      <img src={logo.src} className="max-h-8" alt={logo.alt} />
+                      <img src={logo.src} className="max-h-12 transform scale-125" alt={logo.alt} />
                     </a>
                   </SheetTitle>
                 </SheetHeader>

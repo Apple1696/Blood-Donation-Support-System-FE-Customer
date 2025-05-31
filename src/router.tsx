@@ -4,6 +4,7 @@ import CustomerLayout from '@/layouts/CustomerLayout'
 import Home from '@/pages/Home'
 import LoginPage from '@/pages/Login'
 import BookAppointment from '@/pages/BookAppointment'
+import Profile from './pages/Profile'
 
 export const router = createBrowserRouter([
   {
@@ -20,6 +21,19 @@ export const router = createBrowserRouter([
           <>
             <SignedIn>
               <BookAppointment />
+            </SignedIn>
+            <SignedOut>
+              <RedirectToSignIn />
+            </SignedOut>
+          </>
+        ),
+      },
+      {
+        path: 'profile',
+        element: (
+          <>
+            <SignedIn>
+              <Profile />
             </SignedIn>
             <SignedOut>
               <RedirectToSignIn />
