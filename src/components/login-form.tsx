@@ -38,7 +38,7 @@ export function LoginForm({ className, onSwitchToSignup, ...props }: LoginFormPr
 
       if (result.status === "complete") {
         await setActive({ session: result.createdSessionId });
-        navigate("/home");
+        navigate("/");
       } else {
         console.error("Sign in failed", result);
         setError("Sign in failed. Please check your credentials.");

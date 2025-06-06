@@ -15,7 +15,7 @@ interface Footer2Props {
     alt: string;
     title: string;
   };
-  tagline?: string;
+
   menuItems?: MenuItem[];
   isDark?: boolean;
 }
@@ -27,7 +27,6 @@ const Footer2 = ({
     title: "BloodLink",
     url: "https://www.shadcnblocks.com",
   },
-  tagline = "Components made easy.",
   menuItems = [
     {
       title: "Product",
@@ -88,7 +87,6 @@ const Footer2 = ({
                   </a>
                   <p className="text-xl font-semibold text-foreground">{logo.title}</p>
                 </div>
-                <p className="mt-4 font-bold text-foreground">{tagline}</p>
               </div>
               {menuItems.map((section, sectionIdx) => (
                 <div key={sectionIdx}>

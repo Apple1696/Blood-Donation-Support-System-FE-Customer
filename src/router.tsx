@@ -1,5 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom'
-import { SignedIn, SignedOut, RedirectToSignIn } from "@clerk/clerk-react"
+import { SignedIn, SignedOut } from "@clerk/clerk-react"
+import { Navigate } from 'react-router-dom'
 import CustomerLayout from '@/layouts/CustomerLayout'
 import Home from '@/pages/Home'
 import LoginPage from '@/pages/Login'
@@ -23,7 +24,7 @@ export const router = createBrowserRouter([
               <BookAppointment />
             </SignedIn>
             <SignedOut>
-              <RedirectToSignIn />
+              <Navigate to="/login" replace />
             </SignedOut>
           </>
         ),
@@ -36,7 +37,7 @@ export const router = createBrowserRouter([
               <Profile />
             </SignedIn>
             <SignedOut>
-              <RedirectToSignIn />
+              <Navigate to="/login" replace />
             </SignedOut>
           </>
         ),

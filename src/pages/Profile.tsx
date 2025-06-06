@@ -4,9 +4,58 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useQuery } from "@tanstack/react-query";
+import { AddressService } from "@/services/AddressService";
+import { useState } from "react";
 
 const Profile = () => {
   const { user } = useUser();
+  const [selectedProvinceId, setSelectedProvinceId] = useState<string>("");
+  const [selectedDistrictId, setSelectedDistrictId] = useState<string>("");
+  const [selectedWardId, setSelectedWardId] = useState<string>("");
+
+  // Fetch provinces
+  const { data: provinces, isLoading: isLoadingProvinces } = useQuery({
+    queryKey: ["provinces"],
+    queryFn: AddressService.getProvinces,
+  });
+
+  // Fetch districts based on selected province
+  const { data: districts, isLoading: isLoadingDistricts } = useQuery({
+    queryKey: ["districts", selectedProvinceId],
+    queryFn: () => AddressService.getDistricts(selectedProvinceId),
+    enabled: !!selectedProvinceId, // Only fetch when a province is selected
+  });
+
+  // Fetch wards based on selected district
+  const { data: wards, isLoading: isLoadingWards } = useQuery({
+    queryKey: ["wards", selectedDistrictId],
+    queryFn: () => AddressService.getWards(selectedDistrictId),
+    enabled: !!selectedDistrictId, // Only fetch when a district is selected
+  });
+
+  // Handle selection changes
+  const handleProvinceChange = (value: string) => {
+    setSelectedProvinceId(value);
+    setSelectedDistrictId(""); // Reset district when province changes
+    setSelectedWardId(""); // Reset ward when province changes
+  };
+
+  const handleDistrictChange = (value: string) => {
+    setSelectedDistrictId(value);
+    setSelectedWardId(""); // Reset ward when district changes
+  };
+
+  const handleWardChange = (value: string) => {
+    setSelectedWardId(value);
+  };
 
   if (!user) return null;
 
@@ -52,6 +101,75 @@ const Profile = () => {
               />
             </div>
           </div>
+
+          <div className="grid md:grid-cols-3 gap-6 mt-6">
+            <div>
+              <label className="text-sm font-medium">Province</label>
+              <Select value={selectedProvinceId} onValueChange={handleProvinceChange}>
+                <SelectTrigger className="mt-1 w-full">
+                  <SelectValue placeholder="Select province" />
+                </SelectTrigger>
+                <SelectContent>
+                  {isLoadingProvinces ? (
+                    <SelectItem value="loading">Loading provinces...</SelectItem>
+                  ) : (
+                    provinces?.map((province) => (
+                      <SelectItem key={province.id} value={province.id}>
+                        {province.name}
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="text-sm font-medium">District</label>
+              <Select 
+                value={selectedDistrictId} 
+                onValueChange={handleDistrictChange}
+                disabled={!selectedProvinceId}
+              >
+                <SelectTrigger className="mt-1 w-full">
+                  <SelectValue placeholder="Select district" />
+                </SelectTrigger>
+                <SelectContent>
+                  {isLoadingDistricts ? (
+                    <SelectItem value="loading">Loading districts...</SelectItem>
+                  ) : (
+                    districts?.map((district) => (
+                      <SelectItem key={district.id} value={district.id}>
+                        {district.name}
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="text-sm font-medium">Ward</label>
+              <Select 
+                value={selectedWardId} 
+                onValueChange={handleWardChange}
+                disabled={!selectedDistrictId}
+              >
+                <SelectTrigger className="mt-1 w-full">
+                  <SelectValue placeholder="Select ward" />
+                </SelectTrigger>
+                <SelectContent>
+                  {isLoadingWards ? (
+                    <SelectItem value="loading">Loading wards...</SelectItem>
+                  ) : (
+                    wards?.map((ward) => (
+                      <SelectItem key={ward.id} value={ward.id}>
+                        {ward.name}
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          
         </CardContent>
       </Card>
 
