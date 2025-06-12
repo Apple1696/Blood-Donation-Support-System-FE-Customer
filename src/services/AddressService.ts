@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "@/config/api";
 
 interface Location {
   id: string;
@@ -24,19 +24,11 @@ interface ApiResponse<T> {
   };
 }
 
-// Create axios instance for proxied requests
-const proxyApi = axios.create({
-  headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-  },
-  withCredentials: true
-});
 
 export const AddressService = {
   getProvinces: async (): Promise<Province[]> => {
     try {
-      const response = await proxyApi.get<ApiResponse<Province>>('/location/provinces');
+      const response = await api.get<ApiResponse<Province>>('/location/provinces');
       if (response.data.success && !response.data.data.isError) {
         return response.data.data.result;
       }
@@ -49,7 +41,7 @@ export const AddressService = {
 
   getDistricts: async (provinceId: string): Promise<District[]> => {
     try {
-      const response = await proxyApi.get<ApiResponse<District>>(`/location/districts/${provinceId}`);
+      const response = await api.get<ApiResponse<District>>(`/location/districts/${provinceId}`);
       if (response.data.success && !response.data.data.isError) {
         return response.data.data.result;
       }
@@ -62,7 +54,7 @@ export const AddressService = {
 
   getWards: async (districtId: string): Promise<Ward[]> => {
     try {
-      const response = await proxyApi.get<ApiResponse<Ward>>(`/location/wards/${districtId}`);
+      const response = await api.get<ApiResponse<Ward>>(`/location/wards/${districtId}`);
       if (response.data.success && !response.data.data.isError) {
         return response.data.data.result;
       }

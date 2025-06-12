@@ -11,7 +11,7 @@ declare global {
 const tokenMutex = new Mutex();
 
 const api = axios.create({
-    baseURL: '/api',
+    baseURL: import.meta.env.VITE_API_URL,
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
