@@ -375,23 +375,5 @@ const renderMobileMenuItem = (item: MenuItem) => {
   );
 };
 
-// const SubMenuLink = ({ item }: { item: MenuItem }) => {
-//   return (
-//     <a
-//       className="flex select-none flex-row gap-4 rounded-md p-4 no-underline outline-none transition-colors hover:bg-muted hover:text-accent-foreground"
-//       href={item.url}
-//     >
-//       <div className="text-foreground">{item.icon}</div>
-//       <div className="flex flex-col gap-1">
-//         <div className="text-base font-medium leading-none">{item.title}</div>
-//         {item.description && (
-//           <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-//             {item.description}
-//           </p>
-//         )}
-//       </div>
-//     </a>
-//   );
-// };
 
 export { Navbar1 };

@@ -1,4 +1,4 @@
-import { useUser } from "@clerk/clerk-react";
+import { useAuthContext } from "@/providers/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
@@ -13,13 +13,45 @@ import {
 } from "@/components/ui/select";
 import { useQuery } from "@tanstack/react-query";
 import { AddressService } from "@/services/AddressService";
-import { useState } from "react";
+import { ProfileService } from "@/services/ProfileService";
+import type { CustomerProfile } from "@/services/ProfileService";
+import { useState, useEffect } from "react";
+import { useUser } from "@clerk/clerk-react";
 
 const Profile = () => {
+  const { isAuthenticated, getToken } = useAuthContext();
   const { user } = useUser();
   const [selectedProvinceId, setSelectedProvinceId] = useState<string>("");
   const [selectedDistrictId, setSelectedDistrictId] = useState<string>("");
   const [selectedWardId, setSelectedWardId] = useState<string>("");
+  const [isTokenAvailable, setIsTokenAvailable] = useState(false);
+
+  // Check token availability
+  useEffect(() => {
+    const checkToken = async () => {
+      try {
+        const token = await getToken();
+        setIsTokenAvailable(!!token);
+      } catch (error) {
+        console.error('Error checking token:', error);
+        setIsTokenAvailable(false);
+      }
+    };
+
+    if (isAuthenticated) {
+      checkToken();
+    } else {
+      setIsTokenAvailable(false);
+    }
+  }, [isAuthenticated, getToken]);
+
+  // Fetch user profile data
+  const { data: profile, isLoading: isLoadingProfile, error: profileError } = useQuery<CustomerProfile>({
+    queryKey: ["profile"],
+    queryFn: ProfileService.getProfile,
+    enabled: isAuthenticated && isTokenAvailable,
+    retry: false
+  });
 
   // Fetch provinces
   const { data: provinces, isLoading: isLoadingProvinces } = useQuery({
@@ -31,15 +63,24 @@ const Profile = () => {
   const { data: districts, isLoading: isLoadingDistricts } = useQuery({
     queryKey: ["districts", selectedProvinceId],
     queryFn: () => AddressService.getDistricts(selectedProvinceId),
-    enabled: !!selectedProvinceId, // Only fetch when a province is selected
+    enabled: !!selectedProvinceId,
   });
 
   // Fetch wards based on selected district
   const { data: wards, isLoading: isLoadingWards } = useQuery({
     queryKey: ["wards", selectedDistrictId],
     queryFn: () => AddressService.getWards(selectedDistrictId),
-    enabled: !!selectedDistrictId, // Only fetch when a district is selected
+    enabled: !!selectedDistrictId,
   });
+
+  // Set initial address values when profile is loaded
+  useEffect(() => {
+    if (profile) {
+      if (profile.provinceCode) setSelectedProvinceId(profile.provinceCode);
+      if (profile.districtCode) setSelectedDistrictId(profile.districtCode);
+      if (profile.wardCode) setSelectedWardId(profile.wardCode);
+    }
+  }, [profile]);
 
   // Handle selection changes
   const handleProvinceChange = (value: string) => {
@@ -57,11 +98,44 @@ const Profile = () => {
     setSelectedWardId(value);
   };
 
-  if (!user) return null;
+  if (!isAuthenticated) {
+    return (
+      <div className="container mx-auto py-8 px-4">
+        <h1 className="text-2xl font-semibold mb-6">Please log in to view your profile</h1>
+      </div>
+    );
+  }
 
-  const initials = user.firstName && user.lastName
-    ? `${user.firstName[0]}${user.lastName[0]}`
-    : user.emailAddresses[0].emailAddress[0].toUpperCase();
+  if (!isTokenAvailable) {
+    return (
+      <div className="container mx-auto py-8 px-4">
+        <h1 className="text-2xl font-semibold mb-6">Authenticating...</h1>
+      </div>
+    );
+  }
+
+  if (isLoadingProfile) {
+    return (
+      <div className="container mx-auto py-8 px-4">
+        <h1 className="text-2xl font-semibold mb-6">Loading profile...</h1>
+      </div>
+    );
+  }
+
+  if (profileError) {
+    return (
+      <div className="container mx-auto py-8 px-4">
+        <h1 className="text-2xl font-semibold mb-6 text-destructive">Error loading profile</h1>
+        <p className="text-muted-foreground">Please try refreshing the page</p>
+      </div>
+    );
+  }
+
+  if (!profile || !user) return null;
+
+  const initials = profile.firstName && profile.lastName
+    ? `${profile.firstName[0]}${profile.lastName[0]}`
+    : profile.account.email[0].toUpperCase();
 
   return (
     <div className="container mx-auto py-8 px-4">
@@ -87,7 +161,7 @@ const Profile = () => {
             <div>
               <label className="text-sm font-medium">First Name</label>
               <Input 
-                value={user.firstName || ""} 
+                value={profile.firstName || ""} 
                 className="mt-1"
                 readOnly
               />
@@ -95,7 +169,7 @@ const Profile = () => {
             <div>
               <label className="text-sm font-medium">Last Name</label>
               <Input 
-                value={user.lastName || ""} 
+                value={profile.lastName || ""} 
                 className="mt-1"
                 readOnly
               />
@@ -171,6 +245,9 @@ const Profile = () => {
           </div>
           
         </CardContent>
+        <div className="flex justify-end px-6 pb-6">
+          <Button>Save Changes</Button>
+        </div>
       </Card>
 
       <Card className="mb-8">
@@ -182,7 +259,7 @@ const Profile = () => {
               <label className="text-sm font-medium">Email</label>
               <div className="flex gap-4 items-center mt-1">
                 <Input 
-                  value={user.emailAddresses[0].emailAddress} 
+                  value={profile.account.email} 
                   className="flex-1"
                   readOnly
                 />

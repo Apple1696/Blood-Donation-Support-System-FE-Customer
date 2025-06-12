@@ -1,4 +1,4 @@
-import api from "@/config/api";
+import axios from "axios";
 
 interface Location {
   id: string;
@@ -24,8 +24,8 @@ interface ApiResponse<T> {
   };
 }
 
-// Create a new axios instance without the baseURL for proxied requests
-const proxyApi = api.create({
+// Create axios instance for proxied requests
+const proxyApi = axios.create({
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
@@ -35,17 +35,41 @@ const proxyApi = api.create({
 
 export const AddressService = {
   getProvinces: async (): Promise<Province[]> => {
-    const response = await proxyApi.get<ApiResponse<Province>>('/location/provinces');
-    return response.data.data.result;
+    try {
+      const response = await proxyApi.get<ApiResponse<Province>>('/location/provinces');
+      if (response.data.success && !response.data.data.isError) {
+        return response.data.data.result;
+      }
+      throw new Error(response.data.data.message || 'Failed to fetch provinces');
+    } catch (error) {
+      console.error('Error fetching provinces:', error);
+      throw error;
+    }
   },
 
   getDistricts: async (provinceId: string): Promise<District[]> => {
-    const response = await proxyApi.get<ApiResponse<District>>(`/location/districts/${provinceId}`);
-    return response.data.data.result;
+    try {
+      const response = await proxyApi.get<ApiResponse<District>>(`/location/districts/${provinceId}`);
+      if (response.data.success && !response.data.data.isError) {
+        return response.data.data.result;
+      }
+      throw new Error(response.data.data.message || 'Failed to fetch districts');
+    } catch (error) {
+      console.error('Error fetching districts:', error);
+      throw error;
+    }
   },
 
   getWards: async (districtId: string): Promise<Ward[]> => {
-    const response = await proxyApi.get<ApiResponse<Ward>>(`/location/wards/${districtId}`);
-    return response.data.data.result;
+    try {
+      const response = await proxyApi.get<ApiResponse<Ward>>(`/location/wards/${districtId}`);
+      if (response.data.success && !response.data.data.isError) {
+        return response.data.data.result;
+      }
+      throw new Error(response.data.data.message || 'Failed to fetch wards');
+    } catch (error) {
+      console.error('Error fetching wards:', error);
+      throw error;
+    }
   }
 };
