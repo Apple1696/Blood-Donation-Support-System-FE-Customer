@@ -33,12 +33,12 @@ interface UpdateProfileRequest {
   phone: string;
   longitude: string;
   latitude: string;
-  ward_code: string;
-  district_code: string;
-  province_code: string;
-  ward_name: string;
-  district_name: string;
-  province_name: string;
+  wardCode: string;
+  districtCode: string;
+  provinceCode: string;
+  wardName: string;
+  districtName: string;
+  provinceName: string;
   bloodGroup: string;
   bloodRh: string;
 }

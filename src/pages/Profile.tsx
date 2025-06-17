@@ -139,7 +139,26 @@ const Profile = () => {
   };
 
   const handleWardChange = (value: string) => {
-    setSelectedWardId(value);
+    const selectedWard = wards?.find(w => w.id === value);
+    if (selectedWard) {
+      setSelectedWardId(value);
+      // Update profile with new ward's coordinates
+      updateProfileMutation.mutate({
+        firstName,
+        lastName,
+        phone: profile?.phone || "",
+        longitude: selectedWard.longitude,
+        latitude: selectedWard.latitude,
+        wardCode: value,
+        districtCode: selectedDistrictId,
+        provinceCode: selectedProvinceId,
+        wardName: selectedWard.name,
+        districtName: districts?.find(d => d.id === selectedDistrictId)?.name || "",
+        provinceName: provinces?.find(p => p.id === selectedProvinceId)?.name || "",
+        bloodGroup: profile?.bloodGroup || "A",
+        bloodRh: profile?.bloodRh || "+"
+      });
+    }
   };
 
   const handleSaveChanges = () => {
@@ -163,12 +182,12 @@ const Profile = () => {
       phone: profile?.phone || "",
       longitude: selectedWard.longitude,
       latitude: selectedWard.latitude,
-      ward_code: selectedWardId,
-      district_code: selectedDistrictId,
-      province_code: selectedProvinceId,
-      ward_name: selectedWard.name,
-      district_name: selectedDistrict.name,
-      province_name: selectedProvince.name,
+      wardCode: selectedWardId,
+      districtCode: selectedDistrictId,
+      provinceCode: selectedProvinceId,
+      wardName: selectedWard.name,
+      districtName: selectedDistrict.name,
+      provinceName: selectedProvince.name,
       bloodGroup: profile?.bloodGroup || "A",
       bloodRh: profile?.bloodRh || "+"
     });

@@ -4,9 +4,10 @@ import { Navigate } from 'react-router-dom'
 import CustomerLayout from '@/layouts/CustomerLayout'
 import Home from '@/pages/Home'
 import LoginPage from '@/pages/Login'
-import BookAppointment from '@/pages/BookAppointment'
 import Profile from './pages/Profile'
-import CardCampaign from './components/CardCampaign'
+import CardCampaign from './pages/Campaign/CardCampaign'
+import CampaignDetail from './pages/Campaign/CampaignDetail'
+import BookAppointment from './pages/Campaign/BookAppointment'
 
 export const router = createBrowserRouter([
   {
@@ -18,7 +19,7 @@ export const router = createBrowserRouter([
         element: <Home />
       },
       {
-        path: 'book-appointment',
+        path: 'campaigns',
         element: (
           <>
             <SignedIn>
@@ -42,6 +43,23 @@ export const router = createBrowserRouter([
             </SignedOut>
           </>
         ),
+      },
+      {
+        path: 'campaigns/:id',
+        element: <CampaignDetail />
+      },
+      {
+        path: 'book-appointment/:id',
+        element: (
+          <>
+            <SignedIn>
+              <BookAppointment />
+            </SignedIn>
+            <SignedOut>
+              <Navigate to="/login" replace />
+            </SignedOut>
+          </>
+        )
       }
     ]
   },

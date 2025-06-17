@@ -112,10 +112,10 @@ const Navbar1 = ({
           url: "#",
         },
         {
-          title: "Book Appointment",
+          title: "Campaigns",
           description: "We are here to help you with any questions you have",
           icon: <Sunset className="size-5 shrink-0" />,
-          url: "/book-appointment",
+          url: "/campaigns",
         },
         {
           title: "First-Time Donor Info",
@@ -174,6 +174,9 @@ const Navbar1 = ({
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
             <a href="/profile">Profile</a>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <a href="/donation-history">Donation History</a>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={handleSignOut}>
             Sign out

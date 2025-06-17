@@ -1,3 +1,4 @@
+// First, let's update your CampaignService to include a single campaign fetch
 import api from '../config/api';
 import { useQuery } from '@tanstack/react-query';
 
@@ -31,8 +32,19 @@ export interface CampaignResponse {
     };
 }
 
+export interface SingleCampaignResponse {
+    success: boolean;
+    message: string;
+    data: Campaign;
+}
+
 export const getCampaigns = async (page: number = 1, limit: number = 10): Promise<CampaignResponse> => {
     const response = await api.get<CampaignResponse>(`/campaigns?page=${page}&limit=${limit}`);
+    return response.data;
+};
+
+export const getCampaignById = async (id: string): Promise<SingleCampaignResponse> => {
+    const response = await api.get<SingleCampaignResponse>(`/campaigns/${id}`);
     return response.data;
 };
 
@@ -40,5 +52,13 @@ export const useGetCampaigns = (page: number = 1, limit: number = 10) => {
     return useQuery({
         queryKey: ['campaigns', page, limit],
         queryFn: () => getCampaigns(page, limit),
+    });
+};
+
+export const useGetCampaignById = (id: string) => {
+    return useQuery({
+        queryKey: ['campaign', id],
+        queryFn: () => getCampaignById(id),
+        enabled: !!id,
     });
 };
