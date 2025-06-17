@@ -90,7 +90,7 @@ const CampaignDetail: React.FC = () => {
                       ? 'bg-emerald-500/90 text-white border-emerald-400/50 shadow-lg shadow-emerald-500/25' 
                       : 'bg-gray-500/90 text-white border-gray-400/50'
                   }`}>
-                    {isActive && !isExpired ? 'Active Campaign' : 'Inactive'}
+                    {isActive && !isExpired ? 'Active ' : 'Inactive'}
                   </div>
                 </div>
               </div>

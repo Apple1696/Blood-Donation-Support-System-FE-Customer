@@ -10,7 +10,7 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel";
 import type { CarouselApi } from "@/components/ui/carousel";
-import { getCampaigns, type Campaign } from "@/services/campaigns";
+import { getCampaigns, type Campaign } from "@/services/CampaignService";
 
 interface Gallery6Props {
   heading?: string;
@@ -19,7 +19,7 @@ interface Gallery6Props {
 
 const Gallery6 = ({
   heading = "Current Blood Donation Campaigns",
-  demoUrl = "#",
+  demoUrl = "/campaigns",
 }: Gallery6Props) => {
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const [canScrollPrev, setCanScrollPrev] = useState(false);
@@ -30,8 +30,8 @@ const Gallery6 = ({
   useEffect(() => {
     const fetchCampaigns = async () => {
       try {
-        const data = await getCampaigns();
-        setCampaigns(data);
+        const response = await getCampaigns();
+        setCampaigns(response.data.data);
       } catch (error) {
         console.error('Error fetching campaigns:', error);
       } finally {
@@ -128,7 +128,7 @@ const Gallery6 = ({
                       <div className="flex-1">
                         <div className="relative h-full w-full origin-bottom transition duration-300 group-hover:scale-105">
                           <img
-                            src={campaign.image}
+                            src={campaign.banner}
                             alt={campaign.name}
                             className="h-full w-full object-cover object-center"
                           />
