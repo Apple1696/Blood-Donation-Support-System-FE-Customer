@@ -1,17 +1,33 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { Calendar, MapPin, Award, Heart, Clock, Users, Droplets, TrendingUp } from 'lucide-react';
+
+type DonationStatus = 'completed' | 'confirmed' | 'pending';
+
+interface StatusBadgeProps {
+  status: DonationStatus;
+}
 
 const BloodDonationHistory = () => {
   const [activeTab, setActiveTab] = useState('history');
 
   // Mock data
-  const donationHistory = [
+  const donationHistory: Array<{
+    id: number;
+    date: string;
+    campaign: string;
+    location: string;
+    bloodType: string;
+    amount: string;
+    status: DonationStatus;
+    healthCheck: string;
+    nextEligible: string;
+  }> = [
     {
       id: 1,
       date: '2024-05-15',
@@ -47,7 +63,14 @@ const BloodDonationHistory = () => {
     }
   ];
 
-  const upcomingAppointments = [
+  const upcomingAppointments: Array<{
+    id: number;
+    date: string;
+    time: string;
+    campaign: string;
+    location: string;
+    status: DonationStatus;
+  }> = [
     {
       id: 1,
       date: '2024-07-20',
@@ -72,8 +95,8 @@ const BloodDonationHistory = () => {
     nextEligibleDate: '2024-07-15'
   };
 
-  const StatusBadge = ({ status }) => {
-    const variants = {
+  const StatusBadge = ({ status }: StatusBadgeProps) => {
+    const variants: Record<DonationStatus, string> = {
       completed: 'bg-green-100 text-green-800',
       confirmed: 'bg-blue-100 text-blue-800',
       pending: 'bg-yellow-100 text-yellow-800'
