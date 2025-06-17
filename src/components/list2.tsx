@@ -74,7 +74,7 @@ const List2 = ({
 }: List2Props) => {
   return (
     <section className="py-32">
-      <div className="container px-0 md:px-8">
+      <div className="container mx-auto px-0 md:px-8">
         <h1 className="mb-10 px-4 text-3xl font-semibold md:mb-14 md:text-4xl">
           {heading}
         </h1>

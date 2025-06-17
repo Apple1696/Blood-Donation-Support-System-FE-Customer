@@ -6,6 +6,7 @@ import Home from '@/pages/Home'
 import LoginPage from '@/pages/Login'
 import BookAppointment from '@/pages/BookAppointment'
 import Profile from './pages/Profile'
+import CardCampaign from './components/CardCampaign'
 
 export const router = createBrowserRouter([
   {
@@ -21,7 +22,7 @@ export const router = createBrowserRouter([
         element: (
           <>
             <SignedIn>
-              <BookAppointment />
+              <CardCampaign />
             </SignedIn>
             <SignedOut>
               <Navigate to="/login" replace />

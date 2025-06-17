@@ -11,16 +11,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AddressService } from "@/services/AddressService";
 import { ProfileService } from "@/services/ProfileService";
 import type { CustomerProfile } from "@/services/ProfileService";
 import { useState, useEffect } from "react";
 import { useUser } from "@clerk/clerk-react";
+import { toast } from "sonner";
 
 const Profile = () => {
   const { isAuthenticated, getToken } = useAuthContext();
   const { user } = useUser();
+  const queryClient = useQueryClient();
+  
+  // Form state
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [selectedProvinceId, setSelectedProvinceId] = useState<string>("");
   const [selectedDistrictId, setSelectedDistrictId] = useState<string>("");
   const [selectedWardId, setSelectedWardId] = useState<string>("");
@@ -53,6 +59,18 @@ const Profile = () => {
     retry: false
   });
 
+  // Update profile mutation
+  const updateProfileMutation = useMutation({
+    mutationFn: ProfileService.updateProfile,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      toast.success("Profile updated successfully");
+    },
+    onError: (error) => {
+      toast.error("Failed to update profile: " + (error as Error).message);
+    }
+  });
+
   // Fetch provinces
   const { data: provinces, isLoading: isLoadingProvinces } = useQuery({
     queryKey: ["provinces"],
@@ -73,14 +91,40 @@ const Profile = () => {
     enabled: !!selectedDistrictId,
   });
 
-  // Set initial address values when profile is loaded
+  // Set initial values when profile is loaded
   useEffect(() => {
     if (profile) {
-      if (profile.provinceCode) setSelectedProvinceId(profile.provinceCode);
-      if (profile.districtCode) setSelectedDistrictId(profile.districtCode);
-      if (profile.wardCode) setSelectedWardId(profile.wardCode);
+      setFirstName(profile.firstName || "");
+      setLastName(profile.lastName || "");
+      
+      // Set province and trigger district fetch
+      if (profile.provinceCode) {
+        setSelectedProvinceId(profile.provinceCode);
+      }
     }
   }, [profile]);
+
+  // Set district when province is loaded and matches profile
+  useEffect(() => {
+    if (profile?.districtCode && districts) {
+      // Only set district if it exists in the current province
+      const districtExists = districts.some(d => d.id === profile.districtCode);
+      if (districtExists) {
+        setSelectedDistrictId(profile.districtCode);
+      }
+    }
+  }, [profile?.districtCode, districts]);
+
+  // Set ward when district is loaded and matches profile
+  useEffect(() => {
+    if (profile?.wardCode && wards) {
+      // Only set ward if it exists in the current district
+      const wardExists = wards.some(w => w.id === profile.wardCode);
+      if (wardExists) {
+        setSelectedWardId(profile.wardCode);
+      }
+    }
+  }, [profile?.wardCode, wards]);
 
   // Handle selection changes
   const handleProvinceChange = (value: string) => {
@@ -96,6 +140,38 @@ const Profile = () => {
 
   const handleWardChange = (value: string) => {
     setSelectedWardId(value);
+  };
+
+  const handleSaveChanges = () => {
+    if (!selectedWardId || !selectedDistrictId || !selectedProvinceId) {
+      toast.error("Please select all address fields");
+      return;
+    }
+
+    const selectedProvince = provinces?.find(p => p.id === selectedProvinceId);
+    const selectedDistrict = districts?.find(d => d.id === selectedDistrictId);
+    const selectedWard = wards?.find(w => w.id === selectedWardId);
+
+    if (!selectedProvince || !selectedDistrict || !selectedWard) {
+      toast.error("Invalid address selection");
+      return;
+    }
+
+    updateProfileMutation.mutate({
+      firstName,
+      lastName,
+      phone: profile?.phone || "",
+      longitude: selectedWard.longitude,
+      latitude: selectedWard.latitude,
+      ward_code: selectedWardId,
+      district_code: selectedDistrictId,
+      province_code: selectedProvinceId,
+      ward_name: selectedWard.name,
+      district_name: selectedDistrict.name,
+      province_name: selectedProvince.name,
+      bloodGroup: profile?.bloodGroup || "A",
+      bloodRh: profile?.bloodRh || "+"
+    });
   };
 
   if (!isAuthenticated) {
@@ -133,8 +209,8 @@ const Profile = () => {
 
   if (!profile || !user) return null;
 
-  const initials = profile.firstName && profile.lastName
-    ? `${profile.firstName[0]}${profile.lastName[0]}`
+  const initials = firstName && lastName
+    ? `${firstName[0]}${lastName[0]}`
     : profile.account.email[0].toUpperCase();
 
   return (
@@ -161,17 +237,17 @@ const Profile = () => {
             <div>
               <label className="text-sm font-medium">First Name</label>
               <Input 
-                value={profile.firstName || ""} 
+                value={firstName} 
+                onChange={(e) => setFirstName(e.target.value)}
                 className="mt-1"
-                readOnly
               />
             </div>
             <div>
               <label className="text-sm font-medium">Last Name</label>
               <Input 
-                value={profile.lastName || ""} 
+                value={lastName} 
+                onChange={(e) => setLastName(e.target.value)}
                 className="mt-1"
-                readOnly
               />
             </div>
           </div>
@@ -246,7 +322,12 @@ const Profile = () => {
           
         </CardContent>
         <div className="flex justify-end px-6 pb-6">
-          <Button>Save Changes</Button>
+          <Button 
+            onClick={handleSaveChanges}
+            disabled={updateProfileMutation.isPending}
+          >
+            {updateProfileMutation.isPending ? "Saving..." : "Save Changes"}
+          </Button>
         </div>
       </Card>
 

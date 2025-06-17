@@ -22,7 +22,25 @@ export interface CustomerProfile {
   wardName: string | null;
   districtName: string | null;
   provinceName: string | null;
+  bloodGroup: string;
+  bloodRh: string;
   status: string;
+}
+
+interface UpdateProfileRequest {
+  firstName: string;
+  lastName: string;
+  phone: string;
+  longitude: string;
+  latitude: string;
+  ward_code: string;
+  district_code: string;
+  province_code: string;
+  ward_name: string;
+  district_name: string;
+  province_name: string;
+  bloodGroup: string;
+  bloodRh: string;
 }
 
 interface ApiResponse<T> {
@@ -41,6 +59,19 @@ export const ProfileService = {
       throw new Error(response.data.message || 'Failed to fetch profile');
     } catch (error) {
       console.error('Error fetching profile:', error);
+      throw error;
+    }
+  },
+
+  updateProfile: async (profileData: UpdateProfileRequest): Promise<CustomerProfile> => {
+    try {
+      const response = await api.patch<ApiResponse<CustomerProfile>>('/customers/me', profileData);
+      if (response.data.success) {
+        return response.data.data;
+      }
+      throw new Error(response.data.message || 'Failed to update profile');
+    } catch (error) {
+      console.error('Error updating profile:', error);
       throw error;
     }
   }
