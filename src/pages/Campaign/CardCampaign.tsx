@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar, Users, Clock } from 'lucide-react';
-import { useGetCampaigns } from '@/services/CampaignService';
+import { useGetCampaigns, CampaignStatus } from '@/services/CampaignService';
 import type { Campaign } from '@/services/CampaignService';
 import { useNavigate } from 'react-router-dom';
 
@@ -28,9 +28,36 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
     return diffDays;
   };
 
-  const isActive = campaign.status === 'active';
+  const getStatusDetails = () => {
+    switch (campaign.status) {
+      case CampaignStatus.NOT_STARTED:
+        return {
+          color: 'bg-blue-500/90',
+          borderColor: 'border-blue-400/50',
+          shadowColor: 'shadow-blue-500/25',
+          label: 'Not Started'
+        };
+      case CampaignStatus.ENDED:
+        return {
+          color: 'bg-gray-500/90',
+          borderColor: 'border-gray-400/50',
+          shadowColor: 'shadow-gray-500/25',
+          label: 'Ended'
+        };
+      case CampaignStatus.ACTIVE:
+      default:
+        return {
+          color: 'bg-emerald-500/90',
+          borderColor: 'border-emerald-400/50',
+          shadowColor: 'shadow-emerald-500/25',
+          label: 'Active'
+        };
+    }
+  };
+
+  const statusDetails = getStatusDetails();
   const daysRemaining = getDaysRemaining(campaign.endDate);
-  const isExpired = daysRemaining < 0;
+  const daysUntilStart = Math.abs(getDaysRemaining(campaign.startDate));
 
   return (
     <Card 
@@ -42,12 +69,8 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
       
       {/* Status badge */}
       <div className="absolute top-4 right-4 z-10">
-        <div className={`px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-md border ${
-          isActive && !isExpired 
-            ? 'bg-emerald-500/90 text-white border-emerald-400/50 shadow-lg shadow-emerald-500/25' 
-            : 'bg-gray-500/90 text-white border-gray-400/50'
-        }`}>
-          {isActive && !isExpired ? 'Active' : 'Inactive'}
+        <div className={`px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-md border ${statusDetails.color} text-white ${statusDetails.borderColor} shadow-lg ${statusDetails.shadowColor}`}>
+          {statusDetails.label}
         </div>
       </div>
 
@@ -84,8 +107,8 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
           </div>
         </div>
 
-        {/* Days remaining */}
-        {isActive && !isExpired && (
+        {/* Days remaining/starting */}
+        {campaign.status === CampaignStatus.ACTIVE && daysRemaining > 0 && (
           <div className="flex items-center space-x-3 p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-100/50">
             <div className="p-2 bg-green-500/10 rounded-full">
               <Clock className="w-4 h-4 text-green-600" />
@@ -94,6 +117,19 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
               <p className="text-xs text-green-600 font-medium uppercase tracking-wide">Time Left</p>
               <p className="text-sm font-semibold text-gray-900">
                 {daysRemaining} {daysRemaining === 1 ? 'day' : 'days'} remaining
+              </p>
+            </div>
+          </div>
+        )}
+        {campaign.status === CampaignStatus.NOT_STARTED && (
+          <div className="flex items-center space-x-3 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-100/50">
+            <div className="p-2 bg-blue-500/10 rounded-full">
+              <Clock className="w-4 h-4 text-blue-600" />
+            </div>
+            <div className="flex-1">
+              <p className="text-xs text-blue-600 font-medium uppercase tracking-wide">Starting In</p>
+              <p className="text-sm font-semibold text-gray-900">
+                {daysUntilStart} {daysUntilStart === 1 ? 'day' : 'days'}
               </p>
             </div>
           </div>
@@ -111,7 +147,11 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
         >
           <span className="flex items-center justify-center space-x-2">
             <Users className="w-4 h-4" />
-            <span>{isActive && !isExpired ? 'Learn more' : 'View Details'}</span>
+            <span>
+              {campaign.status === CampaignStatus.ACTIVE && 'Join Campaign'}
+              {campaign.status === CampaignStatus.NOT_STARTED && 'Get Notified'}
+              {campaign.status === CampaignStatus.ENDED && 'View Details'}
+            </span>
           </span>
         </button>
       </CardContent>
@@ -125,7 +165,25 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
 
 export default function BloodDonationCampaigns() {
   const { data: campaignData, isLoading, error } = useGetCampaigns();
-  const campaigns = campaignData?.data.data || [];
+  
+  const sortCampaigns = (campaigns: Campaign[]) => {
+    const statusOrder = {
+      [CampaignStatus.ACTIVE]: 0,
+      [CampaignStatus.NOT_STARTED]: 1,
+      [CampaignStatus.ENDED]: 2
+    };
+
+    return [...campaigns].sort((a, b) => {
+      // First sort by status order
+      const statusDiff = statusOrder[a.status] - statusOrder[b.status];
+      if (statusDiff !== 0) return statusDiff;
+
+      // If same status, sort by start date (most recent first)
+      return new Date(b.startDate).getTime() - new Date(a.startDate).getTime();
+    });
+  };
+
+  const campaigns = sortCampaigns(campaignData?.data.data || []);
 
   if (isLoading) {
     return (

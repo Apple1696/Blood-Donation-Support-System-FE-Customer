@@ -2,11 +2,17 @@
 import api from '../config/api';
 import { useQuery } from '@tanstack/react-query';
 
+export enum CampaignStatus {
+    ACTIVE = 'active',
+    NOT_STARTED = 'not_started',
+    ENDED = 'ended'
+}
+
 export interface Campaign {
     id: string;
     name: string;
     description: string;
-    status: string;
+    status: CampaignStatus;
     startDate: string;
     endDate: string;
     createdAt: string;

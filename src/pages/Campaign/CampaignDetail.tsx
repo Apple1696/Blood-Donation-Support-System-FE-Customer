@@ -1,8 +1,9 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar, Clock, ArrowLeft, MapPin, Phone, Mail, CheckCircle } from 'lucide-react';
-import { useGetCampaignById } from '@/services/CampaignService';
+import { useGetCampaignById, CampaignStatus } from '@/services/CampaignService';
 import { useParams, useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 
 const CampaignDetail: React.FC = () => {
   const { id } = useParams();
@@ -54,9 +55,39 @@ const CampaignDetail: React.FC = () => {
     );
   }
 
-  const isActive = campaign.status === 'active';
+  const getStatusDetails = () => {
+    switch (campaign.status) {
+      case CampaignStatus.NOT_STARTED:
+        return {
+          color: 'bg-blue-500/90',
+          borderColor: 'border-blue-400/50',
+          shadowColor: 'shadow-blue-500/25',
+          label: 'Not Started',
+          message: 'This campaign has not started yet'
+        };
+      case CampaignStatus.ENDED:
+        return {
+          color: 'bg-gray-500/90',
+          borderColor: 'border-gray-400/50',
+          shadowColor: 'shadow-gray-500/25',
+          label: 'Ended',
+          message: 'This campaign has ended'
+        };
+      case CampaignStatus.ACTIVE:
+      default:
+        return {
+          color: 'bg-emerald-500/90',
+          borderColor: 'border-emerald-400/50',
+          shadowColor: 'shadow-emerald-500/25',
+          label: 'Active',
+          message: 'This campaign is currently active'
+        };
+    }
+  };
+
+  const statusDetails = getStatusDetails();
   const daysRemaining = getDaysRemaining(campaign.endDate);
-  const isExpired = daysRemaining < 0;
+  const daysUntilStart = Math.abs(getDaysRemaining(campaign.startDate));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-red-50/30 py-8">
@@ -77,7 +108,7 @@ const CampaignDetail: React.FC = () => {
           <div className="lg:col-span-2">
             <Card className="bg-white/80 backdrop-blur-sm shadow-2xl border-0 overflow-hidden">
               {/* Campaign Image */}
-              <div className="h-[400px] w-full">
+              <div className="h-[400px] w-full relative">
                 <img 
                   src={campaign.banner} 
                   alt={campaign.name}
@@ -85,12 +116,23 @@ const CampaignDetail: React.FC = () => {
                 />
                 {/* Status badge */}
                 <div className="absolute top-4 right-4">
-                  <div className={`px-4 py-2 rounded-full text-sm font-semibold backdrop-blur-md border ${
-                    isActive && !isExpired 
-                      ? 'bg-emerald-500/90 text-white border-emerald-400/50 shadow-lg shadow-emerald-500/25' 
-                      : 'bg-gray-500/90 text-white border-gray-400/50'
-                  }`}>
-                    {isActive && !isExpired ? 'Active ' : 'Inactive'}
+                  <div className={`px-4 py-2 rounded-full text-sm font-semibold backdrop-blur-md border ${statusDetails.color} text-white ${statusDetails.borderColor} shadow-lg ${statusDetails.shadowColor}`}>
+                    {statusDetails.label}
+                  </div>
+                </div>
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-6">
+                  <div className="text-white">
+                    <p className="text-sm font-medium mb-2">{statusDetails.message}</p>
+                    {campaign.status === CampaignStatus.ACTIVE && daysRemaining > 0 && (
+                      <p className="text-sm">
+                        {daysRemaining} {daysRemaining === 1 ? 'day' : 'days'} remaining to participate
+                      </p>
+                    )}
+                    {campaign.status === CampaignStatus.NOT_STARTED && (
+                      <p className="text-sm">
+                        Starting in {daysUntilStart} {daysUntilStart === 1 ? 'day' : 'days'}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -111,7 +153,6 @@ const CampaignDetail: React.FC = () => {
                       <p className="text-gray-700 leading-relaxed mb-4">
                         {campaign.description}
                       </p>
-                     
                     </div>
                   </div>
 
@@ -161,13 +202,24 @@ const CampaignDetail: React.FC = () => {
                     <p className="text-sm font-semibold text-gray-900">{formatDate(campaign.endDate)}</p>
                   </div>
                 </div>
-                {isActive && !isExpired && (
+                {campaign.status === CampaignStatus.ACTIVE && daysRemaining > 0 && (
                   <div className="flex items-start space-x-3 p-3 bg-green-50/50 rounded-lg">
                     <Clock className="w-5 h-5 text-green-600 mt-0.5" />
                     <div>
                       <p className="text-xs text-green-600 font-medium uppercase tracking-wide">Time Remaining</p>
                       <p className="text-sm font-semibold text-gray-900">
                         {daysRemaining} {daysRemaining === 1 ? 'day' : 'days'} left
+                      </p>
+                    </div>
+                  </div>
+                )}
+                {campaign.status === CampaignStatus.NOT_STARTED && (
+                  <div className="flex items-start space-x-3 p-3 bg-blue-50/50 rounded-lg">
+                    <Clock className="w-5 h-5 text-blue-600 mt-0.5" />
+                    <div>
+                      <p className="text-xs text-blue-600 font-medium uppercase tracking-wide">Starting In</p>
+                      <p className="text-sm font-semibold text-gray-900">
+                        {daysUntilStart} {daysUntilStart === 1 ? 'day' : 'days'}
                       </p>
                     </div>
                   </div>
@@ -205,17 +257,42 @@ const CampaignDetail: React.FC = () => {
               </CardContent>
             </Card>
 
-            {/* Action Buttons */}
-            <div className="space-y-3">
-              <button 
-                onClick={() => navigate(`/book-appointment/${campaign.id}`)}
-                className="w-full bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white font-semibold py-4 px-6 rounded-lg shadow-lg shadow-red-500/25 hover:shadow-xl hover:shadow-red-500/30 transition-all duration-300 transform hover:scale-105"
-              >
-                <span className="flex items-center justify-center space-x-2">
-                  <span>Book Appointment</span>
-                </span>
-              </button>
-            </div>
+            {/* Action Card */}
+            <Card className="bg-gradient-to-r from-red-600 to-pink-600 text-white">
+              <CardContent className="p-6">
+                <div className="text-center space-y-4">
+                  {campaign.status === CampaignStatus.ACTIVE && (
+                    <>
+                      <h3 className="text-xl font-bold">Ready to Save Lives?</h3>
+                      <p className="opacity-90">Join this campaign and make a difference today.</p>
+                      <Button
+                      onClick={() => navigate(`/book-appointment/${campaign.id}`)}
+                      className="w-full bg-white text-red-600 hover:bg-gray-100">
+                        Book Appointment
+                      </Button>
+                    </>
+                  )}
+                  {campaign.status === CampaignStatus.NOT_STARTED && (
+                    <>
+                      <h3 className="text-xl font-bold">Get Notified</h3>
+                      <p className="opacity-90">Be the first to know when this campaign starts.</p>
+                      <Button className="w-full bg-white text-red-600 hover:bg-gray-100">
+                        Set Reminder
+                      </Button>
+                    </>
+                  )}
+                  {campaign.status === CampaignStatus.ENDED && (
+                    <>
+                      <h3 className="text-xl font-bold">Campaign Ended</h3>
+                      <p className="opacity-90">Thank you for your interest. Check out our other active campaigns.</p>
+                      <Button className="w-full bg-white text-red-600 hover:bg-gray-100" onClick={() => navigate('/campaigns')}>
+                        View Active Campaigns
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
