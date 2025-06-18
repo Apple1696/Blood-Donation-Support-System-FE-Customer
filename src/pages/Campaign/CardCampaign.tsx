@@ -1,9 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Calendar, Users, Clock } from 'lucide-react';
+import { Calendar, Users, Clock, Search, Filter, Check } from 'lucide-react';
 import { useGetCampaigns, CampaignStatus } from '@/services/CampaignService';
 import type { Campaign } from '@/services/CampaignService';
 import { useNavigate } from 'react-router-dom';
+import { Input } from '@/components/ui/input';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
 
 interface CampaignCardProps {
   campaign: Campaign;
@@ -165,6 +173,12 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
 
 export default function BloodDonationCampaigns() {
   const { data: campaignData, isLoading, error } = useGetCampaigns();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedStatuses, setSelectedStatuses] = useState<CampaignStatus[]>([
+    CampaignStatus.ACTIVE,
+    CampaignStatus.NOT_STARTED,
+    CampaignStatus.ENDED
+  ]);
   
   const sortCampaigns = (campaigns: Campaign[]) => {
     const statusOrder = {
@@ -183,7 +197,21 @@ export default function BloodDonationCampaigns() {
     });
   };
 
-  const campaigns = sortCampaigns(campaignData?.data.data || []);
+  const filterCampaigns = (campaigns: Campaign[]) => {
+    return sortCampaigns(campaigns).filter(campaign => {
+      const matchesSearch = campaign.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesStatus = selectedStatuses.includes(campaign.status);
+      return matchesSearch && matchesStatus;
+    });
+  };
+
+  const campaigns = filterCampaigns(campaignData?.data.data || []);
+
+  const statusLabels = {
+    [CampaignStatus.ACTIVE]: 'Active Campaigns',
+    [CampaignStatus.NOT_STARTED]: 'Upcoming Campaigns',
+    [CampaignStatus.ENDED]: 'Past Campaigns'
+  };
 
   if (isLoading) {
     return (
@@ -253,19 +281,68 @@ export default function BloodDonationCampaigns() {
         </div>
       </div>
 
+      {/* Search and Filter */}
+      <div className="container mx-auto px-4 mb-8">
+        <div className="flex gap-4 items-center">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Input
+              placeholder="Search campaigns..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 bg-white/80 backdrop-blur-sm"
+            />
+          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="bg-white/80 backdrop-blur-sm">
+                <Filter className="h-4 w-4 mr-2" />
+                Filter Status
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              {Object.values(CampaignStatus).map((status) => (
+                <DropdownMenuItem
+                  key={status}
+                  onClick={() => {
+                    setSelectedStatuses(prev =>
+                      prev.includes(status)
+                        ? prev.filter(s => s !== status)
+                        : [...prev, status]
+                    );
+                  }}
+                  className="flex items-center justify-between"
+                >
+                  {statusLabels[status]}
+                  {selectedStatuses.includes(status) && (
+                    <Check className="h-4 w-4" />
+                  )}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+
       {/* Campaigns Grid */}
       <div className="container mx-auto px-4 pb-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {campaigns.map((campaign, index) => (
-            <div 
-              key={campaign.id} 
-              className="animate-fadeInUp"
-              style={{ animationDelay: `${index * 150}ms` }}
-            >
-              <CampaignCard campaign={campaign} />
-            </div>
-          ))}
-        </div>
+        {campaigns.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {campaigns.map((campaign, index) => (
+              <div 
+                key={campaign.id} 
+                className="animate-fadeInUp"
+                style={{ animationDelay: `${index * 150}ms` }}
+              >
+                <CampaignCard campaign={campaign} />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-gray-500 text-lg">No campaigns found matching your criteria.</p>
+          </div>
+        )}
       </div>
 
       <style>{`
