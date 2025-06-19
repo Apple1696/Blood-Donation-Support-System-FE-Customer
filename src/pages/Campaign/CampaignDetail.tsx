@@ -120,7 +120,7 @@ const CampaignDetail: React.FC = () => {
                     {statusDetails.label}
                   </div>
                 </div>
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-6">
+                {/* <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-6">
                   <div className="text-white">
                     <p className="text-sm font-medium mb-2">{statusDetails.message}</p>
                     {campaign.status === CampaignStatus.ACTIVE && daysRemaining > 0 && (
@@ -134,7 +134,7 @@ const CampaignDetail: React.FC = () => {
                       </p>
                     )}
                   </div>
-                </div>
+                </div> */}
               </div>
 
               <CardContent className="p-8">

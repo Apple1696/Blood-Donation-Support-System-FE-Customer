@@ -237,7 +237,7 @@ export default function BloodDonationCampaigns() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-red-50/30">
       {/* Header */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-red-600 via-red-500 to-pink-500 text-white">
+      <div className="relative overflow-hidden p-0 bg-gradient-to-r from-red-600 via-red-500 to-pink-500 text-white">
         <div className="absolute inset-0 bg-black/10" />
         <div className="container mx-auto px-4 py-16">
           <div className="text-center">
