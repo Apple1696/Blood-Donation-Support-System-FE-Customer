@@ -237,7 +237,7 @@ const CampaignDetail: React.FC = () => {
                   <MapPin className="w-5 h-5 text-gray-600" />
                   <div>
                     <p className="text-sm font-semibold text-gray-900">Location</p>
-                    <p className="text-xs text-gray-600">Community Health Center</p>
+                    <p className="text-xs text-gray-600">BloodLink Health Center</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3 p-3 bg-gray-50/50 rounded-lg">
@@ -251,7 +251,7 @@ const CampaignDetail: React.FC = () => {
                   <Mail className="w-5 h-5 text-gray-600" />
                   <div>
                     <p className="text-sm font-semibold text-gray-900">Email</p>
-                    <p className="text-xs text-gray-600">info@blooddrive.org</p>
+                    <p className="text-xs text-gray-600">BloodLink@gmail.com</p>
                   </div>
                 </div>
               </CardContent>

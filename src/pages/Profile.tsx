@@ -1,7 +1,6 @@
 import { useAuthContext } from "@/providers/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import {
@@ -18,12 +17,13 @@ import type { CustomerProfile } from "@/services/ProfileService";
 import { useState, useEffect } from "react";
 import { useUser } from "@clerk/clerk-react";
 import { toast } from "sonner";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const Profile = () => {
   const { isAuthenticated, getToken } = useAuthContext();
   const { user } = useUser();
   const queryClient = useQueryClient();
-  
+
   // Form state
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -31,6 +31,59 @@ const Profile = () => {
   const [selectedDistrictId, setSelectedDistrictId] = useState<string>("");
   const [selectedWardId, setSelectedWardId] = useState<string>("");
   const [isTokenAvailable, setIsTokenAvailable] = useState(false);
+
+  const [isPhoneDialogOpen, setIsPhoneDialogOpen] = useState(false);
+  const [newPhone, setNewPhone] = useState("");
+  const [isChangingPhone, setIsChangingPhone] = useState(false);
+
+  // Function to handle opening the phone change dialog
+  const handleOpenPhoneDialog = () => {
+    setNewPhone(profile?.phone || "");
+    setIsPhoneDialogOpen(true);
+  };
+
+  // Function to handle phone number update
+  const handleUpdatePhone = async () => {
+    if (!newPhone.trim()) {
+      toast.error("Phone number cannot be empty");
+      return;
+    }
+
+    setIsChangingPhone(true);
+
+    try {
+      // Use the existing update profile mutation but only update the phone
+      await updateProfileMutation.mutateAsync({
+        firstName: profile?.firstName || "",
+        lastName: profile?.lastName || "",
+        phone: newPhone,
+        longitude: profile?.longitude || "",
+        latitude: profile?.latitude || "",
+        wardCode: profile?.wardCode || "",
+        districtCode: profile?.districtCode || "",
+        provinceCode: profile?.provinceCode || "",
+        wardName: profile?.wardName || "",
+        districtName: profile?.districtName || "",
+        provinceName: profile?.provinceName || "",
+        bloodType: {
+          group: profile?.bloodType?.group || "A",
+          rh: profile?.bloodType?.rh || "+"
+        },
+        gender: profile?.gender || "",
+        dateOfBirth: profile?.dateOfBirth || "",
+        citizenId: profile?.citizenId || "",
+      });
+
+      // Close the dialog on success
+      setIsPhoneDialogOpen(false);
+      toast.success("Phone number updated successfully");
+    } catch (error) {
+      toast.error("Failed to update phone number");
+      console.error("Error updating phone:", error);
+    } finally {
+      setIsChangingPhone(false);
+    }
+  };
 
   // Check token availability
   useEffect(() => {
@@ -96,7 +149,7 @@ const Profile = () => {
     if (profile) {
       setFirstName(profile.firstName || "");
       setLastName(profile.lastName || "");
-      
+
       // Set province and trigger district fetch
       if (profile.provinceCode) {
         setSelectedProvinceId(profile.provinceCode);
@@ -155,8 +208,13 @@ const Profile = () => {
         wardName: selectedWard.name,
         districtName: districts?.find(d => d.id === selectedDistrictId)?.name || "",
         provinceName: provinces?.find(p => p.id === selectedProvinceId)?.name || "",
-        bloodGroup: profile?.bloodGroup || "A",
-        bloodRh: profile?.bloodRh || "+"
+        bloodType: {
+          group: profile?.bloodType?.group || "A",
+          rh: profile?.bloodType?.rh || "+"
+        },
+        gender: profile?.gender ||"",
+        dateOfBirth: profile?.dateOfBirth || "",
+        citizenId: profile?.citizenId || "",
       });
     }
   };
@@ -176,6 +234,7 @@ const Profile = () => {
       return;
     }
 
+
     updateProfileMutation.mutate({
       firstName,
       lastName,
@@ -188,8 +247,13 @@ const Profile = () => {
       wardName: selectedWard.name,
       districtName: selectedDistrict.name,
       provinceName: selectedProvince.name,
-      bloodGroup: profile?.bloodGroup || "A",
-      bloodRh: profile?.bloodRh || "+"
+      bloodType: {
+        group: profile?.bloodType?.group || "A",
+        rh: profile?.bloodType?.rh || "+"
+      },
+      gender: profile?.gender || "",
+      dateOfBirth: profile?.dateOfBirth || "",
+      citizenId: profile?.citizenId || "",
     });
   };
 
@@ -235,7 +299,7 @@ const Profile = () => {
   return (
     <div className="container mx-auto py-8 px-4">
       <h1 className="text-2xl font-semibold mb-6">My Profile</h1>
-      
+
       <Card className="mb-8">
         <CardContent className="pt-6">
           <div className="flex flex-col items-center mb-6">
@@ -243,10 +307,10 @@ const Profile = () => {
               <AvatarImage src={user.imageUrl} />
               <AvatarFallback className="text-xl">{initials}</AvatarFallback>
             </Avatar>
-            <div className="flex gap-2">
+            {/* <div className="flex gap-2">
               <Button variant="outline">Change Image</Button>
               <Button variant="outline">Remove Image</Button>
-            </div>
+            </div> */}
             <p className="text-sm text-muted-foreground mt-2">
               We support PNGs, JPEGs and GIFs under 2MB
             </p>
@@ -255,16 +319,16 @@ const Profile = () => {
           <div className="grid md:grid-cols-2 gap-6">
             <div>
               <label className="text-sm font-medium">First Name</label>
-              <Input 
-                value={firstName} 
+              <Input
+                value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
                 className="mt-1"
               />
             </div>
             <div>
               <label className="text-sm font-medium">Last Name</label>
-              <Input 
-                value={lastName} 
+              <Input
+                value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
                 className="mt-1"
               />
@@ -293,8 +357,8 @@ const Profile = () => {
             </div>
             <div>
               <label className="text-sm font-medium">District</label>
-              <Select 
-                value={selectedDistrictId} 
+              <Select
+                value={selectedDistrictId}
                 onValueChange={handleDistrictChange}
                 disabled={!selectedProvinceId}
               >
@@ -316,8 +380,8 @@ const Profile = () => {
             </div>
             <div>
               <label className="text-sm font-medium">Ward</label>
-              <Select 
-                value={selectedWardId} 
+              <Select
+                value={selectedWardId}
                 onValueChange={handleWardChange}
                 disabled={!selectedDistrictId}
               >
@@ -337,11 +401,19 @@ const Profile = () => {
                 </SelectContent>
               </Select>
             </div>
+
+
           </div>
-          
+          <div className="mt-6">
+            <label className="text-sm font-medium">Blood Type</label>
+            <div className="mt-1 p-2 border rounded-md bg-gray-50">
+              {profile?.bloodType ? `${profile.bloodType.group}${profile.bloodType.rh}` : 'Not specified'}
+            </div>
+          </div>
+
         </CardContent>
         <div className="flex justify-end px-6 pb-6">
-          <Button 
+          <Button
             onClick={handleSaveChanges}
             disabled={updateProfileMutation.isPending}
           >
@@ -353,24 +425,35 @@ const Profile = () => {
       <Card className="mb-8">
         <CardContent className="pt-6">
           <h2 className="text-xl font-semibold mb-4">Account Security</h2>
-          
+
           <div className="space-y-6">
             <div>
               <label className="text-sm font-medium">Email</label>
               <div className="flex gap-4 items-center mt-1">
-                <Input 
-                  value={profile.account.email} 
+                <Input
+                  value={profile.account.email}
+                  className="flex-1"
+                  disabled
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium">Phone Number</label>
+              <div className="flex gap-4 items-center mt-1">
+                <Input
+                  value={profile.phone}
                   className="flex-1"
                   readOnly
                 />
-                <Button variant="outline">Change email</Button>
+                <Button variant="outline" onClick={handleOpenPhoneDialog}>Change Phone</Button>
               </div>
             </div>
 
             <div>
               <label className="text-sm font-medium">Password</label>
               <div className="flex gap-4 items-center mt-1">
-                <Input 
+                <Input
                   type="password"
                   value="••••••••••"
                   className="flex-1"
@@ -380,54 +463,46 @@ const Profile = () => {
               </div>
             </div>
 
-            <div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-medium">2-Step Verifications</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Add an additional layer of security to your account during login.
-                  </p>
-                </div>
-                <Switch />
-              </div>
-            </div>
+
           </div>
         </CardContent>
       </Card>
-
-      <Card>
-        <CardContent className="pt-6">
-          <h2 className="text-xl font-semibold mb-4">Support Access</h2>
-          
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="font-medium">Support access</h3>
-                <p className="text-sm text-muted-foreground">
-                  You have granted us to access to your account for support purposes until Aug 31, 2023, 9:40 PM.
-                </p>
-              </div>
-              <Switch />
-            </div>
-
-            <div>
-              <h3 className="font-medium mb-1">Log out of all devices</h3>
-              <p className="text-sm text-muted-foreground mb-2">
-                Log out of all other active sessions on other devices besides this one.
-              </p>
-              <Button variant="outline">Log out</Button>
-            </div>
-
-            <div>
-              <h3 className="font-medium text-destructive mb-1">Delete my account</h3>
-              <p className="text-sm text-muted-foreground mb-2">
-                Permanently delete the account and remove access from all workspaces.
-              </p>
-              <Button variant="destructive">Delete Account</Button>
-            </div>
+      {/* Add the dialog for phone number change */}
+      <Dialog open={isPhoneDialogOpen} onOpenChange={setIsPhoneDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Change Phone Number</DialogTitle>
+            <DialogDescription>
+              Enter your new phone number below.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <label htmlFor="new-phone" className="text-sm font-medium">New Phone Number</label>
+            <Input
+              id="new-phone"
+              value={newPhone}
+              onChange={(e) => setNewPhone(e.target.value)}
+              placeholder="Enter new phone number"
+              className="mt-1"
+            />
           </div>
-        </CardContent>
-      </Card>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsPhoneDialogOpen(false)}
+              disabled={isChangingPhone}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleUpdatePhone}
+              disabled={isChangingPhone}
+            >
+              {isChangingPhone ? "Updating..." : "Update Phone"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

@@ -22,9 +22,14 @@ export interface CustomerProfile {
   wardName: string | null;
   districtName: string | null;
   provinceName: string | null;
-  bloodGroup: string;
-  bloodRh: string;
+  bloodType: {
+    group: string;
+    rh: string;
+  };
   status: string;
+  gender: string | null;
+  dateOfBirth: string | null;
+  citizenId: string | null;
 }
 
 interface UpdateProfileRequest {
@@ -39,8 +44,13 @@ interface UpdateProfileRequest {
   wardName: string;
   districtName: string;
   provinceName: string;
-  bloodGroup: string;
-  bloodRh: string;
+  bloodType: {
+    group: string;
+    rh: string;
+  };
+  gender: string
+  dateOfBirth: string;
+  citizenId: string;
 }
 
 interface ApiResponse<T> {

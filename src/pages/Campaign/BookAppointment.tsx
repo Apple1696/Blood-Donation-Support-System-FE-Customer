@@ -25,7 +25,7 @@ export default function BookAppointment() {
   const [date, setDate] = React.useState<Date>();
   const [note, setNote] = React.useState('');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  
+
   // Fetch profile data
   const { data: profileData, isLoading: isProfileLoading } = useQuery({
     queryKey: ['profile'],
@@ -59,7 +59,7 @@ export default function BookAppointment() {
     <div className="min-h-screen  container mx-auto pt-8 pb-8">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">Book Appointment</h1>
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Profile Information Column */}
           <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-0">
@@ -153,7 +153,7 @@ export default function BookAppointment() {
                 <Label htmlFor="bloodType">Blood Type</Label>
                 <Input
                   id="bloodType"
-                  value={`${profileData?.bloodGroup}${profileData?.bloodRh}` || ''}
+                  value={profileData?.bloodType ? `${profileData.bloodType.group}${profileData.bloodType.rh}` : ''}
                   readOnly
                   className="bg-gray-50"
                 />
@@ -202,12 +202,12 @@ export default function BookAppointment() {
                 />
               </div>
 
-              <Button 
+              <Button
                 className="w-full bg-red-500 hover:bg-red-600 text-white"
                 disabled={!date || isSubmitting}
                 onClick={async () => {
                   if (!campaign || !date) return;
-                  
+
                   try {
                     setIsSubmitting(true);
                     await DonationService.createDonationRequest({
@@ -241,15 +241,15 @@ export default function BookAppointment() {
                 {campaign && (
                   <>
                     <div className="h-48 w-full mb-4 overflow-hidden rounded-lg">
-                      <img 
-                        src={campaign.banner} 
+                      <img
+                        src={campaign.banner}
                         alt={campaign.name}
                         className="w-full h-full object-cover"
                       />
                     </div>
 
                     <h3 className="text-xl font-semibold text-gray-900">{campaign.name}</h3>
-                    
+
                     <div className="flex items-center space-x-3 p-3 bg-blue-50/50 rounded-lg">
                       <Calendar className="w-5 h-5 text-blue-600" />
                       <div>
@@ -262,7 +262,7 @@ export default function BookAppointment() {
                     <div className="flex items-center space-x-3 p-3 bg-gray-50/50 rounded-lg">
                       <MapPin className="w-5 h-5 text-gray-600" />
                       <div>
-                        <p className="text-sm text-gray-900">Community Health Center</p>
+                        <p className="text-sm text-gray-900">BloodLink Health Center</p>
                       </div>
                     </div>
 
