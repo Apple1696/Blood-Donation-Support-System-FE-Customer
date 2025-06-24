@@ -56,6 +56,7 @@ const handleSelect = (newDate: Date) => {
         <PopoverContent className="w-auto overflow-hidden p-0" align="start">
           <Calendar
             mode="single"
+            required={true}
             selected={date}
             captionLayout="dropdown"
             fromYear={1920}

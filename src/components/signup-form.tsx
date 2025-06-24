@@ -1,6 +1,6 @@
 "use client"
 
-import { use, useState } from "react"
+import { useState } from "react"
 import type React from "react"
 import { useSignUp } from "@clerk/clerk-react"
 import { cn } from "@/lib/utils"
@@ -177,7 +177,7 @@ export function SignupForm({ className, onSwitchToLogin, ...props }: SignupFormP
                 provinceName: province.name,
                 bloodType: {
                   group: "O",
-                  rh: "positive"
+                  rh: "+"
                 },
                 gender: userMetadata.gender,
                 dateOfBirth: userMetadata.dateOfBirth, // This is already formatted correctly from unsafeMetadata

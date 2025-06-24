@@ -133,8 +133,8 @@ const Navbar1 = ({
     },
   
     {
-      title: "Blog",
-      url: "#",
+      title: "FAQ",
+      url: "/faq",
     },
   ],
   auth = {

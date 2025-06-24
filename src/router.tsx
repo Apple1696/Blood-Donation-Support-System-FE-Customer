@@ -9,6 +9,7 @@ import CardCampaign from './pages/Campaign/CardCampaign'
 import CampaignDetail from './pages/Campaign/CampaignDetail'
 import BookAppointment from './pages/Campaign/BookAppointment'
 import BloodDonationHistory from './pages/Campaign/Dashboard'
+import BloodDonationFAQ from './pages/FAQ'
 
 export const router = createBrowserRouter([
   {
@@ -65,6 +66,10 @@ export const router = createBrowserRouter([
       {
         path: 'donation-history',
         element: <BloodDonationHistory />
+      },
+      {
+        path: 'faq',
+        element: <BloodDonationFAQ />
       }
     ]
   },
