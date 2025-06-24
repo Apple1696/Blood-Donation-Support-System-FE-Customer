@@ -10,6 +10,7 @@ import CampaignDetail from './pages/Campaign/CampaignDetail'
 import BookAppointment from './pages/Campaign/BookAppointment'
 import BloodDonationHistory from './pages/Campaign/Dashboard'
 import BloodDonationFAQ from './pages/FAQ'
+import BloodInfoPage from './pages/BloodInfo/BloodInfoPage'
 
 export const router = createBrowserRouter([
   {
@@ -70,6 +71,10 @@ export const router = createBrowserRouter([
       {
         path: 'faq',
         element: <BloodDonationFAQ />
+      },
+      {
+        path: 'blood-info',
+        element: <BloodInfoPage />
       }
     ]
   },

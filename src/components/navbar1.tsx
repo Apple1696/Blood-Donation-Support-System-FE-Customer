@@ -1,4 +1,4 @@
-import { Book, Menu, Sunset, Trees, Zap } from "lucide-react";
+import { Menu, Sunset, Trees, Zap } from "lucide-react";
 import { useUser, useClerk } from "@clerk/clerk-react";
 
 import {
@@ -69,38 +69,38 @@ const Navbar1 = ({
   },
   menu = [
     { title: "Home", url: "/" },
-    { title: "About us", url: "#" },
-    {
-      title: "Eligibility ",
-      url: "#",
-      items: [
-        {
-          title: "Who Can Donate?",
-          description: "A simple breakdown of general eligibility so users quickly know if they're likely to qualify.",
-          icon: <Book className="size-5 shrink-0" />,
-          url: "#",
-        },
-        {
-          title: "Health Requirements",
-          description: " List conditions that may prevent or delay donations.",
-          icon: <Trees className="size-5 shrink-0" />,
-          url: "#",
-        },
-        {
-          title: "Travel & Medication Restrictions",
-          description: "This helps people who've traveled recently or are on medications understand their status.",
-          icon: <Sunset className="size-5 shrink-0" />,
-          url: "#",
-        },
-        {
-          title: "FAQs",
-          description:
-            "This is your support hub. Include short, reassuring answers to common concerns.",
-          icon: <Zap className="size-5 shrink-0" />,
-          url: "#",
-        },
-      ],
-    },
+    { title: "Blood Info", url: "/blood-info" },
+    // {
+    //   title: "Eligibility ",
+    //   url: "#",
+    //   items: [
+    //     {
+    //       title: "Who Can Donate?",
+    //       description: "A simple breakdown of general eligibility so users quickly know if they're likely to qualify.",
+    //       icon: <Book className="size-5 shrink-0" />,
+    //       url: "#",
+    //     },
+    //     {
+    //       title: "Health Requirements",
+    //       description: " List conditions that may prevent or delay donations.",
+    //       icon: <Trees className="size-5 shrink-0" />,
+    //       url: "#",
+    //     },
+    //     {
+    //       title: "Travel & Medication Restrictions",
+    //       description: "This helps people who've traveled recently or are on medications understand their status.",
+    //       icon: <Sunset className="size-5 shrink-0" />,
+    //       url: "#",
+    //     },
+    //     {
+    //       title: "FAQs",
+    //       description:
+    //         "This is your support hub. Include short, reassuring answers to common concerns.",
+    //       icon: <Zap className="size-5 shrink-0" />,
+    //       url: "#",
+    //     },
+    //   ],
+    // },
     {
       title: "Schedule Appointment",
       url: "#",
