@@ -14,7 +14,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import BloodDonationDiagram from './BloodDiagram';
 
 const BloodInfoPage: React.FC = () => {
   const [bloodTypes, setBloodTypes] = useState<BloodInfo[]>([]);
