@@ -10,7 +10,10 @@ import CampaignDetail from './pages/Campaign/CampaignDetail'
 import BookAppointment from './pages/Campaign/BookAppointment'
 import BloodDonationHistory from './pages/Campaign/Dashboard'
 import BloodDonationFAQ from './pages/FAQ'
-import BloodInfoPage from './pages/BloodInfo/BloodInfoPage'
+import BloodInfoPage from './pages/BloodTypes/BloodInfoPage'
+import BloodComponents from './pages/BloodComponents/BloodComponents'
+import { Blog } from './components/Blog'
+import { BlogDetail } from './components/BlogDetail'
 
 export const router = createBrowserRouter([
   {
@@ -25,12 +28,8 @@ export const router = createBrowserRouter([
         path: 'campaigns',
         element: (
           <>
-            <SignedIn>
               <CardCampaign />
-            </SignedIn>
-            <SignedOut>
-              <Navigate to="/login" replace />
-            </SignedOut>
+           
           </>
         ),
       },
@@ -73,9 +72,22 @@ export const router = createBrowserRouter([
         element: <BloodDonationFAQ />
       },
       {
-        path: 'blood-info',
+        path: 'blood-types',
         element: <BloodInfoPage />
-      }
+      },
+      {
+        path: 'blood-components',
+        element: <BloodComponents />
+      },
+      {
+        path: 'blog',
+        element: <Blog/>
+      },
+      {
+        path: 'blog/:slug',
+        element: <BlogDetail />
+      },
+    
     ]
   },
   {

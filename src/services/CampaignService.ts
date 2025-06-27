@@ -20,6 +20,10 @@ export interface Campaign {
     createdAt: string;
     updatedAt: string;
     banner: string;
+    location: string;
+    limitDonation: number;
+    bloodCollectionDate: string;
+    metadata: any | null;
 }
 
 export interface PaginationMeta {

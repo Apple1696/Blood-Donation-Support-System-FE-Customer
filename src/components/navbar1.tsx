@@ -69,7 +69,23 @@ const Navbar1 = ({
   },
   menu = [
     { title: "Home", url: "/" },
-    { title: "Blood Info", url: "/blood-info" },
+    { title: "Thông tin nhóm máu",
+      url: "/blood-types",
+      items: [
+        {
+          title: "Nhóm máu",
+          description: "Tìm hiểu về các loại máu khác nhau và đặc điểm của chúng.",
+          icon: <Zap className="size-5 shrink-0" />,
+          url: "/blood-types",
+        },
+        {
+          title: "Thành phần máu",
+          description: "Khám phá các thành phần của máu và vai trò của chúng trong cơ thể.",
+          icon: <Sunset className="size-5 shrink-0" />,
+          url: "/blood-components",
+        }
+      ]
+     },
     // {
     //   title: "Eligibility ",
     //   url: "#",
@@ -102,7 +118,7 @@ const Navbar1 = ({
     //   ],
     // },
     {
-      title: "Schedule Appointment",
+      title: "Đặt lịch hẹn",
       url: "#",
       items: [
         {
@@ -112,8 +128,8 @@ const Navbar1 = ({
           url: "#",
         },
         {
-          title: "Campaigns",
-          description: "We are here to help you with any questions you have",
+          title: "Chiến dịch",
+          description: "Tham gia các chiến dịch hiến máu sắp tới",
           icon: <Sunset className="size-5 shrink-0" />,
           url: "/campaigns",
         },
@@ -135,6 +151,10 @@ const Navbar1 = ({
     {
       title: "FAQ",
       url: "/faq",
+    },
+     {
+      title: "Blog",
+      url: "/blog",
     },
   ],
   auth = {

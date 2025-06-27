@@ -36,12 +36,13 @@
     "date-fns": "^4.1.0",
     "embla-carousel-react": "^8.6.0",
     "lucide-react": "^0.511.0",
+    "motion": "^12.19.1",
     "react": "^19.1.0",
     "react-day-picker": "^9.7.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.6.1",
     "sonner": "^2.0.5",
-    "tailwind-merge": "^3.3.0",
+    "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.7"
   },
   "devDependencies": {

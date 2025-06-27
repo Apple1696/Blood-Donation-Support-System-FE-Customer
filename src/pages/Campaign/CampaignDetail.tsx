@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Calendar, Clock, ArrowLeft, MapPin, Phone, Mail, CheckCircle } from 'lucide-react';
+import { Calendar, Clock, ArrowLeft, MapPin, Phone, Mail, CheckCircle, Users, Droplets } from 'lucide-react';
 import { useGetCampaignById, CampaignStatus } from '@/services/CampaignService';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -17,6 +17,17 @@ const CampaignDetail: React.FC = () => {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
+    });
+  };
+
+  const formatDateTime = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
     });
   };
 
@@ -120,21 +131,6 @@ const CampaignDetail: React.FC = () => {
                     {statusDetails.label}
                   </div>
                 </div>
-                {/* <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-6">
-                  <div className="text-white">
-                    <p className="text-sm font-medium mb-2">{statusDetails.message}</p>
-                    {campaign.status === CampaignStatus.ACTIVE && daysRemaining > 0 && (
-                      <p className="text-sm">
-                        {daysRemaining} {daysRemaining === 1 ? 'day' : 'days'} remaining to participate
-                      </p>
-                    )}
-                    {campaign.status === CampaignStatus.NOT_STARTED && (
-                      <p className="text-sm">
-                        Starting in {daysUntilStart} {daysUntilStart === 1 ? 'day' : 'days'}
-                      </p>
-                    )}
-                  </div>
-                </div> */}
               </div>
 
               <CardContent className="p-8">
@@ -145,6 +141,8 @@ const CampaignDetail: React.FC = () => {
                       {campaign.name}
                     </h1>
                   </div>
+
+
 
                   {/* About Section */}
                   <div>
@@ -175,6 +173,63 @@ const CampaignDetail: React.FC = () => {
                       ))}
                     </div>
                   </div>
+
+                  {/* Campaign Details */}
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-4">Campaign Details</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="flex items-start space-x-3 p-4 bg-blue-50/50 rounded-lg border border-blue-100">
+                        <Calendar className="w-5 h-5 text-blue-600 mt-0.5" />
+                        <div>
+                          <p className="text-xs text-blue-600 font-medium uppercase tracking-wide">Start Date</p>
+                          <p className="text-sm font-semibold text-gray-900">{formatDate(campaign.startDate)}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start space-x-3 p-4 bg-red-50/50 rounded-lg border border-red-100">
+                        <Calendar className="w-5 h-5 text-red-600 mt-0.5" />
+                        <div>
+                          <p className="text-xs text-red-600 font-medium uppercase tracking-wide">End Date</p>
+                          <p className="text-sm font-semibold text-gray-900">{formatDate(campaign.endDate)}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start space-x-3 p-4 bg-green-50/50 rounded-lg border border-green-100">
+                        <Droplets className="w-5 h-5 text-green-600 mt-0.5" />
+                        <div>
+                          <p className="text-xs text-green-600 font-medium uppercase tracking-wide">Blood Collection</p>
+                          <p className="text-sm font-semibold text-gray-900">{formatDateTime(campaign.bloodCollectionDate)}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start space-x-3 p-4 bg-purple-50/50 rounded-lg border border-purple-100">
+                        <Users className="w-5 h-5 text-purple-600 mt-0.5" />
+                        <div>
+                          <p className="text-xs text-purple-600 font-medium uppercase tracking-wide">Donation Target</p>
+                          <p className="text-sm font-semibold text-gray-900">{campaign.limitDonation} blood units</p>
+                        </div>
+                      </div>
+                      {campaign.status === CampaignStatus.ACTIVE && daysRemaining > 0 && (
+                        <div className="flex items-start space-x-3 p-4 bg-orange-50/50 rounded-lg border border-orange-100">
+                          <Clock className="w-5 h-5 text-orange-600 mt-0.5" />
+                          <div>
+                            <p className="text-xs text-orange-600 font-medium uppercase tracking-wide">Time Remaining</p>
+                            <p className="text-sm font-semibold text-gray-900">
+                              {daysRemaining} {daysRemaining === 1 ? 'day' : 'days'} left
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                      {campaign.status === CampaignStatus.NOT_STARTED && (
+                        <div className="flex items-start space-x-3 p-4 bg-blue-50/50 rounded-lg border border-blue-100">
+                          <Clock className="w-5 h-5 text-blue-600 mt-0.5" />
+                          <div>
+                            <p className="text-xs text-blue-600 font-medium uppercase tracking-wide">Starting In</p>
+                            <p className="text-sm font-semibold text-gray-900">
+                              {daysUntilStart} {daysUntilStart === 1 ? 'day' : 'days'}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -182,76 +237,54 @@ const CampaignDetail: React.FC = () => {
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Campaign Details */}
+            {/* Location Info */}
             <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-0">
               <CardHeader>
-                <CardTitle className="text-lg font-bold text-gray-900">Campaign Details</CardTitle>
+                <CardTitle className="text-lg font-bold text-gray-900 flex items-center space-x-2">
+                  <MapPin className="w-5 h-5 text-red-600" />
+                  <span>Location & Contact</span>
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-start space-x-3 p-3 bg-blue-50/50 rounded-lg">
-                  <Calendar className="w-5 h-5 text-blue-600 mt-0.5" />
-                  <div>
-                    <p className="text-xs text-blue-600 font-medium uppercase tracking-wide">Start Date</p>
-                    <p className="text-sm font-semibold text-gray-900">{formatDate(campaign.startDate)}</p>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-3 p-3 bg-red-50/50 rounded-lg">
-                  <Calendar className="w-5 h-5 text-red-600 mt-0.5" />
-                  <div>
-                    <p className="text-xs text-red-600 font-medium uppercase tracking-wide">End Date</p>
-                    <p className="text-sm font-semibold text-gray-900">{formatDate(campaign.endDate)}</p>
-                  </div>
-                </div>
-                {campaign.status === CampaignStatus.ACTIVE && daysRemaining > 0 && (
-                  <div className="flex items-start space-x-3 p-3 bg-green-50/50 rounded-lg">
-                    <Clock className="w-5 h-5 text-green-600 mt-0.5" />
-                    <div>
-                      <p className="text-xs text-green-600 font-medium uppercase tracking-wide">Time Remaining</p>
-                      <p className="text-sm font-semibold text-gray-900">
-                        {daysRemaining} {daysRemaining === 1 ? 'day' : 'days'} left
-                      </p>
+                <div className="bg-gradient-to-r from-red-50 to-pink-50 p-4 rounded-lg border border-red-100">
+                  <div className="flex items-start space-x-3">
+                    <div className="p-2 bg-red-100 rounded-full flex-shrink-0">
+                      <MapPin className="w-5 h-5 text-red-600" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-xs text-red-600 font-medium uppercase tracking-wide mb-1">Campaign Location</p>
+                      <p className="text-sm font-semibold text-gray-900 leading-relaxed">{campaign.location}</p>
                     </div>
                   </div>
-                )}
-                {campaign.status === CampaignStatus.NOT_STARTED && (
-                  <div className="flex items-start space-x-3 p-3 bg-blue-50/50 rounded-lg">
-                    <Clock className="w-5 h-5 text-blue-600 mt-0.5" />
-                    <div>
-                      <p className="text-xs text-blue-600 font-medium uppercase tracking-wide">Starting In</p>
-                      <p className="text-sm font-semibold text-gray-900">
-                        {daysUntilStart} {daysUntilStart === 1 ? 'day' : 'days'}
-                      </p>
+                </div>
+                
+                <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-lg border border-green-100">
+                  <div className="flex items-start space-x-3">
+                    <div className="p-2 bg-green-100 rounded-full flex-shrink-0">
+                      <Calendar className="w-5 h-5 text-green-600" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-xs text-green-600 font-medium uppercase tracking-wide mb-1">Blood Collection Date</p>
+                      <p className="text-sm font-semibold text-gray-900">{formatDateTime(campaign.bloodCollectionDate)}</p>
                     </div>
                   </div>
-                )}
-              </CardContent>
-            </Card>
+                </div>
 
-            {/* Contact Info */}
-            <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-0">
-              <CardHeader>
-                <CardTitle className="text-lg font-bold text-gray-900">Contact Information</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center space-x-3 p-3 bg-gray-50/50 rounded-lg">
-                  <MapPin className="w-5 h-5 text-gray-600" />
-                  <div>
-                    <p className="text-sm font-semibold text-gray-900">Location</p>
-                    <p className="text-xs text-gray-600">BloodLink Health Center</p>
+                <div className="space-y-3">
+                  <div className="flex items-start space-x-3 p-3 bg-blue-50/50 rounded-lg hover:bg-blue-50 transition-colors">
+                    <Phone className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                    <div className="flex-1">
+                      <p className="text-sm font-semibold text-gray-900">Phone Support</p>
+                      <p className="text-sm text-blue-600 hover:text-blue-700 cursor-pointer">+1 (555) 123-4567</p>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-center space-x-3 p-3 bg-gray-50/50 rounded-lg">
-                  <Phone className="w-5 h-5 text-gray-600" />
-                  <div>
-                    <p className="text-sm font-semibold text-gray-900">Phone</p>
-                    <p className="text-xs text-gray-600">+1 (555) 123-4567</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-3 p-3 bg-gray-50/50 rounded-lg">
-                  <Mail className="w-5 h-5 text-gray-600" />
-                  <div>
-                    <p className="text-sm font-semibold text-gray-900">Email</p>
-                    <p className="text-xs text-gray-600">BloodLink@gmail.com</p>
+                  
+                  <div className="flex items-start space-x-3 p-3 bg-purple-50/50 rounded-lg hover:bg-purple-50 transition-colors">
+                    <Mail className="w-5 h-5 text-purple-600 mt-0.5 flex-shrink-0" />
+                    <div className="flex-1">
+                      <p className="text-sm font-semibold text-gray-900">Email Support</p>
+                      <p className="text-sm text-purple-600 hover:text-purple-700 cursor-pointer break-all">BloodLink@gmail.com</p>
+                    </div>
                   </div>
                 </div>
               </CardContent>
