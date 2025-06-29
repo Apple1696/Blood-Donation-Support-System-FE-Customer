@@ -14,6 +14,7 @@ import BloodInfoPage from './pages/BloodTypes/BloodInfoPage'
 import BloodComponents from './pages/BloodComponents/BloodComponents'
 import { Blog } from './components/Blog'
 import { BlogDetail } from './components/BlogDetail'
+import BloodInfoPage2 from './pages/BloodInfo/BloodInfo'
 
 export const router = createBrowserRouter([
   {
@@ -87,6 +88,10 @@ export const router = createBrowserRouter([
         path: 'blog/:slug',
         element: <BlogDetail />
       },
+      {
+        path: 'blood-info',
+        element: <BloodInfoPage2 />
+      }
     
     ]
   },
@@ -94,5 +99,6 @@ export const router = createBrowserRouter([
     path: '/login',
     element: <LoginPage />
   },
+ 
  
 ]) 

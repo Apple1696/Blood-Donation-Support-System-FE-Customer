@@ -9,22 +9,24 @@ import { DonationService } from '@/services/DonationService';
 import { useQuery } from '@tanstack/react-query';
 import { Calendar, MapPin, Users } from 'lucide-react';
 import { format } from "date-fns";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { toast } from 'sonner';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { useAuthContext } from '@/providers/AuthProvider';
+
 
 export default function BookAppointment() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [date, setDate] = React.useState<Date>();
   const [note, setNote] = React.useState('');
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
+   const { isAuthenticated } = useAuthContext();
+
+// Redirect if not authenticated
+  React.useEffect(() => {
+    if (!isAuthenticated) {
+      toast.error('Please log in to book an appointment');
+      navigate('/sign-in', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   // Fetch profile data
   const { data: profileData, isLoading: isProfileLoading } = useQuery({
@@ -35,6 +37,12 @@ export default function BookAppointment() {
   // Fetch campaign data
   const { data: campaignData, isLoading: isCampaignLoading } = useGetCampaignById(id as string);
   const campaign = campaignData?.data;
+  
+  // Get collection date when campaign data is loaded
+  const collectionDate = campaign ? new Date(campaign.bloodCollectionDate) : undefined;
+
+  // Create donation request mutation
+  const createDonationMutation = DonationService.useCreateDonationRequest();
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -55,6 +63,35 @@ export default function BookAppointment() {
     });
   };
 
+  const handleSubmit = async () => {
+    if (!campaign || !collectionDate) return;
+
+    try {
+      await createDonationMutation.mutateAsync({
+        campaignId: campaign.id,
+        appointmentDate: collectionDate.toISOString(),
+        note: note.trim()
+      });
+
+      toast.success('Your appointment has been booked successfully.');
+      navigate('/campaigns');
+    } catch (error: any) {
+      console.error('Error booking appointment:', error);
+      
+      // Check for authentication issues
+      if (error.message?.includes('Authentication')) {
+        toast.error('Please log in again to book your appointment');
+        navigate('/sign-in');
+      } else {
+        toast.error(error.message || 'Failed to book appointment. Please try again.');
+      }
+    }
+  };
+
+  if (!isAuthenticated) {
+    return null; // Let the useEffect handle redirect
+  }
+
   if (isProfileLoading || isCampaignLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-red-50/30 flex items-center justify-center">
@@ -67,7 +104,7 @@ export default function BookAppointment() {
   }
 
   return (
-    <div className="min-h-screen  container mx-auto pt-8 pb-8">
+    <div className="min-h-screen container mx-auto pt-8 pb-8">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">Book Appointment</h1>
 
@@ -170,36 +207,18 @@ export default function BookAppointment() {
                 />
               </div>
 
+              {/* Fixed appointment date display */}
               <div className="space-y-2">
                 <Label>Appointment Date</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !date && "text-muted-foreground"
-                      )}
-                    >
-                      <Calendar className="mr-2 h-4 w-4" />
-                      {date ? format(date, "PPP") : <span>Pick a date</span>}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <CalendarComponent
-                      mode="single"
-                      selected={date}
-                      onSelect={setDate}
-                      disabled={(date) => {
-                        if (!campaign) return true;
-                        const startDate = new Date(campaign.startDate);
-                        const endDate = new Date(campaign.endDate);
-                        return date < startDate || date > endDate || date < new Date();
-                      }}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
+                <div className="bg-gray-50 p-3 rounded-md border flex items-center">
+                  <Calendar className="w-4 h-4 mr-2 text-gray-500" />
+                  <span className="text-gray-700">
+                    {collectionDate ? format(collectionDate, "PPP") : 'Loading date...'}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Your appointment is automatically scheduled for the blood collection date.
+                </p>
               </div>
 
               <div className="space-y-2">
@@ -215,29 +234,10 @@ export default function BookAppointment() {
 
               <Button
                 className="w-full bg-red-500 hover:bg-red-600 text-white"
-                disabled={!date || isSubmitting}
-                onClick={async () => {
-                  if (!campaign || !date) return;
-
-                  try {
-                    setIsSubmitting(true);
-                    await DonationService.createDonationRequest({
-                      campaignId: campaign.id,
-                      appointmentDate: date.toISOString(),
-                      note: note.trim()
-                    });
-
-                    toast.success('Your appointment has been booked successfully.');
-                    navigate('/campaigns');
-                  } catch (error) {
-                    console.error('Error booking appointment:', error);
-                    toast.error('Failed to book appointment. Please try again.');
-                  } finally {
-                    setIsSubmitting(false);
-                  }
-                }}
+                disabled={!collectionDate || createDonationMutation.isPending}
+                onClick={handleSubmit}
               >
-                {isSubmitting ? "Booking..." : "Confirm Appointment"}
+                {createDonationMutation.isPending ? "Booking..." : "Confirm Appointment"}
               </Button>
             </CardContent>
           </Card>

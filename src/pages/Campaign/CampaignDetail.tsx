@@ -4,6 +4,10 @@ import { Calendar, Clock, ArrowLeft, MapPin, Phone, Mail, CheckCircle, Users, Dr
 import { useGetCampaignById, CampaignStatus } from '@/services/CampaignService';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { DonationService } from '@/services/DonationService';
+import { useAuthContext } from '@/providers/AuthProvider';
+import { useQuery } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 const CampaignDetail: React.FC = () => {
   const { id } = useParams();
@@ -20,6 +24,7 @@ const CampaignDetail: React.FC = () => {
     });
   };
 
+    
   const formatDateTime = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       weekday: 'long',

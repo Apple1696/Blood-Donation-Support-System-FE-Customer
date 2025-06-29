@@ -72,6 +72,12 @@ const Navbar1 = ({
     { title: "Thông tin nhóm máu",
       url: "/blood-types",
       items: [
+         {
+          title:  "Thông tin chung và máu và nhóm máu",
+          description: "Tìm hiểu về máu, nhóm máu và các yếu tố liên quan.",
+          icon: <Trees className="size-5 shrink-0" />,
+          url: "/blood-info",
+        },
         {
           title: "Nhóm máu",
           description: "Tìm hiểu về các loại máu khác nhau và đặc điểm của chúng.",
@@ -83,7 +89,8 @@ const Navbar1 = ({
           description: "Khám phá các thành phần của máu và vai trò của chúng trong cơ thể.",
           icon: <Sunset className="size-5 shrink-0" />,
           url: "/blood-components",
-        }
+        },
+       
       ]
      },
     // {
