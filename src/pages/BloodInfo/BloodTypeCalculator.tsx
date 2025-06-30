@@ -149,6 +149,15 @@ const BloodTypeCalculator = () => {
       >
         How Is My Blood Type Determined?
       </motion.h1>
+
+        <motion.p 
+        className="text-foreground text-center mx-auto max-w-3xl mb-8 bg-accent/5 p-4 rounded-lg border border-accent/10"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+      >
+        It's inherited. Like eye color, blood type is passed genetically from your parents. Whether your blood group is type A, B, AB or O is based on the blood types of your mother and father.
+      </motion.p>
       
       <Card className="bg-card shadow-xl border border-border">
         <CardHeader className="border-b border-border/30">

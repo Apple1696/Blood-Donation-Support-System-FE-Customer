@@ -163,6 +163,10 @@ const Navbar1 = ({
       title: "Blog",
       url: "/blog",
     },
+    {
+      title: "Emergency",
+      url: "/emergency",
+    }
   ],
   auth = {
     login: { title: "Login", url: "/login" },

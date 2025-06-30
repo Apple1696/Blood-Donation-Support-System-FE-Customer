@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "react-router-dom";
 
 const BloodDonationAnimation = () => {
   const [selectedDonor, setSelectedDonor] = useState<string | null>(null);
@@ -73,6 +74,26 @@ const BloodDonationAnimation = () => {
 
   return (
     <div className="container mx-auto py-8 px-4">
+      <h1 className="text-4xl font-bold text-center text-foreground mb-6 text-primary">Blood Types and Transfusion</h1>
+      
+      <div className="mb-6 text-foreground">
+        <p className="mb-4">
+          There are very specific ways in which blood types must be matched for a safe transfusion. The right blood transfusion can 
+          mean the difference between life and death. Use the interactive graphic below to learn more about matching blood types for
+          transfusions.
+        </p>
+        
+        <p className="mb-4">
+          Also, Rh-negative blood is given to Rh-negative patients, and Rh-positive or Rh-negative blood may be given to Rh-positive
+          patients. The rules for plasma are the reverse.
+        </p>
+        
+        <ul className="list-disc pl-6 text-primary space-y-2">
+          <li className="font-medium">The universal red cell donor has Type O negative blood.</li>
+          <li className="font-medium">The universal plasma donor has Type AB blood.</li>
+        </ul>
+      </div>
+      
       <Card className="border-border shadow-lg">
         <CardHeader className="bg-card/50">
           <CardTitle className="text-2xl text-center text-card-foreground">Blood Donation Compatibility</CardTitle>
@@ -258,6 +279,12 @@ const BloodDonationAnimation = () => {
           )}
         </CardFooter>
       </Card>
+       <div className="mt-8 p-4 bg-accent/10 rounded-lg border border-accent/20">
+        <p className="text-foreground text-center">
+          There are more than 300 other known antigens, the presence or absence of which creates "rare blood types." 
+          Certain blood types are unique to specific ethnic or racial groups. Learn about <Link to="/blood-types" className="text-primary font-medium hover:underline">blood and diversity</Link>.
+        </p>
+      </div>
     </div>
   );
 };

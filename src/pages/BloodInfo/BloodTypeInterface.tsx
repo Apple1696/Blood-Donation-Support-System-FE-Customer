@@ -54,11 +54,10 @@ const BloodTypeButton = ({ type, isActive, onClick }) => (
   <Button
     variant={isActive ? "default" : "outline"}
     onClick={() => onClick(type)}
-    className={`w-3/4  py-6 text-base font-semibold rounded-full transition-all duration-300 ${
-      isActive 
-        ? 'bg-primary text-primary-foreground shadow-md' 
-        : 'border-primary/30 hover:border-primary/70 text-foreground'
-    }`}
+    className={`w-3/4  py-6 text-base font-semibold rounded-full transition-all duration-300 ${isActive
+      ? 'bg-primary text-primary-foreground shadow-md'
+      : 'border-primary/30 hover:border-primary/70 text-foreground'
+      }`}
     size="lg"
   >
     Group {type}
@@ -68,14 +67,14 @@ const BloodTypeButton = ({ type, isActive, onClick }) => (
 // Test Tube Component
 const TestTube = ({ bloodType }) => {
   const data = bloodTypes[bloodType];
-  
+
   return (
     <div className="relative flex flex-col items-center">
       {/* Test Tube Container */}
       <div className="relative w-24 h-80 bg-secondary rounded-t-lg border-4 border-secondary/70 overflow-hidden shadow-lg">
         {/* Test Tube Neck */}
         <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-8 h-8 bg-secondary border-4 border-secondary/70 rounded-t-lg -mt-2"></div>
-        
+
         {/* Plasma (Yellow) */}
         <motion.div
           className="absolute top-0 w-full bg-chart-4 flex items-center justify-center gap-2"
@@ -110,7 +109,7 @@ const TestTube = ({ bloodType }) => {
             PLASMA
           </div>
         </motion.div>
-        
+
         {/* Red Blood Cells (Red) */}
         <motion.div
           className="absolute bottom-0 w-full bg-primary flex items-center justify-center gap-2"
@@ -145,7 +144,7 @@ const TestTube = ({ bloodType }) => {
             RED CELLS
           </div>
         </motion.div>
-        
+
         {/* Animated Bubbles */}
         <motion.div
           className="absolute inset-0 pointer-events-none"
@@ -176,7 +175,7 @@ const TestTube = ({ bloodType }) => {
           ))}
         </motion.div>
       </div>
-      
+
       {/* Test Tube Base */}
       <div className="w-32 h-4 bg-secondary/80 rounded-b-full border-4 border-secondary shadow-lg"></div>
     </div>
@@ -186,11 +185,11 @@ const TestTube = ({ bloodType }) => {
 // Information Panel Component
 const InformationPanel = ({ bloodType }) => {
   const data = bloodTypes[bloodType];
-  
+
   return (
     <Card className="shadow-lg border-primary/20">
       <CardHeader className="pb-2">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8 }}
@@ -199,9 +198,9 @@ const InformationPanel = ({ bloodType }) => {
           <CardDescription className="text-base">Blood composition</CardDescription>
         </motion.div>
       </CardHeader>
-      
+
       <CardContent>
-        <motion.p 
+        <motion.p
           className="text-foreground text-lg leading-relaxed"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -209,15 +208,15 @@ const InformationPanel = ({ bloodType }) => {
         >
           This blood type {data.description}.
         </motion.p>
-        
+
         <Tabs defaultValue="composition" className="mt-6">
           <TabsList className="w-full">
             <TabsTrigger value="composition" className="flex-1">Composition</TabsTrigger>
             <TabsTrigger value="compatibility" className="flex-1">Compatibility</TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="composition" className="mt-4">
-            <motion.div 
+            <motion.div
               className="p-4 bg-accent/10 rounded-lg border border-accent/20"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -251,9 +250,9 @@ const InformationPanel = ({ bloodType }) => {
               </div>
             </motion.div>
           </TabsContent>
-          
+
           <TabsContent value="compatibility" className="mt-4">
-            <motion.div 
+            <motion.div
               className="p-4 bg-accent/10 rounded-lg border border-accent/20"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -281,7 +280,7 @@ const InformationPanel = ({ bloodType }) => {
                   </div>
                 </div>
               </div>
-              
+
               {bloodType === 'O' && (
                 <div className="mt-3 p-2 bg-primary/10 rounded border border-primary/20">
                   <p className="text-sm text-center">
@@ -289,7 +288,7 @@ const InformationPanel = ({ bloodType }) => {
                   </p>
                 </div>
               )}
-              
+
               {bloodType === 'AB' && (
                 <div className="mt-3 p-2 bg-primary/10 rounded border border-primary/20">
                   <p className="text-sm text-center">
@@ -301,15 +300,15 @@ const InformationPanel = ({ bloodType }) => {
           </TabsContent>
         </Tabs>
       </CardContent>
-      
+
       <CardFooter className="flex flex-col items-start">
         <h3 className="font-semibold mb-2">Quick Facts</h3>
         <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
           <li>
-            {bloodType === 'O' ? 'Most in demand blood type' : 
-             bloodType === 'AB' ? 'Rarest blood type (~4% of population)' :
-             bloodType === 'A' ? 'Second most common blood type' : 
-             'Third most common blood type'}
+            {bloodType === 'O' ? 'Most in demand blood type' :
+              bloodType === 'AB' ? 'Rarest blood type (~4% of population)' :
+                bloodType === 'A' ? 'Second most common blood type' :
+                  'Third most common blood type'}
           </li>
           <li>
             Determined by antigens on red blood cells
@@ -323,33 +322,49 @@ const InformationPanel = ({ bloodType }) => {
 // Main App Component
 const BloodTypeInterface = () => {
   const [selectedBloodType, setSelectedBloodType] = useState('A');
-  
+
   return (
     <div className="min-h-screen p-8 bg-background">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <motion.div 
+        <motion.div
           className="text-center mb-12"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <Card className="inline-block px-6 py-3 shadow-md">
-            <CardTitle className="text-2xl text-foreground">
-              Interactive Blood Type Visualization
-            </CardTitle>
-          </Card>
+          <h1 className="text-4xl font-bold text-center mb-6 text-primary">How Blood Type Is Determined And Why You Need To Know</h1>
+
+          <motion.div
+            className="mt-6 mb-8 bg-accent/5 p-5 rounded-lg border border-accent/10 max-w-4xl mx-auto"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            <p className="text-foreground text-lg leading-relaxed">
+              Blood types are determined by the presence or absence of certain antigens – substances that can trigger an immune
+              response if they are foreign to the body. Since some antigens can trigger a patient's immune system to attack the transfused
+              blood, safe blood transfusions depend on careful blood typing and cross-matching.
+            </p>
+            <p className="mt-3 font-semibold text-lg text-primary">
+              Do you know what blood type is safe for you if you need a transfusion?
+            </p>
+            <p className="text-foreground text-lg leading-relaxed">
+              There are four major blood groups determined by the presence or absence of two antigens, A and B, on the surface of red blood cells. In addition to the A and B antigens, there is a protein called the Rh factor, which can be either present (+) or absent (–), creating the 8 most common blood types (A+, A-,  B+, B-,  O+, O-,  AB+, AB-).
+            </p>
+          </motion.div>
+
           <p className="mt-4 text-muted-foreground">
             Click on a blood type below to learn about its composition and compatibility.
           </p>
         </motion.div>
-        
+
         {/* Main Content */}
         <Card className="p-6">
           <CardContent className="p-0 pb-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-center">
               {/* Blood Type Buttons */}
-              <motion.div 
+              <motion.div
                 className="space-y-4"
                 initial={{ opacity: 0, x: -50 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -364,22 +379,22 @@ const BloodTypeInterface = () => {
                   />
                 ))}
               </motion.div>
-              
+
               {/* Test Tube */}
               <div className="flex justify-center">
                 <AnimatePresence mode="wait">
-                  <TestTube 
-                    key={selectedBloodType} 
-                    bloodType={selectedBloodType} 
+                  <TestTube
+                    key={selectedBloodType}
+                    bloodType={selectedBloodType}
                   />
                 </AnimatePresence>
               </div>
-              
+
               {/* Information Panel */}
               <AnimatePresence mode="wait">
-                <InformationPanel 
-                  key={selectedBloodType} 
-                  bloodType={selectedBloodType} 
+                <InformationPanel
+                  key={selectedBloodType}
+                  bloodType={selectedBloodType}
                 />
               </AnimatePresence>
             </div>
