@@ -26,7 +26,7 @@ export default function LoginPage() {
           </a>
         </div>
         <div className="flex flex-1 items-center justify-center">
-          <div className="w-full max-w-md">
+          <div className="w-full max-w-lg">
           {isSignup ? (
             <SignupForm onSwitchToLogin={() => setIsSignup(false)} />
           ) : (

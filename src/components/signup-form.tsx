@@ -82,7 +82,7 @@ export function SignupForm({ className, onSwitchToLogin, ...props }: SignupFormP
     setError("");
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      setError("Mật khẩu không khớp");
       setIsLoading(false);
       return;
     }
@@ -115,7 +115,7 @@ export function SignupForm({ className, onSwitchToLogin, ...props }: SignupFormP
       setVerifying(true);
     } catch (err: any) {
       console.error("Error:", err);
-      setError("An error occurred during sign up.");
+      setError("Đã xảy ra lỗi trong quá trình đăng ký.");
     } finally {
       setIsLoading(false);
     }
@@ -198,12 +198,12 @@ export function SignupForm({ className, onSwitchToLogin, ...props }: SignupFormP
         }, 2000); // Give a second for auth context to update
       } else {
         console.error("Verification failed", completeSignUp);
-        setError("Verification failed. Please try again.");
+        setError("Xác minh thất bại. Vui lòng thử lại.");
         setIsLoading(false);
       }
     } catch (err) {
       console.error("Error:", err);
-      setError("An error occurred during verification.");
+      setError("Đã xảy ra lỗi trong quá trình xác minh.");
       setIsLoading(false);
     }
   };
@@ -212,9 +212,9 @@ export function SignupForm({ className, onSwitchToLogin, ...props }: SignupFormP
     return (
       <form onSubmit={handleVerify} className={cn("flex flex-col gap-6", className)} {...props}>
         <div className="flex flex-col items-center gap-2 text-center">
-          <h1 className="text-2xl font-bold">Verify your email</h1>
+          <h1 className="text-2xl font-bold">Xác minh email của bạn</h1>
           <p className="text-balance text-sm text-muted-foreground">
-            We've sent a verification code to your email
+            Chúng tôi đã gửi mã xác nhận đến email của bạn
           </p>
         </div>
         {error && (
@@ -224,18 +224,18 @@ export function SignupForm({ className, onSwitchToLogin, ...props }: SignupFormP
         )}
         <div className="grid gap-6">
           <div className="grid gap-2">
-            <Label htmlFor="code">Verification Code</Label>
+            <Label htmlFor="code">Mã xác nhận</Label>
             <Input
               id="code"
               type="text"
               required
               value={verificationCode}
               onChange={(e) => setVerificationCode(e.target.value)}
-              placeholder="Enter the code from your email"
+              placeholder="Nhập mã từ email của bạn"
             />
           </div>
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Verifying..." : "Verify Email"}
+            {isLoading ? "Đang xác minh..." : "Xác minh email"}
           </Button>
         </div>
       </form>
@@ -245,7 +245,7 @@ export function SignupForm({ className, onSwitchToLogin, ...props }: SignupFormP
   return (
     <form onSubmit={handleSubmit} className={cn("flex flex-col gap-6", className)} {...props}>
       <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="text-2xl font-bold">Create an account</h1>
+        <h1 className="text-2xl font-bold">Tạo tài khoản</h1>
       </div>
       {error && (
         <div className="text-sm text-red-500 text-center">
@@ -256,7 +256,7 @@ export function SignupForm({ className, onSwitchToLogin, ...props }: SignupFormP
         {/* First Name and Last Name in same row */}
         <div className="grid grid-cols-2 gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="firstName">First Name</Label>
+            <Label htmlFor="firstName">Tên</Label>
             <Input
               id="firstName"
               type="text"
@@ -266,7 +266,7 @@ export function SignupForm({ className, onSwitchToLogin, ...props }: SignupFormP
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="lastName">Last Name</Label>
+            <Label htmlFor="lastName">Họ</Label>
             <Input
               id="lastName"
               type="text"
@@ -280,14 +280,14 @@ export function SignupForm({ className, onSwitchToLogin, ...props }: SignupFormP
         {/* Gender and Date of Birth in same row */}
         <div className="grid grid-cols-2 gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="gender">Gender</Label>
+            <Label htmlFor="gender">Giới tính</Label>
             <Select value={gender} onValueChange={setGender}>
               <SelectTrigger id="gender" className="w-full">
-                <SelectValue placeholder="Select gender" />
+                <SelectValue placeholder="Chọn giới tính" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="male">Male</SelectItem>
-                <SelectItem value="female">Female</SelectItem>
+                <SelectItem value="male">Nam</SelectItem>
+                <SelectItem value="female">Nữ</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -300,14 +300,14 @@ export function SignupForm({ className, onSwitchToLogin, ...props }: SignupFormP
         {/* Address fields */}
         <div className="grid grid-cols-3 gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="province">Province</Label>
+            <Label htmlFor="province">Tỉnh/Thành phố</Label>
             <Select value={selectedProvinceId} onValueChange={handleProvinceChange}>
               <SelectTrigger id="province" className="w-full">
-                <SelectValue placeholder="Select province" />
+                <SelectValue placeholder="Chọn thành phố" />
               </SelectTrigger>
               <SelectContent>
                 {isLoadingProvinces ? (
-                  <SelectItem value="loading">Loading provinces...</SelectItem>
+                  <SelectItem value="loading">Đang tải...</SelectItem>
                 ) : (
                   provinces?.map((province) => (
                     <SelectItem key={province.id} value={province.id}>
@@ -319,18 +319,18 @@ export function SignupForm({ className, onSwitchToLogin, ...props }: SignupFormP
             </Select>
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="district">District</Label>
+            <Label htmlFor="district">Quận/Huyện</Label>
             <Select
               value={selectedDistrictId}
               onValueChange={handleDistrictChange}
               disabled={!selectedProvinceId}
             >
               <SelectTrigger id="district" className="w-full">
-                <SelectValue placeholder="Select district" />
+                <SelectValue placeholder="Chọn quận/huyện" />
               </SelectTrigger>
               <SelectContent>
                 {isLoadingDistricts ? (
-                  <SelectItem value="loading">Loading districts...</SelectItem>
+                  <SelectItem value="loading">Đang tải...</SelectItem>
                 ) : (
                   districts?.map((district) => (
                     <SelectItem key={district.id} value={district.id}>
@@ -342,18 +342,18 @@ export function SignupForm({ className, onSwitchToLogin, ...props }: SignupFormP
             </Select>
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="ward">Ward</Label>
+            <Label htmlFor="ward">Phường/Xã</Label>
             <Select
               value={selectedWardId}
               onValueChange={setSelectedWardId}
               disabled={!selectedDistrictId}
             >
               <SelectTrigger id="ward" className="w-full">
-                <SelectValue placeholder="Select ward" />
+                <SelectValue placeholder="Chọn phường/xã" />
               </SelectTrigger>
               <SelectContent>
                 {isLoadingWards ? (
-                  <SelectItem value="loading">Loading wards...</SelectItem>
+                  <SelectItem value="loading">Đang tải...</SelectItem>
                 ) : (
                   wards?.map((ward) => (
                     <SelectItem key={ward.id} value={ward.id}>
@@ -367,25 +367,34 @@ export function SignupForm({ className, onSwitchToLogin, ...props }: SignupFormP
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="citizenId">Citizen ID</Label>
+
+             <div className="grid gap-2">
+            <Label htmlFor="citizenId">CCCD/CMND</Label>
             <Input
               id="citizenId"
               type="text"
               required
               value={citizenId}
               onChange={(e) => setCitizenId(e.target.value)}
+              minLength={12}
+              maxLength={12}
+              pattern="[0-9]{12}"
+              placeholder="Nhập CCCD/CMND của bạn"
             />
+            {citizenId && citizenId.length !== 12 && (
+              <p className="text-xs text-red-500 mt-1">CCCD/CMND phải có đúng 12 chữ số</p>
+            )}
           </div>
+
           <div className="grid gap-2">
-            <Label htmlFor="phone">Phone Number</Label>
+            <Label htmlFor="phone">Số điện thoại</Label>
             <Input
               id="phone"
               type="tel"
               required
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              placeholder="Enter your phone number"
+              placeholder="Nhập số điện thoại của bạn"
             />
           </div>
         </div>
@@ -402,7 +411,7 @@ export function SignupForm({ className, onSwitchToLogin, ...props }: SignupFormP
           />
         </div>
         <div className="grid gap-2">
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="password">Mật khẩu</Label>
           <Input
             id="password"
             type="password"
@@ -412,7 +421,7 @@ export function SignupForm({ className, onSwitchToLogin, ...props }: SignupFormP
           />
         </div>
         <div className="grid gap-2">
-          <Label htmlFor="confirmPassword">Confirm Password</Label>
+          <Label htmlFor="confirmPassword">Xác nhận mật khẩu</Label>
           <Input
             id="confirmPassword"
             type="password"
@@ -426,13 +435,13 @@ export function SignupForm({ className, onSwitchToLogin, ...props }: SignupFormP
         <div id="clerk-captcha" className="my-4"></div>
 
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Creating Account..." : "Create Account"}
+          {isLoading ? "Đang tạo tài khoản..." : "Tạo tài khoản"}
         </Button>
       </div>
       <div className="text-center text-sm">
-        Already have an account?{" "}
+        Bạn đã có tài khoản?{" "}
         <button type="button" onClick={onSwitchToLogin} className="underline underline-offset-4 hover:text-primary">
-          Sign in
+          Đăng nhập
         </button>
       </div>
     </form>

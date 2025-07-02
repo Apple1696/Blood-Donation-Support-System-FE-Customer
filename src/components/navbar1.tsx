@@ -169,8 +169,8 @@ const Navbar1 = ({
     }
   ],
   auth = {
-    login: { title: "Login", url: "/login" },
-    signup: { title: "Sign up", url: "/login?signup=true" },
+    login: { title: "Đăng nhập", url: "/login" },
+    signup: { title: "Đăng kí", url: "/login?signup=true" },
   },
 }: Navbar1Props) => {
   const { user } = useUser();

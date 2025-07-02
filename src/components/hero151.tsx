@@ -30,17 +30,17 @@ interface Hero151Props {
 }
 
 const Hero151 = ({
-  heading = "Give the Gift of Life: Donate Blood Today",
-  description = "Every drop counts. Your blood donation can save up to three lives. Join our community of lifesavers and make a difference in someone's story.",
+  heading = "Tặng Món Quà Sự Sống: Hiến Máu Ngay Hôm Nay",
+  description = "Mỗi giọt máu đều quý giá. Sự hiến máu của bạn có thể cứu sống tới ba người. Hãy tham gia cộng đồng của chúng tôi và tạo nên sự khác biệt trong cuộc đời của ai đó.",
   button = {
-    text: "Donate Now",
-    url: "#",
+    text: "Hiến Máu Ngay",
+    url: "/campaigns",
   },
   testimonial = {
-    quote: "Donating blood was one of the most rewarding experiences of my life",
+    quote: "Hiến máu là một trong những trải nghiệm ý nghĩa nhất trong cuộc đời tôi",
     author: "Sarah Chen",
-    role: "Regular Donor",
-    company: "100+ Lives Saved",
+    role: "Người hiến máu thường xuyên",
+    company: "Đã cứu sống 100+ người",
     avatars: [
       { image: "/images/HomePage/Sarah-Chen.jpg", fallback: "SC" },
     ],
