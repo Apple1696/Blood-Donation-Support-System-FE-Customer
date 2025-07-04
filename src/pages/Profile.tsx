@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { AddressService } from "@/services/AddressService";
 import { ProfileService } from "@/services/ProfileService";
 import type { CustomerProfile } from "@/services/ProfileService";
@@ -124,25 +124,10 @@ const Profile = () => {
     }
   });
 
-  // Fetch provinces
-  const { data: provinces, isLoading: isLoadingProvinces } = useQuery({
-    queryKey: ["provinces"],
-    queryFn: AddressService.getProvinces,
-  });
-
-  // Fetch districts based on selected province
-  const { data: districts, isLoading: isLoadingDistricts } = useQuery({
-    queryKey: ["districts", selectedProvinceId],
-    queryFn: () => AddressService.getDistricts(selectedProvinceId),
-    enabled: !!selectedProvinceId,
-  });
-
-  // Fetch wards based on selected district
-  const { data: wards, isLoading: isLoadingWards } = useQuery({
-    queryKey: ["wards", selectedDistrictId],
-    queryFn: () => AddressService.getWards(selectedDistrictId),
-    enabled: !!selectedDistrictId,
-  });
+  // Using the new query hooks from AddressService
+  const { data: provinces, isLoading: isLoadingProvinces } = AddressService.useProvinces();
+  const { data: districts, isLoading: isLoadingDistricts } = AddressService.useDistricts(selectedProvinceId);
+  const { data: wards, isLoading: isLoadingWards } = AddressService.useWards(selectedDistrictId);
 
   // Set initial values when profile is loaded
   useEffect(() => {
@@ -212,7 +197,7 @@ const Profile = () => {
           group: profile?.bloodType?.group || "A",
           rh: profile?.bloodType?.rh || "+"
         },
-        gender: profile?.gender ||"",
+        gender: profile?.gender || "",
         dateOfBirth: profile?.dateOfBirth || "",
         citizenId: profile?.citizenId || "",
       });

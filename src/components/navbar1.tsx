@@ -165,7 +165,21 @@ const Navbar1 = ({
     },
     {
       title: "Emergency",
-      url: "/emergency",
+      url: "/",
+      items: [
+        {
+          title: "Request Blood",
+          description: "Request blood in case of emergency",
+          icon: <Zap className="size-5 shrink-0" />,
+          url: "/request-emergency",
+        },
+        {
+          title: "Emergency Requests",
+          description: "View all emergency requests",
+          icon: <Sunset className="size-5 shrink-0" />,
+          url: "/view-requests",
+        },
+      ],
     }
   ],
   auth = {

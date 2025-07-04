@@ -51,7 +51,7 @@ export interface SingleCampaignResponse {
 }
 
 export const getCampaigns = async (page: number = 1, limit: number = 10): Promise<CampaignResponse> => {
-    const response = await api.get<CampaignResponse>(`/campaigns?page=${page}&limit=${limit}`);
+    const response = await api.get<CampaignResponse>(`/campaigns/available?page=${page}&limit=${limit}`);
     return response.data;
 };
 

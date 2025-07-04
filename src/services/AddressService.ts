@@ -1,4 +1,5 @@
 import api from "@/config/api";
+import { useQuery } from "@tanstack/react-query";
 
 interface Location {
   id: string;
@@ -63,5 +64,29 @@ export const AddressService = {
       console.error('Error fetching wards:', error);
       throw error;
     }
+  },
+  
+  // React Query Hooks
+  useProvinces: () => {
+    return useQuery({
+      queryKey: ["provinces"],
+      queryFn: AddressService.getProvinces,
+    });
+  },
+  
+  useDistricts: (provinceId: string | undefined) => {
+    return useQuery({
+      queryKey: ["districts", provinceId],
+      queryFn: () => provinceId ? AddressService.getDistricts(provinceId) : Promise.resolve([]),
+      enabled: !!provinceId,
+    });
+  },
+  
+  useWards: (districtId: string | undefined) => {
+    return useQuery({
+      queryKey: ["wards", districtId],
+      queryFn: () => districtId ? AddressService.getWards(districtId) : Promise.resolve([]),
+      enabled: !!districtId,
+    });
   }
 };

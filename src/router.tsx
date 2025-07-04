@@ -15,6 +15,7 @@ import BloodComponents from './pages/BloodComponents/BloodComponents'
 import { Blog } from './components/Blog'
 import { BlogDetail } from './components/BlogDetail'
 import BloodInfoPage2 from './pages/BloodInfo/BloodInfo'
+import RequestEmergency from './pages/Emergency/RequestEmergency'
 
 export const router = createBrowserRouter([
   {
@@ -91,6 +92,10 @@ export const router = createBrowserRouter([
       {
         path: 'blood-info',
         element: <BloodInfoPage2 />
+      },
+      {
+        path: 'request-emergency',
+        element: <RequestEmergency />
       }
     
     ]
