@@ -21,7 +21,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
   const navigate = useNavigate();
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    return new Date(dateString).toLocaleDateString('vi-VN', {
       month: 'short',
       day: 'numeric',
       year: 'numeric'
@@ -43,14 +43,14 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
           color: 'bg-blue-500/90',
           borderColor: 'border-blue-400/50',
           shadowColor: 'shadow-blue-500/25',
-          label: 'Not Started'
+          label: 'Sắp diễn ra'
         };
       // case CampaignStatus.ENDED:
       //   return {
       //     color: 'bg-gray-500/90',
       //     borderColor: 'border-gray-400/50',
       //     shadowColor: 'shadow-gray-500/25',
-      //     label: 'Ended'
+      //     label: 'Đã kết thúc'
       //   };
       case CampaignStatus.ACTIVE:
       default:
@@ -58,7 +58,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
           color: 'bg-emerald-500/90',
           borderColor: 'border-emerald-400/50',
           shadowColor: 'shadow-emerald-500/25',
-          label: 'Active'
+          label: 'Đang diễn ra'
         };
     }
   };
@@ -107,11 +107,10 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
           <div className="p-2 bg-blue-500/10 rounded-full">
             <Calendar className="w-4 h-4 text-blue-600" />
           </div>
-          <div className="flex-1">
-            <p className="text-xs text-blue-600 font-medium uppercase tracking-wide">Duration</p>
-            <p className="text-sm font-semibold text-gray-900">
-              {formatDate(campaign.startDate)} - {formatDate(campaign.endDate)}
-            </p>
+          <div className="flex-1">              <p className="text-xs text-blue-600 font-medium uppercase tracking-wide">Thời gian</p>
+              <p className="text-sm font-semibold text-gray-900">
+                {formatDate(campaign.startDate)} - {formatDate(campaign.endDate)}
+              </p>
           </div>
         </div>
 
@@ -122,9 +121,9 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
               <Clock className="w-4 h-4 text-green-600" />
             </div>
             <div className="flex-1">
-              <p className="text-xs text-green-600 font-medium uppercase tracking-wide">Time Left</p>
+              <p className="text-xs text-green-600 font-medium uppercase tracking-wide">Thời gian còn lại</p>
               <p className="text-sm font-semibold text-gray-900">
-                {daysRemaining} {daysRemaining === 1 ? 'day' : 'days'} remaining
+                Còn {daysRemaining} ngày
               </p>
             </div>
           </div>
@@ -135,9 +134,9 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
               <Clock className="w-4 h-4 text-blue-600" />
             </div>
             <div className="flex-1">
-              <p className="text-xs text-blue-600 font-medium uppercase tracking-wide">Starting In</p>
+              <p className="text-xs text-blue-600 font-medium uppercase tracking-wide">Bắt đầu sau</p>
               <p className="text-sm font-semibold text-gray-900">
-                {daysUntilStart} {daysUntilStart === 1 ? 'day' : 'days'}
+                {daysUntilStart} ngày
               </p>
             </div>
           </div>
@@ -156,9 +155,9 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
           <span className="flex items-center justify-center space-x-2">
             <Users className="w-4 h-4" />
             <span>
-              {campaign.status === CampaignStatus.ACTIVE && 'Join Campaign'}
-              {campaign.status === CampaignStatus.NOT_STARTED && 'Get Notified'}
-              {/* {campaign.status === CampaignStatus.ENDED && 'View Details'} */}
+              {campaign.status === CampaignStatus.ACTIVE && 'Tham gia chiến dịch'}
+              {campaign.status === CampaignStatus.NOT_STARTED && 'Tìm hiểu thêm'}
+              {/* {campaign.status === CampaignStatus.ENDED && 'Xem chi tiết'} */}
             </span>
           </span>
         </button>
@@ -208,18 +207,17 @@ export default function BloodDonationCampaigns() {
   const campaigns = filterCampaigns(campaignData?.data.data || []);
 
   const statusLabels = {
-    [CampaignStatus.ACTIVE]: 'Active Campaigns',
-    [CampaignStatus.NOT_STARTED]: 'Upcoming Campaigns',
-    // [CampaignStatus.ENDED]: 'Past Campaigns'
+    [CampaignStatus.ACTIVE]: 'Chiến dịch đang diễn ra',
+    [CampaignStatus.NOT_STARTED]: 'Chiến dịch sắp diễn ra',
+    // [CampaignStatus.ENDED]: 'Chiến dịch đã kết thúc'
   };
 
   if (isLoading) {
     return (
-      <div className="container mx-auto min-h-screen bg-gradient-to-br from-gray-50 via-white to-red-50/30 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading campaigns...</p>
-        </div>
+      <div className="container mx-auto min-h-screen bg-gradient-to-br from-gray-50 via-white to-red-50/30 flex items-center justify-center">          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500 mx-auto mb-4"></div>
+            <p className="text-gray-600">Đang tải chiến dịch...</p>
+          </div>
       </div>
     );
   }
@@ -228,7 +226,7 @@ export default function BloodDonationCampaigns() {
     return (
       <div className="container mx-auto min-h-screen bg-gradient-to-br from-gray-50 via-white to-red-50/30 flex items-center justify-center">
         <div className="text-center text-red-600">
-          <p>Error loading campaigns. Please try again later.</p>
+          <p>Lỗi khi tải chiến dịch. Vui lòng thử lại sau.</p>
         </div>
       </div>
     );
@@ -245,10 +243,10 @@ export default function BloodDonationCampaigns() {
               <Heart className="w-8 h-8 fill-current" />
             </div> */}
             <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-white to-red-100 bg-clip-text text-transparent">
-              Blood Donation Campaigns
+              Chiến Dịch Hiến Máu
             </h1>
             <p className="text-xl text-red-100 max-w-2xl mx-auto">
-              Join our life-saving campaigns and make a difference in your community
+              Tham gia các chiến dịch cứu sống mạng người và tạo nên sự khác biệt trong cộng đồng của bạn
             </p>
           </div>
         </div>
@@ -261,7 +259,7 @@ export default function BloodDonationCampaigns() {
           <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/50">
             <div className="text-center">
               <div className="text-3xl font-bold text-gray-900 mb-2">{campaigns.length}</div>
-              <div className="text-gray-600 font-medium">Total Campaigns</div>
+              <div className="text-gray-600 font-medium">Tổng số chiến dịch</div>
             </div>
           </div>
           <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/50">
@@ -269,13 +267,13 @@ export default function BloodDonationCampaigns() {
               <div className="text-3xl font-bold text-red-600 mb-2">
                 {campaigns.filter(c => c.status === 'active').length}
               </div>
-              <div className="text-gray-600 font-medium">Currently Running</div>
+              <div className="text-gray-600 font-medium">Đang diễn ra</div>
             </div>
           </div>
           <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/50">
             <div className="text-center">
               <div className="text-3xl font-bold text-green-600 mb-2">100+</div>
-              <div className="text-gray-600 font-medium">Lives Saved</div>
+              <div className="text-gray-600 font-medium">Mạng sống được cứu</div>
             </div>
           </div>
         </div>
@@ -287,7 +285,7 @@ export default function BloodDonationCampaigns() {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
-              placeholder="Search campaigns..."
+              placeholder="Tìm kiếm chiến dịch..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 bg-white/80 backdrop-blur-sm"
@@ -297,7 +295,7 @@ export default function BloodDonationCampaigns() {
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="bg-white/80 backdrop-blur-sm">
                 <Filter className="h-4 w-4 mr-2" />
-                Filter Status
+                Lọc trạng thái
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
@@ -340,7 +338,7 @@ export default function BloodDonationCampaigns() {
           </div>
         ) : (
           <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">No campaigns found matching your criteria.</p>
+            <p className="text-gray-500 text-lg">Không tìm thấy chiến dịch nào phù hợp với tiêu chí của bạn.</p>
           </div>
         )}
       </div>

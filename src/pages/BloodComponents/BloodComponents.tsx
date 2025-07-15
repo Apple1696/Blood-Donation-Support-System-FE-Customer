@@ -6,9 +6,9 @@ const BloodComponents = () => {
     return (
         <div className="container mx-auto py-10 px-4">
             <div className="text-center mb-8">
-                <h1 className="text-3xl font-bold text-primary md:text-4xl">Blood Components</h1>
+                <h1 className="text-3xl font-bold text-primary md:text-4xl">Các Thành Phần Máu</h1>
                 <p className="text-muted-foreground mt-2">
-                    Understanding the vital elements of blood and their role in transfusion
+                    Tìm hiểu về các thành phần quan trọng của máu và vai trò của chúng trong truyền máu
                 </p>
             </div>
 
@@ -18,30 +18,30 @@ const BloodComponents = () => {
                 {/* Left Column - Text Content */}
                 <Card className="border-none shadow-none">
                     <CardContent className="p-0">
-                        <h2 className="text-2xl font-semibold mb-4">What are Blood Components?</h2>
+                        <h2 className="text-2xl font-semibold mb-4">Các Thành Phần Máu Là Gì?</h2>
                         <p className="text-base mb-4">
-                            Blood components are the separate parts that make up whole blood. When you donate blood,
-                            it can be separated into these components, allowing one donation to potentially help multiple patients
-                            with specific medical needs.
+                            Các thành phần máu là những phần riêng biệt tạo nên máu toàn phần. Khi bạn hiến máu,
+                            nó có thể được tách thành các thành phần này, cho phép một lần hiến máu có thể giúp nhiều bệnh nhân
+                            với những nhu cầu y tế cụ thể.
                         </p>
-                        <h3 className="text-xl font-medium mb-2">Main Blood Components:</h3>
+                        <h3 className="text-xl font-medium mb-2">Các Thành Phần Chính Của Máu:</h3>
                         <ul className="list-disc pl-6 space-y-2 mb-4">
                             <li>
-                                <strong className="text-primary">Red Blood Cells</strong> - Carry oxygen from the lungs to the rest of the body
+                                <strong className="text-primary">Hồng Cầu</strong> - Vận chuyển oxy từ phổi đến các bộ phận khác của cơ thể
                             </li>
                             <li>
-                                <strong className="text-primary">Platelets</strong> - Help blood clot and prevent excessive bleeding
+                                <strong className="text-primary">Tiểu Cầu</strong> - Giúp máu đông và ngăn chặn chảy máu quá mức
                             </li>
                             <li>
-                                <strong className="text-primary">Plasma</strong> - The liquid portion of blood that contains proteins and helps maintain blood pressure
+                                <strong className="text-primary">Huyết Tương</strong> - Phần lỏng của máu chứa protein và giúp duy trì huyết áp
                             </li>
                             <li>
-                                <strong className="text-primary">White Blood Cells</strong> - Fight infections and diseases
+                                <strong className="text-primary">Bạch Cầu</strong> - Chống lại nhiễm trùng và bệnh tật
                             </li>
                         </ul>
                         <p className="text-base">
-                            Each component serves a unique and critical function in the human body. By donating blood, you're providing
-                            essential components that can be used in different medical treatments and emergency situations.
+                            Mỗi thành phần đều có chức năng quan trọng và độc đáo trong cơ thể con người. Bằng cách hiến máu, bạn đang cung cấp
+                            những thành phần thiết yếu có thể được sử dụng trong các điều trị y tế khác nhau và các tình huống khẩn cấp.
                         </p>
                     </CardContent>
                 </Card>
@@ -59,155 +59,155 @@ const BloodComponents = () => {
             <Separator className="my-10" />
 
             <div className="mt-10">
-                <h2 className="text-2xl font-semibold mb-6 text-center">Detailed Blood Component Information</h2>
+                <h2 className="text-2xl font-semibold mb-6 text-center">Thông Tin Chi Tiết Về Các Thành Phần Máu</h2>
 
                 <Tabs defaultValue="whole-blood" className="w-full">
                     <TabsList className="grid grid-cols-6 mb-8">
-                        <TabsTrigger value="whole-blood">Whole Blood</TabsTrigger>
-                        <TabsTrigger value="red-cells">Red Cells</TabsTrigger>
-                        <TabsTrigger value="platelets">Platelets</TabsTrigger>
-                        <TabsTrigger value="plasma">Plasma</TabsTrigger>
-                        <TabsTrigger value="cryo">Cryo</TabsTrigger>
-                        <TabsTrigger value="white-cells">White Cells </TabsTrigger>
+                        <TabsTrigger value="whole-blood">Máu Toàn Phần</TabsTrigger>
+                        <TabsTrigger value="red-cells">Hồng Cầu</TabsTrigger>
+                        <TabsTrigger value="platelets">Tiểu Cầu</TabsTrigger>
+                        <TabsTrigger value="plasma">Huyết Tương</TabsTrigger>
+                        <TabsTrigger value="cryo">Tủa Lạnh</TabsTrigger>
+                        <TabsTrigger value="white-cells">Bạch Cầu</TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="whole-blood" className="border rounded-lg p-6">
                         <div className="space-y-4">
-                            <h3 className="text-xl font-medium text-primary">Whole Blood</h3>
-                            <p>Contains red cells, white cells, and platelets (~45% of volume) suspended in blood plasma (~55% of volume).</p>
+                            <h3 className="text-xl font-medium text-primary">Máu Toàn Phần</h3>
+                            <p>Chứa hồng cầu, bạch cầu và tiểu cầu (~45% thể tích) lơ lửng trong huyết tương (~55% thể tích).</p>
 
                             <ul className="space-y-2">
-                                <li><span className="font-medium">Color:</span> Red</li>
-                                <li><span className="font-medium">Shelf Life:</span> 21/35 days*</li>
-                                <li><span className="font-medium">Storage Conditions:</span> Refrigerated</li>
-                                <li><span className="font-medium">Key Uses:</span> Trauma, Surgery</li>
+                                <li><span className="font-medium">Màu sắc:</span> Đỏ</li>
+                                <li><span className="font-medium">Thời hạn sử dụng:</span> 21/35 ngày*</li>
+                                <li><span className="font-medium">Điều kiện bảo quản:</span> Làm lạnh</li>
+                                <li><span className="font-medium">Công dụng chính:</span> Chấn thương, Phẫu thuật</li>
                             </ul>
 
-                            <p>Whole Blood is the simplest, most common type of blood donation. It's also the most flexible because it can be transfused in its original form, or used to help multiple people when separated into its specific components of red cells, plasma and platelets.</p>
+                            <p>Máu toàn phần là loại hiến máu đơn giản và phổ biến nhất. Nó cũng linh hoạt nhất vì có thể được truyền nguyên dạng, hoặc được dùng để giúp nhiều người khi được tách thành các thành phần cụ thể như hồng cầu, huyết tương và tiểu cầu.</p>
 
-                            <p>A whole blood donation requires minimal processing before it is ready to be transfused into a patient. If not needed right away, whole blood can be refrigerated for up to 35 days, depending on the type of anticoagulant used.</p>
+                            <p>Máu toàn phần cần xử lý tối thiểu trước khi sẵn sàng được truyền cho bệnh nhân. Nếu không cần ngay, máu toàn phần có thể được làm lạnh đến 35 ngày, tùy thuộc vào loại chất chống đông được sử dụng.</p>
 
-                            <p>Whole blood is used to treat patients who need all the components of blood, such as those who have sustained significant blood loss due to trauma or surgery.</p>
+                            <p>Máu toàn phần được sử dụng để điều trị cho bệnh nhân cần tất cả các thành phần của máu, chẳng hạn như những người bị mất máu đáng kể do chấn thương hoặc phẫu thuật.</p>
 
-                            <p className="text-sm text-muted-foreground italic mt-4">* Shelf life of whole blood varies based on the type anticoagulant used.</p>
+                            <p className="text-sm text-muted-foreground italic mt-4">* Thời hạn sử dụng của máu toàn phần thay đổi tùy theo loại chất chống đông được sử dụng.</p>
                         </div>
                     </TabsContent>
                     <TabsContent value="red-cells" className="border rounded-lg p-6">
                         <div className="space-y-4">
-                            <h3 className="text-xl font-medium text-primary">Red Blood Cells</h3>
-                            <p>(RBCs), or erythrocytes, give blood its distinctive color. Produced in our bone marrow, they carry oxygen from our lungs to the rest of our bodies and take carbon dioxide back to our lungs to be exhaled. There are about one billion red blood cells in two to three drops of blood.</p>
+                            <h3 className="text-xl font-medium text-primary">Hồng Cầu</h3>
+                            <p>(RBCs), hay hồng cầu, tạo nên màu sắc đặc trưng của máu. Được sản xuất trong tủy xương, chúng vận chuyển oxy từ phổi đến các bộ phận khác trong cơ thể và đưa carbon dioxide trở lại phổi để thải ra. Có khoảng một tỷ hồng cầu trong hai đến ba giọt máu.</p>
 
                             <ul className="space-y-2">
-                                <li><span className="font-medium">Color:</span> Red</li>
-                                <li><span className="font-medium">Shelf Life:</span> Up to 42 days*</li>
-                                <li><span className="font-medium">Storage Conditions:</span> Refrigerated</li>
-                                <li><span className="font-medium">Key Uses:</span> Trauma, Surgery, Anemia, Any blood loss, Blood disorders such as sickle cell</li>
+                                <li><span className="font-medium">Màu sắc:</span> Đỏ</li>
+                                <li><span className="font-medium">Thời hạn sử dụng:</span> Lên đến 42 ngày*</li>
+                                <li><span className="font-medium">Điều kiện bảo quản:</span> Làm lạnh</li>
+                                <li><span className="font-medium">Công dụng chính:</span> Chấn thương, Phẫu thuật, Thiếu máu, Mất máu, Rối loạn máu như hồng cầu hình liềm</li>
                             </ul>
 
-                            <p>Red blood cells are prepared from whole blood by removing the plasma (the liquid portion of the blood). They have a shelf life of up to 42 days, depending on the type of anticoagulant used. They can also be treated and frozen for 10 years or more.</p>
+                            <p>Hồng cầu được chuẩn bị từ máu toàn phần bằng cách loại bỏ huyết tương (phần lỏng của máu). Chúng có thời hạn sử dụng lên đến 42 ngày, tùy thuộc vào loại chất chống đông được sử dụng. Chúng cũng có thể được xử lý và đông lạnh trong 10 năm hoặc lâu hơn.</p>
 
-                            <p>RBCs are used to treat anemia without substantially increasing the patient's blood volume. Patients who benefit most from transfusion of red blood cells include those with chronic anemia resulting from kidney failure or gastrointestinal bleeding, and those with acute blood loss resulting from trauma. They can also be used to treat blood disorders such as sickle cell disease.</p>
+                            <p>Hồng cầu được dùng để điều trị thiếu máu mà không làm tăng đáng kể thể tích máu của bệnh nhân. Những bệnh nhân được hưởng lợi nhiều nhất từ việc truyền hồng cầu bao gồm những người bị thiếu máu mãn tính do suy thận hoặc chảy máu đường tiêu hóa, và những người bị mất máu cấp tính do chấn thương. Chúng cũng có thể được sử dụng để điều trị các rối loạn máu như bệnh hồng cầu hình liềm.</p>
 
-                            <h4 className="text-lg font-medium mt-6">Prestorage Leukocyte-Reduced Red Blood Cells</h4>
-                            <p>Leukocyte-reduced RBCs are prepared by removing leukocytes (white blood cells) by filtration shortly after donation. This is done before the RBCs are stored because over time the leukocytes can fragment, deteriorate, and release cytokines, which can trigger negative reactions in the patient who receives them. These reactions can occur during the initial transfusion or during any future transfusions.</p>
+                            <h4 className="text-lg font-medium mt-6">Hồng Cầu Giảm Bạch Cầu Trước Bảo Quản</h4>
+                            <p>Hồng cầu giảm bạch cầu được chuẩn bị bằng cách loại bỏ bạch cầu thông qua lọc ngay sau khi hiến máu. Điều này được thực hiện trước khi bảo quản hồng cầu vì theo thời gian, bạch cầu có thể bị phân mảnh, xuống cấp và giải phóng các cytokine, có thể gây ra phản ứng tiêu cực ở bệnh nhân nhận máu. Những phản ứng này có thể xảy ra trong quá trình truyền máu ban đầu hoặc trong bất kỳ lần truyền máu nào trong tương lai.</p>
 
-                            <h4 className="text-lg font-medium mt-6">Donating Red Blood Cells</h4>
-                            <p>The Red Cross calls RBC donations "Power Red." By donating Power Red, you double your impact by contributing two units of red cells in just one donation.</p>
+                            <h4 className="text-lg font-medium mt-6">Hiến Tặng Hồng Cầu</h4>
+                            <p>Hội Chữ Thập Đỏ gọi việc hiến tặng hồng cầu là "Power Red" (Sức mạnh đỏ). Bằng cách hiến tặng Power Red, bạn tăng gấp đôi tác động của mình bằng cách đóng góp hai đơn vị hồng cầu trong chỉ một lần hiến máu.</p>
 
-                            <p className="text-sm text-muted-foreground italic mt-4">* Shelf life of red cells varies based on the type anticoagulant used.</p>
+                            <p className="text-sm text-muted-foreground italic mt-4">* Thời hạn sử dụng của hồng cầu thay đổi tùy theo loại chất chống đông được sử dụng.</p>
                         </div>
                     </TabsContent>
                     <TabsContent value="platelets" className="border rounded-lg p-6">
                         <div className="space-y-4">
-                            <h3 className="text-xl font-medium text-primary">Platelets</h3>
-                            <p>Platelets, or thrombocytes, are small, colorless cell fragments in our blood whose main function is to stick to the lining of blood vessels and help stop or prevent bleeding. Platelets are made in our bone marrow.</p>
+                            <h3 className="text-xl font-medium text-primary">Tiểu Cầu</h3>
+                            <p>Tiểu cầu, hay tiểu huyết cầu, là những mảnh tế bào nhỏ, không màu trong máu của chúng ta, có chức năng chính là bám vào lớp lót của các mạch máu và giúp ngừng hoặc ngăn chặn chảy máu. Tiểu cầu được tạo ra trong tủy xương của chúng ta.</p>
 
                             <ul className="space-y-2">
-                                <li><span className="font-medium">Color:</span> Colorless</li>
-                                <li><span className="font-medium">Shelf Life:</span> 5 days</li>
-                                <li><span className="font-medium">Storage Conditions:</span> Room temperature with constant agitation to prevent clumping</li>
-                                <li><span className="font-medium">Key Uses:</span> Cancer treatments, Organ transplants, Surgery</li>
+                                <li><span className="font-medium">Màu sắc:</span> Không màu</li>
+                                <li><span className="font-medium">Thời hạn sử dụng:</span> 5 ngày</li>
+                                <li><span className="font-medium">Điều kiện bảo quản:</span> Nhiệt độ phòng với khuấy động liên tục để ngăn vón cục</li>
+                                <li><span className="font-medium">Công dụng chính:</span> Điều trị ung thư, Cấy ghép nội tạng, Phẫu thuật</li>
                             </ul>
 
-                            <p>Platelets can be prepared by using a centrifuge to separate the platelet-rich plasma from donated whole blood. Platelets from several different donors are then combined to make one transfusable unit. Alternately, platelets can be obtained using an apheresis machine which draws blood from the donor's arm, separates the blood into its components, retains some of the platelets, and returns the remainder of the blood to the donor. Using this process, one donor can contribute about four to six times as many platelets as a unit of platelets obtained from a whole blood donation.</p>
+                            <p>Tiểu cầu có thể được chuẩn bị bằng cách sử dụng máy li tâm để tách huyết tương giàu tiểu cầu từ máu toàn phần đã hiến tặng. Tiểu cầu từ một số người hiến máu khác nhau sau đó được kết hợp để tạo thành một đơn vị có thể truyền. Một cách khác, tiểu cầu có thể được lấy bằng máy tách thành phần máu, máy này lấy máu từ tay của người hiến máu, tách máu thành các thành phần, giữ lại một số tiểu cầu và trả lại phần máu còn lại cho người hiến máu. Sử dụng quy trình này, một người hiến máu có thể đóng góp khoảng bốn đến sáu lần lượng tiểu cầu nhiều hơn so với một đơn vị tiểu cầu từ máu toàn phần.</p>
 
-                            <p>Platelets are stored at room temperature for up to 5 days. They must receive constant gentle agitation to prevent them from clumping.</p>
+                            <p>Tiểu cầu được bảo quản ở nhiệt độ phòng lên đến 5 ngày. Chúng phải nhận được sự khuấy động nhẹ nhàng liên tục để ngăn chặn chúng vón cục.</p>
 
-                            <p>Platelets are most often used during cancer treatment as well as surgical procedures such as organ transplant, in order to treat a condition called thrombocytopenia, in which there is a shortage of platelets. They are also used to treat platelet function abnormalities.</p>
+                            <p>Tiểu cầu thường được sử dụng nhiều nhất trong điều trị ung thư cũng như các quy trình phẫu thuật như cấy ghép nội tạng, để điều trị một tình trạng gọi là giảm tiểu cầu, trong đó có sự thiếu hụt tiểu cầu. Chúng cũng được sử dụng để điều trị các bất thường chức năng tiểu cầu.</p>
 
-                            <h4 className="text-lg font-medium mt-6">Donating Platelets</h4>
-                            <p>Since platelets must be used within 5 days of donation, there is a constant need for platelet donors.</p>
+                            <h4 className="text-lg font-medium mt-6">Hiến Tặng Tiểu Cầu</h4>
+                            <p>Vì tiểu cầu phải được sử dụng trong vòng 5 ngày sau khi hiến tặng, nên luôn có nhu cầu liên tục về người hiến tiểu cầu.</p>
 
                         </div>
                     </TabsContent>
                     <TabsContent value="plasma" className="border rounded-lg p-6">
                         <div className="space-y-4">
-                            <h3 className="text-xl font-medium text-primary">Plasma</h3>
-                            <p>Plasma is the liquid portion of blood; our red and white blood cells and platelets are suspended in plasma as they move throughout our bodies.</p>
+                            <h3 className="text-xl font-medium text-primary">Huyết Tương</h3>
+                            <p>Huyết tương là phần lỏng của máu; hồng cầu, bạch cầu và tiểu cầu của chúng ta lơ lửng trong huyết tương khi chúng di chuyển trong cơ thể.</p>
 
                             <ul className="space-y-2">
-                                <li><span className="font-medium">Color:</span> Yellowish</li>
-                                <li><span className="font-medium">Shelf Life:</span> 1 year</li>
-                                <li><span className="font-medium">Storage Conditions:</span> Frozen</li>
-                                <li><span className="font-medium">Key Uses:</span> Burn patients, Shock, Bleeding disorders</li>
+                                <li><span className="font-medium">Màu sắc:</span> Hơi vàng</li>
+                                <li><span className="font-medium">Thời hạn sử dụng:</span> 1 năm</li>
+                                <li><span className="font-medium">Điều kiện bảo quản:</span> Đông lạnh</li>
+                                <li><span className="font-medium">Công dụng chính:</span> Bệnh nhân bỏng, Sốc, Rối loạn chảy máu</li>
                             </ul>
 
-                            <p>Blood plasma serves several important functions in our bodies, despite being about 92% water. (Plasma also contains 7% vital proteins such as albumin, gamma globulin, anti-hemophilic factor, and 1% mineral salts, sugars, fats, hormones and vitamins.) It helps us maintain a satisfactory blood pressure and volume, and supplies critical proteins for blood clotting and immunity. It also carries electrolytes such as sodium and potassium to our muscles and helps to maintain a proper pH (acid-base) balance in the body, which is critical to cell function.</p>
+                            <p>Huyết tương đảm nhiệm nhiều chức năng quan trọng trong cơ thể chúng ta, mặc dù chứa khoảng 92% là nước. (Huyết tương cũng chứa 7% protein thiết yếu như albumin, gamma globulin, yếu tố chống hemophilic, và 1% muối khoáng, đường, chất béo, hormone và vitamin.) Nó giúp chúng ta duy trì huyết áp và thể tích máu ổn định, cung cấp protein quan trọng cho quá trình đông máu và miễn dịch. Nó cũng vận chuyển các chất điện giải như natri và kali đến cơ bắp và giúp duy trì cân bằng pH (acid-base) thích hợp trong cơ thể, điều này rất quan trọng cho chức năng tế bào.</p>
 
-                            <p>Plasma is obtained by separating the liquid portion of blood from the cells. Plasma is frozen within 24 hours of being donated in order to preserve the valuable clotting factors. It is then stored for up to one year, and thawed when needed.</p>
+                            <p>Huyết tương được thu nhận bằng cách tách phần lỏng của máu khỏi các tế bào. Huyết tương được đông lạnh trong vòng 24 giờ sau khi hiến tặng để bảo tồn các yếu tố đông máu quý giá. Sau đó, nó được lưu trữ lên đến một năm và được rã đông khi cần thiết.</p>
 
-                            <p>Plasma is commonly transfused to trauma, burn and shock patients, as well as people with severe liver disease or multiple clotting factor deficiencies.</p>
+                            <p>Huyết tương thường được truyền cho bệnh nhân chấn thương, bỏng và sốc, cũng như người bị bệnh gan nặng hoặc thiếu nhiều yếu tố đông máu.</p>
 
-                            <h4 className="text-lg font-medium mt-6">Plasma Derivatives</h4>
-                            <p>In some cases, patients need plasma derivatives instead. These are concentrates of specific plasma proteins obtained through a process known as fractionation. The derivatives are treated with heat and/or solvent detergent to kill certain viruses like those that cause HIV, hepatitis B, and hepatitis C.</p>
+                            <h4 className="text-lg font-medium mt-6">Các Dẫn Xuất Huyết Tương</h4>
+                            <p>Trong một số trường hợp, bệnh nhân cần các dẫn xuất huyết tương thay thế. Đây là những chất cô đặc của các protein huyết tương cụ thể thu được thông qua quá trình được gọi là phân đoạn. Các dẫn xuất được xử lý bằng nhiệt và/hoặc chất tẩy rửa dung môi để tiêu diệt một số virus nhất định như những virus gây ra HIV, viêm gan B và viêm gan C.</p>
 
-                            <p>Plasma derivatives include:</p>
+                            <p>Các dẫn xuất huyết tương bao gồm:</p>
                             <ul className="list-disc pl-6 space-y-1">
-                                <li>Factor VIII Concentrate</li>
-                                <li>Factor IX Concentrate</li>
-                                <li>Anti-Inhibitor Coagulation Complex (AICC)</li>
+                                <li>Yếu tố VIII cô đặc</li>
+                                <li>Yếu tố IX cô đặc</li>
+                                <li>Phức hợp đông máu kháng ức chế (AICC)</li>
                                 <li>Albumin</li>
-                                <li>Immune Globulins, including Rh Immune Globulin</li>
-                                <li>Anti-Thrombin III Concentrate</li>
-                                <li>Alpha 1-Proteinase Inhibitor Concentrate</li>
+                                <li>Globulin miễn dịch, bao gồm Globulin miễn dịch Rh</li>
+                                <li>Anti-Thrombin III cô đặc</li>
+                                <li>Alpha 1-Proteinase Inhibitor cô đặc</li>
                             </ul>
 
-                            <h4 className="text-lg font-medium mt-6">Donating AB Plasma</h4>
-                            <p>When collecting specifically plasma, the Red Cross is seeking AB-type donors. AB plasma is collected at select Red Cross Donation Centers only.</p>
+                            <h4 className="text-lg font-medium mt-6">Hiến Tặng Huyết Tương AB</h4>
+                            <p>Khi thu thập huyết tương cụ thể, Hội Chữ Thập Đỏ đang tìm kiếm người hiến máu nhóm AB. Huyết tương AB chỉ được thu thập tại các Trung tâm Hiến máu Chữ Thập Đỏ được chọn.</p>
                         </div>
                     </TabsContent>
 
                     <TabsContent value="cryo" className="border rounded-lg p-6">
                         <div className="space-y-4">
-                            <h3 className="text-xl font-medium text-primary">Cryoprecipitated Antihemophilic Factor</h3>
-                            <p>(Cryo) is a portion of plasma rich in clotting factors, including Factor VIII and fibrinogen. These clotting factors reduce blood loss by helping to slow or stop bleeding due to illness or injury.</p>
+                            <h3 className="text-xl font-medium text-primary">Yếu Tố Kháng Hemophilic Tủa Lạnh</h3>
+                            <p>(Cryo) là một phần của huyết tương giàu các yếu tố đông máu, bao gồm Yếu tố VIII và fibrinogen. Những yếu tố đông máu này làm giảm mất máu bằng cách giúp làm chậm hoặc ngừng chảy máu do bệnh tật hoặc chấn thương.</p>
                             
                             <ul className="space-y-2">
-                                <li><span className="font-medium">Color:</span> White</li>
-                                <li><span className="font-medium">Shelf Life:</span> 1 year</li>
-                                <li><span className="font-medium">Storage Conditions:</span> Frozen</li>
-                                <li><span className="font-medium">Key Uses:</span> Hemophilia, Von Willebrand disease (most common hereditary coagulation abnormality), Rich source of Fibrinogen</li>
+                                <li><span className="font-medium">Màu sắc:</span> Trắng</li>
+                                <li><span className="font-medium">Thời hạn sử dụng:</span> 1 năm</li>
+                                <li><span className="font-medium">Điều kiện bảo quản:</span> Đông lạnh</li>
+                                <li><span className="font-medium">Công dụng chính:</span> Bệnh hemophilia, Bệnh Von Willebrand (bất thường đông máu di truyền phổ biến nhất), Nguồn Fibrinogen phong phú</li>
                             </ul>
                             
-                            <p>Cryo is prepared by freezing and then slowly thawing frozen plasma. The precipitate is collected and then pooled with contributions from other donors to reach a sufficient volume for transfusion. It can be stored, frozen, for up to a year.</p>
+                            <p>Cryo được chuẩn bị bằng cách đông lạnh và sau đó rã đông từ từ huyết tương đông lạnh. Phần tủa được thu thập và sau đó được gộp chung với đóng góp từ những người hiến máu khác để đạt đến thể tích đủ để truyền. Nó có thể được bảo quản, đông lạnh, lên đến một năm.</p>
                             
-                            <p>Cryo is used to prevent or control bleeding in people whose own blood does not clot properly. This includes patients with hereditary conditions such as hemophilia and von Willebrands disease. Cryo is also a source of fibrinogen for patients who cannot produce the necessary amount of this important clotting protein on their own.</p>
+                            <p>Cryo được sử dụng để ngăn ngừa hoặc kiểm soát chảy máu ở những người mà máu của họ không đông đúng cách. Điều này bao gồm bệnh nhân với các tình trạng di truyền như bệnh hemophilia và bệnh von Willebrand. Cryo cũng là nguồn fibrinogen cho bệnh nhân không thể tự sản xuất lượng protein đông máu quan trọng này.</p>
                             
-                            <h4 className="text-lg font-medium mt-6">Donating Cryoprecipitated AHF</h4>
-                            <p>Cryo is prepared from donated plasma.</p>
+                            <h4 className="text-lg font-medium mt-6">Hiến Tặng AHF Tủa Lạnh</h4>
+                            <p>Cryo được chuẩn bị từ huyết tương đã hiến tặng.</p>
                         </div>
                     </TabsContent>
 
                     <TabsContent value="white-cells" className="border rounded-lg p-6">
                         <div className="space-y-4">
-                            <h3 className="text-xl font-medium text-primary">White Blood Cells & Granulocytes</h3>
-                            <p>White blood cells, or leukocytes, are one of the body's defenses against disease: some destroy bacteria and others create antibodies against bacteria and viruses or fight malignant disease. But while our own white cells help us stay healthy, they can be dangerous to someone who receives donated blood. That's because leukocytes may carry viruses that cause immune suppression and release toxic substances in the recipient. To avoid these negative reactions, leukocytes are often removed from transfusable blood components, a process called leuko-reduction.</p>
+                            <h3 className="text-xl font-medium text-primary">Bạch Cầu & Bạch Cầu Hạt</h3>
+                            <p>Bạch cầu, hoặc leukocyte, là một trong những hệ thống phòng vệ của cơ thể chống lại bệnh tật: một số tiêu diệt vi khuẩn và số khác tạo ra kháng thể chống lại vi khuẩn và virus hoặc chống lại bệnh ác tính. Nhưng trong khi bạch cầu của chính chúng ta giúp chúng ta khỏe mạnh, chúng có thể nguy hiểm đối với người nhận máu hiến tặng. Đó là vì bạch cầu có thể mang virus gây ức chế miễn dịch và giải phóng các chất độc hại trong người nhận. Để tránh những phản ứng tiêu cực này, bạch cầu thường được loại bỏ khỏi các thành phần máu có thể truyền, một quá trình gọi là giảm bạch cầu.</p>
                             
-                            <h4 className="text-lg font-medium mt-6">Granulocytes</h4>
-                            <p>That doesn't necessarily mean your white cells can't be used to help patients in need! Granulocytes are a type of white cell that protects against infection by surrounding and destroying invading bacteria and viruses. They can be used to treat infections that don't respond to antibiotics. Granulocytes are collected by an automated process called apheresis and must be transfused into the patient within 24 hours of being donated.</p>
+                            <h4 className="text-lg font-medium mt-6">Bạch Cầu Hạt</h4>
+                            <p>Điều đó không nhất thiết có nghĩa là bạch cầu của bạn không thể được sử dụng để giúp bệnh nhân cần! Bạch cầu hạt là một loại tế bào bạch cầu bảo vệ chống nhiễm trùng bằng cách bao quanh và tiêu diệt vi khuẩn và virus xâm nhập. Chúng có thể được sử dụng để điều trị nhiễm trùng không đáp ứng với kháng sinh. Bạch cầu hạt được thu thập bằng một quy trình tự động gọi là tách thành phần máu và phải được truyền vào bệnh nhân trong vòng 24 giờ sau khi hiến tặng.</p>
                             
-                            <h4 className="text-lg font-medium mt-6">Donating Granulocytes</h4>
-                            <p>Since granulocyte must be used within 24 hours, donations are taken on an as-needed basis. To be eligible to donate granulocytes, you must have donated platelets through the Red Cross within 30 days.</p>
+                            <h4 className="text-lg font-medium mt-6">Hiến Tặng Bạch Cầu Hạt</h4>
+                            <p>Vì bạch cầu hạt phải được sử dụng trong vòng 24 giờ, việc hiến tặng được thực hiện theo nhu cầu. Để đủ điều kiện hiến tặng bạch cầu hạt, bạn phải đã hiến tặng tiểu cầu thông qua Hội Chữ Thập Đỏ trong vòng 30 ngày.</p>
                         </div>
                     </TabsContent>
                 </Tabs>

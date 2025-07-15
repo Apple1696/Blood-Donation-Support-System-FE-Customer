@@ -8,8 +8,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 // Blood type data
 const bloodTypes = {
   A: {
-    name: 'Group A',
-    description: 'has only the A antigen on red cells (and B antibody in the plasma)',
+    name: 'Nhóm A',
+    description: 'chỉ có kháng nguyên A trên hồng cầu (và kháng thể B trong huyết tương)',
     redCellsHeight: 60,
     plasmaHeight: 40,
     antigens: ['A'],
@@ -18,8 +18,8 @@ const bloodTypes = {
     canReceiveFrom: ['A', 'O']
   },
   B: {
-    name: 'Group B',
-    description: 'has only the B antigen on red cells (and A antibody in the plasma)',
+    name: 'Nhóm B',
+    description: 'chỉ có kháng nguyên B trên hồng cầu (và kháng thể A trong huyết tương)',
     redCellsHeight: 55,
     plasmaHeight: 45,
     antigens: ['B'],
@@ -28,8 +28,8 @@ const bloodTypes = {
     canReceiveFrom: ['B', 'O']
   },
   AB: {
-    name: 'Group AB',
-    description: 'has both A and B antigens on red cells (but neither A nor B antibody in the plasma)',
+    name: 'Nhóm AB',
+    description: 'có cả kháng nguyên A và B trên hồng cầu (nhưng không có kháng thể A hoặc B nào trong huyết tương)',
     redCellsHeight: 65,
     plasmaHeight: 35,
     antigens: ['A', 'B'],
@@ -38,8 +38,8 @@ const bloodTypes = {
     canReceiveFrom: ['A', 'B', 'AB', 'O']
   },
   O: {
-    name: 'Group O',
-    description: 'has neither A nor B antigens on red cells (but both A and B antibody in the plasma)',
+    name: 'Nhóm O',
+    description: 'không có kháng nguyên A hoặc B nào trên hồng cầu (nhưng có cả kháng thể A và B trong huyết tương)',
     redCellsHeight: 50,
     plasmaHeight: 50,
     antigens: [],
@@ -60,7 +60,7 @@ const BloodTypeButton = ({ type, isActive, onClick }) => (
       }`}
     size="lg"
   >
-    Group {type}
+    Nhóm {type}
   </Button>
 );
 
@@ -106,7 +106,7 @@ const TestTube = ({ bloodType }) => {
             </motion.div>
           )}
           <div className="absolute top-2 right-2 text-xs font-semibold text-background">
-            PLASMA
+            HUYẾT TƯƠNG
           </div>
         </motion.div>
 
@@ -141,7 +141,7 @@ const TestTube = ({ bloodType }) => {
             </motion.div>
           )}
           <div className="absolute bottom-2 right-2 text-xs font-semibold text-primary-foreground">
-            RED CELLS
+            HỒNG CẦU
           </div>
         </motion.div>
 
@@ -195,7 +195,7 @@ const InformationPanel = ({ bloodType }) => {
           transition={{ delay: 0.8 }}
         >
           <CardTitle className="text-2xl font-bold">{data.name}</CardTitle>
-          <CardDescription className="text-base">Blood composition</CardDescription>
+          <CardDescription className="text-base">Thành phần máu</CardDescription>
         </motion.div>
       </CardHeader>
 
@@ -206,13 +206,13 @@ const InformationPanel = ({ bloodType }) => {
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
         >
-          This blood type {data.description}.
+          Nhóm máu này {data.description}.
         </motion.p>
 
         <Tabs defaultValue="composition" className="mt-6">
           <TabsList className="w-full">
-            <TabsTrigger value="composition" className="flex-1">Composition</TabsTrigger>
-            <TabsTrigger value="compatibility" className="flex-1">Compatibility</TabsTrigger>
+            <TabsTrigger value="composition" className="flex-1">Thành Phần</TabsTrigger>
+            <TabsTrigger value="compatibility" className="flex-1">Khả Năng Tương Thích</TabsTrigger>
           </TabsList>
 
           <TabsContent value="composition" className="mt-4">
@@ -224,26 +224,26 @@ const InformationPanel = ({ bloodType }) => {
             >
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <span className="font-semibold text-muted-foreground">Antigens:</span>
+                  <span className="font-semibold text-muted-foreground">Kháng nguyên:</span>
                   <div className="flex gap-2 mt-1">
                     {data.antigens.length > 0 ? data.antigens.map(antigen => (
                       <Badge key={antigen} variant="secondary" className="bg-primary text-primary-foreground">
                         {antigen}
                       </Badge>
                     )) : (
-                      <Badge variant="outline">None</Badge>
+                      <Badge variant="outline">Không có</Badge>
                     )}
                   </div>
                 </div>
                 <div>
-                  <span className="font-semibold text-muted-foreground">Antibodies:</span>
+                  <span className="font-semibold text-muted-foreground">Kháng thể:</span>
                   <div className="flex gap-2 mt-1">
                     {data.antibodies.length > 0 ? data.antibodies.map(antibody => (
                       <Badge key={antibody} variant="secondary" className="bg-chart-4 text-accent-foreground">
                         {antibody}
                       </Badge>
                     )) : (
-                      <Badge variant="outline">None</Badge>
+                      <Badge variant="outline">Không có</Badge>
                     )}
                   </div>
                 </div>
@@ -260,21 +260,21 @@ const InformationPanel = ({ bloodType }) => {
             >
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <span className="font-semibold text-muted-foreground">Can donate to:</span>
+                  <span className="font-semibold text-muted-foreground">Có thể hiến cho:</span>
                   <div className="flex flex-wrap gap-2 mt-1">
                     {data.canDonateTo.map(type => (
                       <Badge key={type} variant="outline" className="border-primary">
-                        Type {type}
+                        Nhóm {type}
                       </Badge>
                     ))}
                   </div>
                 </div>
                 <div>
-                  <span className="font-semibold text-muted-foreground">Can receive from:</span>
+                  <span className="font-semibold text-muted-foreground">Có thể nhận từ:</span>
                   <div className="flex flex-wrap gap-2 mt-1">
                     {data.canReceiveFrom.map(type => (
                       <Badge key={type} variant="outline" className="border-primary">
-                        Type {type}
+                        Nhóm {type}
                       </Badge>
                     ))}
                   </div>
@@ -284,7 +284,7 @@ const InformationPanel = ({ bloodType }) => {
               {bloodType === 'O' && (
                 <div className="mt-3 p-2 bg-primary/10 rounded border border-primary/20">
                   <p className="text-sm text-center">
-                    Type O is known as the universal donor.
+                    Nhóm O được biết đến là người hiến máu vạn năng.
                   </p>
                 </div>
               )}
@@ -292,7 +292,7 @@ const InformationPanel = ({ bloodType }) => {
               {bloodType === 'AB' && (
                 <div className="mt-3 p-2 bg-primary/10 rounded border border-primary/20">
                   <p className="text-sm text-center">
-                    Type AB is known as the universal recipient.
+                    Nhóm AB được biết đến là người nhận máu vạn năng.
                   </p>
                 </div>
               )}
@@ -302,16 +302,16 @@ const InformationPanel = ({ bloodType }) => {
       </CardContent>
 
       <CardFooter className="flex flex-col items-start">
-        <h3 className="font-semibold mb-2">Quick Facts</h3>
+        <h3 className="font-semibold mb-2">Thông Tin Nhanh</h3>
         <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
           <li>
-            {bloodType === 'O' ? 'Most in demand blood type' :
-              bloodType === 'AB' ? 'Rarest blood type (~4% of population)' :
-                bloodType === 'A' ? 'Second most common blood type' :
-                  'Third most common blood type'}
+            {bloodType === 'O' ? 'Nhóm máu được yêu cầu nhiều nhất' :
+              bloodType === 'AB' ? 'Nhóm máu hiếm nhất (~4% dân số)' :
+                bloodType === 'A' ? 'Nhóm máu phổ biến thứ hai' :
+                  'Nhóm máu phổ biến thứ ba'}
           </li>
           <li>
-            Determined by antigens on red blood cells
+            Được xác định bởi kháng nguyên trên hồng cầu
           </li>
         </ul>
       </CardFooter>
@@ -333,7 +333,7 @@ const BloodTypeInterface = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <h1 className="text-4xl font-bold text-center mb-6 text-primary">How Blood Type Is Determined And Why You Need To Know</h1>
+          <h1 className="text-4xl font-bold text-center mb-6 text-primary">Nhóm Máu Được Xác Định Như Thế Nào Và Tại Sao Bạn Cần Biết</h1>
 
           <motion.div
             className="mt-6 mb-8 bg-accent/5 p-5 rounded-lg border border-accent/10 max-w-4xl mx-auto"
@@ -342,20 +342,18 @@ const BloodTypeInterface = () => {
             transition={{ duration: 0.5, delay: 0.3 }}
           >
             <p className="text-foreground text-lg leading-relaxed">
-              Blood types are determined by the presence or absence of certain antigens – substances that can trigger an immune
-              response if they are foreign to the body. Since some antigens can trigger a patient's immune system to attack the transfused
-              blood, safe blood transfusions depend on careful blood typing and cross-matching.
+              Nhóm máu được xác định bởi sự hiện diện hoặc vắng mặt của các kháng nguyên – các chất có thể kích hoạt phản ứng miễn dịch nếu chúng là lạ đối với cơ thể. Vì một số kháng nguyên có thể kích hoạt hệ miễn dịch của bệnh nhân tấn công máu được truyền, các ca truyền máu an toàn phụ thuộc vào việc xác định nhóm máu và kiểm tra chéo cẩn thận.
             </p>
             <p className="mt-3 font-semibold text-lg text-primary">
-              Do you know what blood type is safe for you if you need a transfusion?
+              Bạn có biết nhóm máu nào an toàn cho bạn nếu bạn cần truyền máu không?
             </p>
             <p className="text-foreground text-lg leading-relaxed">
-              There are four major blood groups determined by the presence or absence of two antigens, A and B, on the surface of red blood cells. In addition to the A and B antigens, there is a protein called the Rh factor, which can be either present (+) or absent (–), creating the 8 most common blood types (A+, A-,  B+, B-,  O+, O-,  AB+, AB-).
+              Có bốn nhóm máu chính được xác định bởi sự hiện diện hoặc vắng mặt của hai kháng nguyên, A và B, trên bề mặt của hồng cầu. Ngoài kháng nguyên A và B, có một protein gọi là yếu tố Rh, có thể hiện diện (+) hoặc vắng mặt (–), tạo ra 8 nhóm máu phổ biến nhất (A+, A-, B+, B-, O+, O-, AB+, AB-).
             </p>
           </motion.div>
 
           <p className="mt-4 text-muted-foreground">
-            Click on a blood type below to learn about its composition and compatibility.
+            Nhấp vào một nhóm máu bên dưới để tìm hiểu về thành phần và tính tương thích của nó.
           </p>
         </motion.div>
 

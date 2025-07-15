@@ -25,7 +25,7 @@ const ParentFigure = ({ bloodType, parentNumber }) => (
     transition={{ duration: 0.5 }}
   >
     <h3 className="text-lg font-medium text-muted-foreground">
-      Parent {parentNumber}
+      Cha/Mẹ {parentNumber}
     </h3>
     <div className="relative">
       {/* Person silhouette with gradient */}
@@ -59,7 +59,7 @@ const PossibleChildrenDisplay = ({ possibleTypes }) => (
     transition={{ duration: 0.5, delay: 0.2 }}
   >
     <h3 className="text-lg font-medium text-muted-foreground">
-      Possible blood type of child:
+      Nhóm máu có thể của con:
     </h3>
     <div className="relative">
       {/* Child silhouette with gradient */}
@@ -146,7 +146,7 @@ const BloodTypeCalculator = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        How Is My Blood Type Determined?
+        Nhóm Máu Của Tôi Được Xác Định Như Thế Nào?
       </motion.h1>
 
       <motion.p
@@ -155,14 +155,14 @@ const BloodTypeCalculator = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
-        It's inherited. Like eye color, blood type is passed genetically from your parents. Whether your blood group is type A, B, AB or O is based on the blood types of your mother and father.
+        Nó được di truyền. Giống như màu mắt, nhóm máu được truyền về mặt di truyền từ cha mẹ của bạn. Cho dù nhóm máu của bạn là loại A, B, AB hay O đều dựa trên nhóm máu của mẹ và cha bạn.
       </motion.p>
 
       <Card className="bg-card shadow-xl border border-border">
         <CardHeader className="border-b border-border/30">
-          <CardTitle className="text-2xl font-bold text-center">Blood Type Inheritance Calculator</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">Máy Tính Di Truyền Nhóm Máu</CardTitle>
           <CardDescription className="text-center">
-            Select blood types for both parents to see possible blood types for their children
+            Chọn nhóm máu cho cả hai cha mẹ để xem các nhóm máu có thể có cho con của họ
           </CardDescription>
         </CardHeader>
 
@@ -171,7 +171,7 @@ const BloodTypeCalculator = () => {
           <div className="flex flex-col md:flex-row justify-center gap-8 mb-12">
             {/* Parent 1 buttons */}
             <div className="space-y-4">
-              <h3 className="text-center text-foreground font-medium">Parent 1 Blood Type</h3>
+              <h3 className="text-center text-foreground font-medium">Nhóm Máu Cha/Mẹ 1</h3>
               <div className="flex justify-center gap-3">
                 {bloodTypes.map(type => (
                   <BloodTypeButton
@@ -186,7 +186,7 @@ const BloodTypeCalculator = () => {
 
             {/* Parent 2 buttons */}
             <div className="space-y-4">
-              <h3 className="text-center text-foreground font-medium">Parent 2 Blood Type</h3>
+              <h3 className="text-center text-foreground font-medium">Nhóm Máu Cha/Mẹ 2</h3>
               <div className="flex justify-center gap-3">
                 {bloodTypes.map(type => (
                   <BloodTypeButton
@@ -223,18 +223,18 @@ const BloodTypeCalculator = () => {
           <div className="p-5 bg-accent/10 rounded-lg border border-accent/30 w-full">
             <h4 className="font-semibold text-accent-foreground mb-2 flex items-center gap-2">
               <span className="inline-block w-3 h-3 rounded-full bg-primary"></span>
-              Current Combination:
+              Kết Hợp Hiện Tại:
             </h4>
 
             <div className="flex flex-wrap items-center justify-center gap-2 md:gap-3">
               <Badge variant="outline" className="bg-secondary text-secondary-foreground px-3 py-1">
-                Parent 1: Type {parent1Type}
+                Cha/Mẹ 1: Nhóm {parent1Type}
               </Badge>
 
               <span className="text-muted-foreground">+</span>
 
               <Badge variant="outline" className="bg-secondary text-secondary-foreground px-3 py-1">
-                Parent 2: Type {parent2Type}
+                Cha/Mẹ 2: Nhóm {parent2Type}
               </Badge>
 
               <span className="text-muted-foreground">=</span>
@@ -248,7 +248,7 @@ const BloodTypeCalculator = () => {
                     transition={{ duration: 0.3 }}
                   >
                     <Badge className="bg-primary text-primary-foreground px-3 py-1">
-                      Type {type}
+                      Nhóm {type}
                     </Badge>
                   </motion.div>
                 ))}
@@ -256,7 +256,7 @@ const BloodTypeCalculator = () => {
             </div>
 
             <p className="text-sm text-muted-foreground mt-3 text-center">
-              Note: This shows the most common genetic scenarios. Actual inheritance can vary based on specific genotypes.
+              Lưu ý: Đây hiển thị các kịch bản di truyền phổ biến nhất. Di truyền thực tế có thể khác nhau dựa trên các kiểu gen cụ thể.
             </p>
           </div>
         </CardFooter>

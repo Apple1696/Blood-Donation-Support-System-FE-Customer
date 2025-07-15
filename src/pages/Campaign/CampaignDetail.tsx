@@ -16,7 +16,7 @@ const CampaignDetail: React.FC = () => {
   const campaign = campaignData?.data;
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    return new Date(dateString).toLocaleDateString('vi-VN', {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
@@ -26,7 +26,7 @@ const CampaignDetail: React.FC = () => {
 
     
   const formatDateTime = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    return new Date(dateString).toLocaleDateString('vi-VN', {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
@@ -49,7 +49,7 @@ const CampaignDetail: React.FC = () => {
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-red-50/30 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading campaign details...</p>
+          <p className="text-gray-600">Đang tải thông tin chiến dịch...</p>
         </div>
       </div>
     );
@@ -59,12 +59,12 @@ const CampaignDetail: React.FC = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-red-50/30 flex items-center justify-center">
         <div className="text-center text-red-600">
-          <p>Error loading campaign details. Please try again later.</p>
+          <p>Lỗi khi tải thông tin chiến dịch. Vui lòng thử lại sau.</p>
           <button 
             onClick={() => navigate('/campaigns')}
             className="mt-4 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
           >
-            Back to Campaigns
+            Quay lại Chiến dịch
           </button>
         </div>
       </div>
@@ -78,16 +78,16 @@ const CampaignDetail: React.FC = () => {
           color: 'bg-blue-500/90',
           borderColor: 'border-blue-400/50',
           shadowColor: 'shadow-blue-500/25',
-          label: 'Not Started',
-          message: 'This campaign has not started yet'
+          label: 'Sắp diễn ra',
+          message: 'Chiến dịch này chưa bắt đầu'
         };
       case CampaignStatus.ENDED:
         return {
           color: 'bg-gray-500/90',
           borderColor: 'border-gray-400/50',
           shadowColor: 'shadow-gray-500/25',
-          label: 'Ended',
-          message: 'This campaign has ended'
+          label: 'Đã kết thúc',
+          message: 'Chiến dịch này đã kết thúc'
         };
       case CampaignStatus.ACTIVE:
       default:
@@ -95,8 +95,8 @@ const CampaignDetail: React.FC = () => {
           color: 'bg-emerald-500/90',
           borderColor: 'border-emerald-400/50',
           shadowColor: 'shadow-emerald-500/25',
-          label: 'Active',
-          message: 'This campaign is currently active'
+          label: 'Đang diễn ra',
+          message: 'Chiến dịch này đang diễn ra'
         };
     }
   };
@@ -151,7 +151,7 @@ const CampaignDetail: React.FC = () => {
 
                   {/* About Section */}
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-4">About This Campaign</h2>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-4">Về Chiến Dịch Này</h2>
                     <div className="prose prose-gray max-w-none">
                       <p className="text-gray-700 leading-relaxed mb-4">
                         {campaign.description}
@@ -161,15 +161,15 @@ const CampaignDetail: React.FC = () => {
 
                   {/* Requirements */}
                   <div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-4">Donation Requirements</h3>
+                    <h3 className="text-xl font-bold text-gray-900 mb-4">Yêu Cầu Hiến Máu</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {[
-                        'Age: 18-65 years old',
-                        'Weight: Minimum 50kg',
-                        'Good general health',
-                        'No recent illness or medication',
-                        'Valid ID required',
-                        'Fasting not required'
+                        'Độ tuổi: 18-65 tuổi',
+                        'Cân nặng: Tối thiểu 50kg',
+                        'Sức khỏe tổng thể tốt',
+                        'Không có bệnh hoặc dùng thuốc gần đây',
+                        'Yêu cầu CMND/CCCD hợp lệ',
+                        'Không cần nhịn ăn'
                       ].map((requirement, index) => (
                         <div key={index} className="flex items-center space-x-3">
                           <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
@@ -181,43 +181,43 @@ const CampaignDetail: React.FC = () => {
 
                   {/* Campaign Details */}
                   <div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-4">Campaign Details</h3>
+                    <h3 className="text-xl font-bold text-gray-900 mb-4">Chi Tiết Chiến Dịch</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="flex items-start space-x-3 p-4 bg-blue-50/50 rounded-lg border border-blue-100">
                         <Calendar className="w-5 h-5 text-blue-600 mt-0.5" />
                         <div>
-                          <p className="text-xs text-blue-600 font-medium uppercase tracking-wide">Start Date</p>
+                          <p className="text-xs text-blue-600 font-medium uppercase tracking-wide">Ngày bắt đầu</p>
                           <p className="text-sm font-semibold text-gray-900">{formatDate(campaign.startDate)}</p>
                         </div>
                       </div>
                       <div className="flex items-start space-x-3 p-4 bg-red-50/50 rounded-lg border border-red-100">
                         <Calendar className="w-5 h-5 text-red-600 mt-0.5" />
                         <div>
-                          <p className="text-xs text-red-600 font-medium uppercase tracking-wide">End Date</p>
+                          <p className="text-xs text-red-600 font-medium uppercase tracking-wide">Ngày kết thúc</p>
                           <p className="text-sm font-semibold text-gray-900">{formatDate(campaign.endDate)}</p>
                         </div>
                       </div>
                       <div className="flex items-start space-x-3 p-4 bg-green-50/50 rounded-lg border border-green-100">
                         <Droplets className="w-5 h-5 text-green-600 mt-0.5" />
                         <div>
-                          <p className="text-xs text-green-600 font-medium uppercase tracking-wide">Blood Collection</p>
+                          <p className="text-xs text-green-600 font-medium uppercase tracking-wide">Ngày thu gom máu</p>
                           <p className="text-sm font-semibold text-gray-900">{formatDateTime(campaign.bloodCollectionDate)}</p>
                         </div>
                       </div>
                       <div className="flex items-start space-x-3 p-4 bg-purple-50/50 rounded-lg border border-purple-100">
                         <Users className="w-5 h-5 text-purple-600 mt-0.5" />
                         <div>
-                          <p className="text-xs text-purple-600 font-medium uppercase tracking-wide">Donation Target</p>
-                          <p className="text-sm font-semibold text-gray-900">{campaign.limitDonation} blood units</p>
+                          <p className="text-xs text-purple-600 font-medium uppercase tracking-wide">Mục tiêu </p>
+                          <p className="text-sm font-semibold text-gray-900">{campaign.limitDonation} đơn vị máu</p>
                         </div>
                       </div>
                       {campaign.status === CampaignStatus.ACTIVE && daysRemaining > 0 && (
                         <div className="flex items-start space-x-3 p-4 bg-orange-50/50 rounded-lg border border-orange-100">
                           <Clock className="w-5 h-5 text-orange-600 mt-0.5" />
                           <div>
-                            <p className="text-xs text-orange-600 font-medium uppercase tracking-wide">Time Remaining</p>
+                            <p className="text-xs text-orange-600 font-medium uppercase tracking-wide">Thời gian còn lại</p>
                             <p className="text-sm font-semibold text-gray-900">
-                              {daysRemaining} {daysRemaining === 1 ? 'day' : 'days'} left
+                              Còn {daysRemaining} ngày
                             </p>
                           </div>
                         </div>
@@ -226,9 +226,9 @@ const CampaignDetail: React.FC = () => {
                         <div className="flex items-start space-x-3 p-4 bg-blue-50/50 rounded-lg border border-blue-100">
                           <Clock className="w-5 h-5 text-blue-600 mt-0.5" />
                           <div>
-                            <p className="text-xs text-blue-600 font-medium uppercase tracking-wide">Starting In</p>
+                            <p className="text-xs text-blue-600 font-medium uppercase tracking-wide">Bắt đầu sau</p>
                             <p className="text-sm font-semibold text-gray-900">
-                              {daysUntilStart} {daysUntilStart === 1 ? 'day' : 'days'}
+                              {daysUntilStart} ngày
                             </p>
                           </div>
                         </div>
@@ -247,7 +247,7 @@ const CampaignDetail: React.FC = () => {
               <CardHeader>
                 <CardTitle className="text-lg font-bold text-gray-900 flex items-center space-x-2">
                   <MapPin className="w-5 h-5 text-red-600" />
-                  <span>Location & Contact</span>
+                  <span>Địa điểm & Liên hệ</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -257,7 +257,7 @@ const CampaignDetail: React.FC = () => {
                       <MapPin className="w-5 h-5 text-red-600" />
                     </div>
                     <div className="flex-1">
-                      <p className="text-xs text-red-600 font-medium uppercase tracking-wide mb-1">Campaign Location</p>
+                      <p className="text-xs text-red-600 font-medium uppercase tracking-wide mb-1">Địa điểm chiến dịch</p>
                       <p className="text-sm font-semibold text-gray-900 leading-relaxed">{campaign.location}</p>
                     </div>
                   </div>
@@ -269,7 +269,7 @@ const CampaignDetail: React.FC = () => {
                       <Calendar className="w-5 h-5 text-green-600" />
                     </div>
                     <div className="flex-1">
-                      <p className="text-xs text-green-600 font-medium uppercase tracking-wide mb-1">Blood Collection Date</p>
+                      <p className="text-xs text-green-600 font-medium uppercase tracking-wide mb-1">Ngày thu gom máu</p>
                       <p className="text-sm font-semibold text-gray-900">{formatDateTime(campaign.bloodCollectionDate)}</p>
                     </div>
                   </div>
@@ -279,7 +279,7 @@ const CampaignDetail: React.FC = () => {
                   <div className="flex items-start space-x-3 p-3 bg-blue-50/50 rounded-lg hover:bg-blue-50 transition-colors">
                     <Phone className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
                     <div className="flex-1">
-                      <p className="text-sm font-semibold text-gray-900">Phone Support</p>
+                      <p className="text-sm font-semibold text-gray-900">Hỗ trợ qua điện thoại</p>
                       <p className="text-sm text-blue-600 hover:text-blue-700 cursor-pointer">+1 (555) 123-4567</p>
                     </div>
                   </div>
@@ -287,7 +287,7 @@ const CampaignDetail: React.FC = () => {
                   <div className="flex items-start space-x-3 p-3 bg-purple-50/50 rounded-lg hover:bg-purple-50 transition-colors">
                     <Mail className="w-5 h-5 text-purple-600 mt-0.5 flex-shrink-0" />
                     <div className="flex-1">
-                      <p className="text-sm font-semibold text-gray-900">Email Support</p>
+                      <p className="text-sm font-semibold text-gray-900">Hỗ trợ qua Email</p>
                       <p className="text-sm text-purple-600 hover:text-purple-700 cursor-pointer break-all">BloodLink@gmail.com</p>
                     </div>
                   </div>
@@ -301,30 +301,32 @@ const CampaignDetail: React.FC = () => {
                 <div className="text-center space-y-4">
                   {campaign.status === CampaignStatus.ACTIVE && (
                     <>
-                      <h3 className="text-xl font-bold">Ready to Save Lives?</h3>
-                      <p className="opacity-90">Join this campaign and make a difference today.</p>
+                      <h3 className="text-xl font-bold">Sẵn sàng cứu sống mạng người?</h3>
+                      <p className="opacity-90">Tham gia chiến dịch này và tạo nên sự khác biệt ngay hôm nay.</p>
                       <Button
                       onClick={() => navigate(`/book-appointment/${campaign.id}`)}
                       className="w-full bg-white text-red-600 hover:bg-gray-100">
-                        Book Appointment
+                        Đặt lịch hẹn
                       </Button>
                     </>
                   )}
                   {campaign.status === CampaignStatus.NOT_STARTED && (
                     <>
-                      <h3 className="text-xl font-bold">Get Notified</h3>
-                      <p className="opacity-90">Be the first to know when this campaign starts.</p>
-                      <Button className="w-full bg-white text-red-600 hover:bg-gray-100">
-                        Set Reminder
+                      <h3 className="text-xl font-bold">Chiến dịch chưa bắt đầu</h3>
+                      {/* <p className="opacity-90">Hãy là người đầu tiên biết khi chiến dịch này bắt đầu.</p> */}
+                      <Button onClick={
+                        () => navigate('/campaigns')
+                      } className="w-full bg-white text-red-600 hover:bg-gray-100">
+                        Quay lại Chiến dịch
                       </Button>
                     </>
                   )}
                   {campaign.status === CampaignStatus.ENDED && (
                     <>
-                      <h3 className="text-xl font-bold">Campaign Ended</h3>
-                      <p className="opacity-90">Thank you for your interest. Check out our other active campaigns.</p>
+                      <h3 className="text-xl font-bold">Chiến dịch đã kết thúc</h3>
+                      <p className="opacity-90">Cảm ơn sự quan tâm của bạn. Hãy xem các chiến dịch đang diễn ra khác.</p>
                       <Button className="w-full bg-white text-red-600 hover:bg-gray-100" onClick={() => navigate('/campaigns')}>
-                        View Active Campaigns
+                        Xem chiến dịch đang diễn ra
                       </Button>
                     </>
                   )}

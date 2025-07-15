@@ -73,31 +73,31 @@ const BloodDonationAnimation = () => {
 
   return (
     <div className="container mx-auto py-8 px-4">
-      <h1 className="text-4xl font-bold text-center text-foreground mb-6 text-primary">Blood Types and Transfusion</h1>
+      <h1 className="text-4xl font-bold text-center text-foreground mb-6 text-primary">Nhóm Máu và Truyền Máu</h1>
       
       <div className="mb-6 text-foreground">
         <p className="mb-4">
-          There are very specific ways in which blood types must be matched for a safe transfusion. The right blood transfusion can 
-          mean the difference between life and death. Use the interactive graphic below to learn more about matching blood types for
-          transfusions.
+          Có những cách rất cụ thể để nhóm máu phải được ghép với nhau cho một ca truyền máu an toàn. Việc truyền máu đúng cách có thể 
+          tạo nên sự khác biệt giữa sự sống và cái chết. Sử dụng đồ họa tương tác bên dưới để tìm hiểu thêm về việc ghép nhóm máu cho
+          các ca truyền máu.
         </p>
         
         <p className="mb-4">
-          Also, Rh-negative blood is given to Rh-negative patients, and Rh-positive or Rh-negative blood may be given to Rh-positive
-          patients. The rules for plasma are the reverse.
+          Ngoài ra, máu Rh âm được truyền cho bệnh nhân Rh âm, và máu Rh dương hoặc Rh âm có thể được truyền cho bệnh nhân Rh dương.
+          Các quy tắc đối với huyết tương thì ngược lại.
         </p>
         
         <ul className="list-disc pl-6 text-primary space-y-2">
-          <li className="font-medium">The universal red cell donor has Type O negative blood.</li>
-          <li className="font-medium">The universal plasma donor has Type AB blood.</li>
+          <li className="font-medium">Người hiến hồng cầu phổ quát có máu nhóm O âm.</li>
+          <li className="font-medium">Người hiến huyết tương phổ quát có máu nhóm AB.</li>
         </ul>
       </div>
       
       <Card className="border-border shadow-lg">
         <CardHeader className="bg-card/50">
-          <CardTitle className="text-2xl text-center text-card-foreground">Blood Donation Compatibility</CardTitle>
+          <CardTitle className="text-2xl text-center text-card-foreground">Khả Năng Tương Thích Hiến Máu</CardTitle>
           <CardDescription className="text-center text-muted-foreground">
-            Click on a donor blood type to see compatible recipients
+            Nhấp vào nhóm máu của người hiến để xem người nhận tương thích
           </CardDescription>
         </CardHeader>
         
@@ -106,9 +106,9 @@ const BloodDonationAnimation = () => {
           <div className="relative bg-secondary/20 rounded-lg p-4 border border-border">
             <div className="flex items-center mb-4">
               <div className="w-4 h-4 bg-primary rounded-full mr-2"></div>
-              <span className="text-sm font-medium text-foreground">Donor</span>
+              <span className="text-sm font-medium text-foreground">Người hiến</span>
               <div className="w-4 h-4 bg-muted rounded-full ml-6 mr-2"></div>
-              <span className="text-sm font-medium text-foreground">Recipient</span>
+              <span className="text-sm font-medium text-foreground">Người nhận</span>
             </div>
             
             <svg width="600" height="280" viewBox="0 0 600 280" className="mx-auto">
@@ -213,8 +213,8 @@ const BloodDonationAnimation = () => {
               ))}
 
               {/* Labels */}
-              <text x="20" y="65" className="fill-foreground text-sm font-medium">DONOR</text>
-              <text x="20" y="205" className="fill-foreground text-sm font-medium">RECIPIENT</text>
+              <text x="20" y="65" className="fill-foreground text-sm font-medium">NGƯỜI HIẾN</text>
+              <text x="20" y="205" className="fill-foreground text-sm font-medium">NGƯỜI NHẬN</text>
             </svg>
           </div>
         </CardContent>
@@ -224,9 +224,9 @@ const BloodDonationAnimation = () => {
             <>
               <div className="flex flex-wrap gap-2 justify-center">
                 <Badge variant="outline" className="bg-primary text-primary-foreground">
-                  Type {selectedDonor}
+                  Nhóm {selectedDonor}
                 </Badge>
-                <span className="text-foreground">can donate to:</span>
+                <span className="text-foreground">có thể hiến cho:</span>
                 {compatibility[selectedDonor as keyof typeof compatibility].map((type) => (
                   <Badge key={type} variant="secondary" className="bg-secondary text-secondary-foreground">
                     {type}
@@ -243,7 +243,7 @@ const BloodDonationAnimation = () => {
                 >
                   <p className="text-center text-accent-foreground flex items-center justify-center gap-2">
                     <span className="inline-block w-3 h-3 rounded-full bg-chart-5"></span>
-                    Type O is the universal donor! Blood from O donors can be given to any recipient.
+                    Nhóm O là người hiến phổ quát! Máu từ người hiến nhóm O có thể được truyền cho bất kỳ người nhận nào.
                   </p>
                 </motion.div>
               )}
@@ -257,7 +257,7 @@ const BloodDonationAnimation = () => {
                 >
                   <p className="text-center text-accent-foreground flex items-center justify-center gap-2">
                     <span className="inline-block w-3 h-3 rounded-full bg-chart-3"></span>
-                    Type AB is the universal recipient! AB recipients can receive blood from any donor.
+                    Nhóm AB là người nhận phổ quát! Người nhận nhóm AB có thể nhận máu từ bất kỳ người hiến nào.
                   </p>
                 </motion.div>
               )}
@@ -265,7 +265,7 @@ const BloodDonationAnimation = () => {
           ) : (
             <div className="flex flex-col items-center space-y-3">
               <p className="text-sm text-muted-foreground text-center">
-                Click on a donor blood type above to see compatibility
+                Nhấp vào nhóm máu của người hiến ở trên để xem khả năng tương thích
               </p>
               <div className="flex gap-2">
                 {['O', 'A', 'B', 'AB'].map((type, i) => (
@@ -280,8 +280,8 @@ const BloodDonationAnimation = () => {
       </Card>
        <div className="mt-8 p-4 bg-accent/10 rounded-lg border border-accent/20">
         <p className="text-foreground text-center">
-          There are more than 300 other known antigens, the presence or absence of which creates "rare blood types." 
-          Certain blood types are unique to specific ethnic or racial groups. Learn about <Link to="/blood-types" className="text-primary font-medium hover:underline">blood and diversity</Link>.
+          Có hơn 300 kháng nguyên đã được biết đến, sự hiện diện hoặc vắng mặt của chúng tạo ra "các nhóm máu hiếm." 
+          Một số nhóm máu là duy nhất đối với các nhóm dân tộc hoặc chủng tộc cụ thể. Tìm hiểu về <Link to="/blood-types" className="text-primary font-medium hover:underline">máu và sự đa dạng</Link>.
         </p>
       </div>
     </div>

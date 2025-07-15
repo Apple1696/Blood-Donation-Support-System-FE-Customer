@@ -23,7 +23,7 @@ export default function BookAppointment() {
 // Redirect if not authenticated
   React.useEffect(() => {
     if (!isAuthenticated) {
-      toast.error('Please log in to book an appointment');
+      toast.error('Vui lòng đăng nhập để đặt lịch hẹn');
       navigate('/sign-in', { replace: true });
     }
   }, [isAuthenticated, navigate]);
@@ -45,7 +45,7 @@ export default function BookAppointment() {
   const createDonationMutation = DonationService.useCreateDonationRequest();
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    return new Date(dateString).toLocaleDateString('vi-VN', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
@@ -53,7 +53,7 @@ export default function BookAppointment() {
   };
 
   const formatDateTime = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    return new Date(dateString).toLocaleDateString('vi-VN', {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
@@ -73,17 +73,17 @@ export default function BookAppointment() {
         note: note.trim()
       });
 
-      toast.success('Your appointment has been booked successfully.');
+      toast.success('Lịch hẹn của bạn đã được đặt thành công.');
       navigate('/campaigns');
     } catch (error: any) {
       console.error('Error booking appointment:', error);
       
       // Check for authentication issues
       if (error.message?.includes('Authentication')) {
-        toast.error('Please log in again to book your appointment');
+        toast.error('Vui lòng đăng nhập lại để đặt lịch hẹn');
         navigate('/sign-in');
       } else {
-        toast.error(error.message || 'Failed to book appointment. Please try again.');
+        toast.error(error.message || 'Không thể đặt lịch hẹn. Vui lòng thử lại.');
       }
     }
   };
@@ -97,7 +97,7 @@ export default function BookAppointment() {
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-red-50/30 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
+          <p className="text-gray-600">Đang tải...</p>
         </div>
       </div>
     );
@@ -106,18 +106,18 @@ export default function BookAppointment() {
   return (
     <div className="min-h-screen container mx-auto pt-8 pb-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Book Appointment</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">Đặt Lịch Hẹn</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Profile Information Column */}
           <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-0">
             <CardHeader>
-              <CardTitle>Personal Information</CardTitle>
+              <CardTitle>Thông Tin Cá Nhân</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="firstName">First Name</Label>
+                  <Label htmlFor="firstName">Tên</Label>
                   <Input
                     id="firstName"
                     value={profileData?.firstName || ''}
@@ -126,7 +126,7 @@ export default function BookAppointment() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="lastName">Last Name</Label>
+                  <Label htmlFor="lastName">Họ</Label>
                   <Input
                     id="lastName"
                     value={profileData?.lastName || ''}
@@ -137,7 +137,7 @@ export default function BookAppointment() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="phone">Phone</Label>
+                <Label htmlFor="phone">Điện Thoại</Label>
                 <Input
                   id="phone"
                   value={profileData?.phone || ''}
@@ -148,7 +148,7 @@ export default function BookAppointment() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="latitude">Latitude</Label>
+                  <Label htmlFor="latitude">Vĩ Độ</Label>
                   <Input
                     id="latitude"
                     value={profileData?.latitude || ''}
@@ -157,7 +157,7 @@ export default function BookAppointment() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="longitude">Longitude</Label>
+                  <Label htmlFor="longitude">Kinh Độ</Label>
                   <Input
                     id="longitude"
                     value={profileData?.longitude || ''}
@@ -169,7 +169,7 @@ export default function BookAppointment() {
 
               <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="province">Province</Label>
+                  <Label htmlFor="province">Tỉnh/Thành Phố</Label>
                   <Input
                     id="province"
                     value={profileData?.provinceName || ''}
@@ -178,7 +178,7 @@ export default function BookAppointment() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="district">District</Label>
+                  <Label htmlFor="district">Quận/Huyện</Label>
                   <Input
                     id="district"
                     value={profileData?.districtName || ''}
@@ -187,7 +187,7 @@ export default function BookAppointment() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="ward">Ward</Label>
+                  <Label htmlFor="ward">Phường/Xã</Label>
                   <Input
                     id="ward"
                     value={profileData?.wardName || ''}
@@ -198,7 +198,7 @@ export default function BookAppointment() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="bloodType">Blood Type</Label>
+                <Label htmlFor="bloodType">Nhóm Máu</Label>
                 <Input
                   id="bloodType"
                   value={profileData?.bloodType ? `${profileData.bloodType.group}${profileData.bloodType.rh}` : ''}
@@ -209,23 +209,23 @@ export default function BookAppointment() {
 
               {/* Fixed appointment date display */}
               <div className="space-y-2">
-                <Label>Appointment Date</Label>
+                <Label>Ngày Hẹn</Label>
                 <div className="bg-gray-50 p-3 rounded-md border flex items-center">
                   <Calendar className="w-4 h-4 mr-2 text-gray-500" />
                   <span className="text-gray-700">
-                    {collectionDate ? format(collectionDate, "PPP") : 'Loading date...'}
+                    {collectionDate ? format(collectionDate, "PPP") : 'Đang tải ngày...'}
                   </span>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  Your appointment is automatically scheduled for the blood collection date.
+                  Lịch hẹn của bạn được tự động sắp xếp vào ngày thu thập máu.
                 </p>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="note">Additional Note</Label>
+                <Label htmlFor="note">Ghi Chú Bổ Sung</Label>
                 <Input
                   id="note"
-                  placeholder="Enter any additional information or special requirements"
+                  placeholder="Nhập thông tin bổ sung hoặc yêu cầu đặc biệt"
                   className="min-h-[80px]"
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
@@ -237,7 +237,7 @@ export default function BookAppointment() {
                 disabled={!collectionDate || createDonationMutation.isPending}
                 onClick={handleSubmit}
               >
-                {createDonationMutation.isPending ? "Booking..." : "Confirm Appointment"}
+                {createDonationMutation.isPending ? "Đang đặt lịch..." : "Xác Nhận Lịch Hẹn"}
               </Button>
             </CardContent>
           </Card>
@@ -246,7 +246,7 @@ export default function BookAppointment() {
           <div className="space-y-6">
             <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-0">
               <CardHeader>
-                <CardTitle>Campaign Details</CardTitle>
+                <CardTitle>Chi Tiết Chiến Dịch</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 {campaign && (
@@ -267,7 +267,7 @@ export default function BookAppointment() {
                           <Calendar className="w-5 h-5 text-blue-600" />
                         </div>
                         <div className="flex-1">
-                          <p className="text-xs text-blue-600 font-medium uppercase tracking-wide mb-1">Campaign Period</p>
+                          <p className="text-xs text-blue-600 font-medium uppercase tracking-wide mb-1">Thời Gian Chiến Dịch</p>
                           <p className="text-sm font-semibold text-gray-900">
                             {formatDate(campaign.startDate)} - {formatDate(campaign.endDate)}
                           </p>
@@ -281,7 +281,7 @@ export default function BookAppointment() {
                           <MapPin className="w-5 h-5 text-red-600" />
                         </div>
                         <div className="flex-1">
-                          <p className="text-xs text-red-600 font-medium uppercase tracking-wide mb-1">Location</p>
+                          <p className="text-xs text-red-600 font-medium uppercase tracking-wide mb-1">Địa Điểm</p>
                           <p className="text-sm font-semibold text-gray-900 leading-relaxed">{campaign.location}</p>
                         </div>
                       </div>
@@ -293,7 +293,7 @@ export default function BookAppointment() {
                           <Calendar className="w-5 h-5 text-green-600" />
                         </div>
                         <div className="flex-1">
-                          <p className="text-xs text-green-600 font-medium uppercase tracking-wide mb-1">Blood Collection Date</p>
+                          <p className="text-xs text-green-600 font-medium uppercase tracking-wide mb-1">Ngày Thu Thập Máu</p>
                           <p className="text-sm font-semibold text-gray-900">{formatDateTime(campaign.bloodCollectionDate)}</p>
                         </div>
                       </div>
@@ -305,8 +305,8 @@ export default function BookAppointment() {
                           <Users className="w-5 h-5 text-purple-600" />
                         </div>
                         <div className="flex-1">
-                          <p className="text-xs text-purple-600 font-medium uppercase tracking-wide mb-1">Donation Target</p>
-                          <p className="text-sm font-semibold text-gray-900">{campaign.limitDonation} blood units</p>
+                          <p className="text-xs text-purple-600 font-medium uppercase tracking-wide mb-1">Mục Tiêu Hiến Máu</p>
+                          <p className="text-sm font-semibold text-gray-900">{campaign.limitDonation} đơn vị máu</p>
                         </div>
                       </div>
                     </div>
