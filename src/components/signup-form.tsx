@@ -175,10 +175,8 @@ export function SignupForm({ className, onSwitchToLogin, ...props }: SignupFormP
                 wardName: ward.name,
                 districtName: district.name,
                 provinceName: province.name,
-                bloodType: {
-                  group: "O",
-                  rh: "+"
-                },
+                bloodGroup: null,
+                bloodRh: null,
                 gender: userMetadata.gender,
                 dateOfBirth: userMetadata.dateOfBirth, // This is already formatted correctly from unsafeMetadata
                 citizenId: userMetadata.citizenId
@@ -368,7 +366,7 @@ export function SignupForm({ className, onSwitchToLogin, ...props }: SignupFormP
 
         <div className="grid grid-cols-2 gap-4">
 
-             <div className="grid gap-2">
+          <div className="grid gap-2">
             <Label htmlFor="citizenId">CCCD/CMND</Label>
             <Input
               id="citizenId"

@@ -1,4 +1,5 @@
 import api from "@/config/api";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export interface CustomerProfile {
   id: string;
@@ -44,11 +45,10 @@ interface UpdateProfileRequest {
   wardName: string;
   districtName: string;
   provinceName: string;
-  bloodType: {
-    group: string;
-    rh: string;
-  };
-  gender: string
+  // Replace bloodType object with separate fields
+  bloodGroup: string | null;
+  bloodRh: string | null;
+  gender: string;
   dateOfBirth: string;
   citizenId: string;
 }
@@ -84,5 +84,30 @@ export const ProfileService = {
       console.error('Error updating profile:', error);
       throw error;
     }
+  },
+
+  // React Query Hooks
+  useProfile: (isAuthenticated: boolean, isTokenAvailable: boolean) => {
+    return useQuery<CustomerProfile>({
+      queryKey: ["profile"],
+      queryFn: ProfileService.getProfile,
+      enabled: isAuthenticated && isTokenAvailable,
+      retry: false
+    });
+  },
+
+  useUpdateProfile: (onSuccessCallback?: () => void, onErrorCallback?: (error: Error) => void) => {
+    const queryClient = useQueryClient();
+    
+    return useMutation({
+      mutationFn: ProfileService.updateProfile,
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["profile"] });
+        onSuccessCallback?.();
+      },
+      onError: (error) => {
+        onErrorCallback?.(error as Error);
+      }
+    });
   }
 };

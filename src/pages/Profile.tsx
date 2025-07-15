@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { AddressService } from "@/services/AddressService";
 import { ProfileService } from "@/services/ProfileService";
 import type { CustomerProfile } from "@/services/ProfileService";
@@ -22,7 +22,6 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 const Profile = () => {
   const { isAuthenticated, getToken } = useAuthContext();
   const { user } = useUser();
-  const queryClient = useQueryClient();
 
   // Form state
   const [firstName, setFirstName] = useState("");
@@ -35,6 +34,8 @@ const Profile = () => {
   const [isPhoneDialogOpen, setIsPhoneDialogOpen] = useState(false);
   const [newPhone, setNewPhone] = useState("");
   const [isChangingPhone, setIsChangingPhone] = useState(false);
+  const [selectedBloodGroup, setSelectedBloodGroup] = useState<string | null>(null);
+  const [selectedBloodRh, setSelectedBloodRh] = useState<string | null>(null);
 
   // Function to handle opening the phone change dialog
   const handleOpenPhoneDialog = () => {
@@ -52,7 +53,6 @@ const Profile = () => {
     setIsChangingPhone(true);
 
     try {
-      // Use the existing update profile mutation but only update the phone
       await updateProfileMutation.mutateAsync({
         firstName: profile?.firstName || "",
         lastName: profile?.lastName || "",
@@ -65,10 +65,8 @@ const Profile = () => {
         wardName: profile?.wardName || "",
         districtName: profile?.districtName || "",
         provinceName: profile?.provinceName || "",
-        bloodType: {
-          group: profile?.bloodType?.group || "A",
-          rh: profile?.bloodType?.rh || "+"
-        },
+        bloodGroup: selectedBloodGroup,
+        bloodRh: selectedBloodRh,
         gender: profile?.gender || "",
         dateOfBirth: profile?.dateOfBirth || "",
         citizenId: profile?.citizenId || "",
@@ -104,27 +102,19 @@ const Profile = () => {
     }
   }, [isAuthenticated, getToken]);
 
-  // Fetch user profile data
-  const { data: profile, isLoading: isLoadingProfile, error: profileError } = useQuery<CustomerProfile>({
-    queryKey: ["profile"],
-    queryFn: ProfileService.getProfile,
-    enabled: isAuthenticated && isTokenAvailable,
-    retry: false
-  });
+  // Use the new profile hook
+  const { data: profile, isLoading: isLoadingProfile, error: profileError } =
+    ProfileService.useProfile(isAuthenticated, isTokenAvailable);
 
-  // Update profile mutation
-  const updateProfileMutation = useMutation({
-    mutationFn: ProfileService.updateProfile,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["profile"] });
-      toast.success("Profile updated successfully");
-    },
-    onError: (error) => {
-      toast.error("Failed to update profile: " + (error as Error).message);
-    }
-  });
+  // Use the new update profile mutation hook
+  const updateProfileMutation = ProfileService.useUpdateProfile(
+    // onSuccess callback
+    () => toast.success("Profile updated successfully"),
+    // onError callback
+    (error) => toast.error("Failed to update profile: " + error.message)
+  );
 
-  // Using the new query hooks from AddressService
+  // Using the query hooks from AddressService
   const { data: provinces, isLoading: isLoadingProvinces } = AddressService.useProvinces();
   const { data: districts, isLoading: isLoadingDistricts } = AddressService.useDistricts(selectedProvinceId);
   const { data: wards, isLoading: isLoadingWards } = AddressService.useWards(selectedDistrictId);
@@ -135,12 +125,22 @@ const Profile = () => {
       setFirstName(profile.firstName || "");
       setLastName(profile.lastName || "");
 
+      // Set blood type if available
+      if (profile.bloodType) {
+        setSelectedBloodGroup(profile.bloodType.group);
+        setSelectedBloodRh(profile.bloodType.rh);
+      } else {
+        setSelectedBloodGroup(null);
+        setSelectedBloodRh(null);
+      }
+
       // Set province and trigger district fetch
       if (profile.provinceCode) {
         setSelectedProvinceId(profile.provinceCode);
       }
     }
   }, [profile]);
+
 
   // Set district when province is loaded and matches profile
   useEffect(() => {
@@ -193,16 +193,15 @@ const Profile = () => {
         wardName: selectedWard.name,
         districtName: districts?.find(d => d.id === selectedDistrictId)?.name || "",
         provinceName: provinces?.find(p => p.id === selectedProvinceId)?.name || "",
-        bloodType: {
-          group: profile?.bloodType?.group || "A",
-          rh: profile?.bloodType?.rh || "+"
-        },
+        bloodGroup: selectedBloodGroup,
+        bloodRh: selectedBloodRh,
         gender: profile?.gender || "",
         dateOfBirth: profile?.dateOfBirth || "",
         citizenId: profile?.citizenId || "",
       });
     }
   };
+
 
   const handleSaveChanges = () => {
     if (!selectedWardId || !selectedDistrictId || !selectedProvinceId) {
@@ -219,7 +218,6 @@ const Profile = () => {
       return;
     }
 
-
     updateProfileMutation.mutate({
       firstName,
       lastName,
@@ -232,15 +230,14 @@ const Profile = () => {
       wardName: selectedWard.name,
       districtName: selectedDistrict.name,
       provinceName: selectedProvince.name,
-      bloodType: {
-        group: profile?.bloodType?.group || "A",
-        rh: profile?.bloodType?.rh || "+"
-      },
+      bloodGroup: selectedBloodGroup,
+      bloodRh: selectedBloodRh,
       gender: profile?.gender || "",
       dateOfBirth: profile?.dateOfBirth || "",
       citizenId: profile?.citizenId || "",
     });
   };
+
 
   if (!isAuthenticated) {
     return (
@@ -292,10 +289,6 @@ const Profile = () => {
               <AvatarImage src={user.imageUrl} />
               <AvatarFallback className="text-xl">{initials}</AvatarFallback>
             </Avatar>
-            {/* <div className="flex gap-2">
-              <Button variant="outline">Change Image</Button>
-              <Button variant="outline">Remove Image</Button>
-            </div> */}
             <p className="text-sm text-muted-foreground mt-2">
               We support PNGs, JPEGs and GIFs under 2MB
             </p>
@@ -387,13 +380,55 @@ const Profile = () => {
               </Select>
             </div>
 
-
           </div>
+
           <div className="mt-6">
             <label className="text-sm font-medium">Blood Type</label>
-            <div className="mt-1 p-2 border rounded-md bg-gray-50">
-              {profile?.bloodType ? `${profile.bloodType.group}${profile.bloodType.rh}` : 'Not specified'}
+            <div className="flex gap-4 mt-1">
+              <Select
+                value={selectedBloodGroup || "unknown"}
+                onValueChange={(value) => {
+                  if (value === "unknown") {
+                    setSelectedBloodGroup(null);
+                    setSelectedBloodRh(null); // Reset Rh when group is set to unknown
+                  } else {
+                    setSelectedBloodGroup(value);
+                  }
+                }}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Blood Group" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="unknown">Not specified</SelectItem>
+                  <SelectItem value="A">A</SelectItem>
+                  <SelectItem value="B">B</SelectItem>
+                  <SelectItem value="AB">AB</SelectItem>
+                  <SelectItem value="O">O</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select
+                value={selectedBloodRh || "unknown"}
+                onValueChange={(value) => setSelectedBloodRh(value === "unknown" ? null : value)}
+                disabled={!selectedBloodGroup}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Rh Factor" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="unknown">Not specified</SelectItem>
+                  <SelectItem value="+">Positive (+)</SelectItem>
+                  <SelectItem value="-">Negative (-)</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
+
+            <p className="text-sm text-muted-foreground mt-2">
+              {!selectedBloodGroup
+                ? "Select your blood type if known"
+                : `Your selected blood type: ${selectedBloodGroup}${selectedBloodRh || ''}`}
+            </p>
           </div>
 
         </CardContent>
@@ -444,7 +479,6 @@ const Profile = () => {
                   className="flex-1"
                   readOnly
                 />
-                <Button variant="outline">Change password</Button>
               </div>
             </div>
 

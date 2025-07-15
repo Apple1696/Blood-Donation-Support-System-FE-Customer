@@ -45,13 +45,13 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
           shadowColor: 'shadow-blue-500/25',
           label: 'Not Started'
         };
-      case CampaignStatus.ENDED:
-        return {
-          color: 'bg-gray-500/90',
-          borderColor: 'border-gray-400/50',
-          shadowColor: 'shadow-gray-500/25',
-          label: 'Ended'
-        };
+      // case CampaignStatus.ENDED:
+      //   return {
+      //     color: 'bg-gray-500/90',
+      //     borderColor: 'border-gray-400/50',
+      //     shadowColor: 'shadow-gray-500/25',
+      //     label: 'Ended'
+      //   };
       case CampaignStatus.ACTIVE:
       default:
         return {
@@ -158,7 +158,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
             <span>
               {campaign.status === CampaignStatus.ACTIVE && 'Join Campaign'}
               {campaign.status === CampaignStatus.NOT_STARTED && 'Get Notified'}
-              {campaign.status === CampaignStatus.ENDED && 'View Details'}
+              {/* {campaign.status === CampaignStatus.ENDED && 'View Details'} */}
             </span>
           </span>
         </button>
@@ -177,7 +177,7 @@ export default function BloodDonationCampaigns() {
   const [selectedStatuses, setSelectedStatuses] = useState<CampaignStatus[]>([
     CampaignStatus.ACTIVE,
     CampaignStatus.NOT_STARTED,
-    CampaignStatus.ENDED
+    // CampaignStatus.ENDED
   ]);
   
   const sortCampaigns = (campaigns: Campaign[]) => {
@@ -210,7 +210,7 @@ export default function BloodDonationCampaigns() {
   const statusLabels = {
     [CampaignStatus.ACTIVE]: 'Active Campaigns',
     [CampaignStatus.NOT_STARTED]: 'Upcoming Campaigns',
-    [CampaignStatus.ENDED]: 'Past Campaigns'
+    // [CampaignStatus.ENDED]: 'Past Campaigns'
   };
 
   if (isLoading) {
