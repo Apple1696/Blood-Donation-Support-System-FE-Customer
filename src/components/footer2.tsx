@@ -23,43 +23,43 @@ interface Footer2Props {
 const Footer2 = ({
   logo = {
     src: "/images/HomePage/HeartLogo.jpg",
-    alt: "blocks for shadcn/ui",
+    alt: "Hệ thống hỗ trợ hiến máu",
     title: "BloodLink",
     url: "https://www.shadcnblocks.com",
   },
   menuItems = [
     {
-      title: "Product",
+      title: "Sản phẩm",
       links: [
-        { text: "Overview", url: "#" },
-        { text: "Pricing", url: "#" },
-        { text: "Marketplace", url: "#" },
-        { text: "Features", url: "#" },
-        { text: "Integrations", url: "#" },
-        { text: "Pricing", url: "#" },
+        { text: "Tổng quan", url: "#" },
+        { text: "Giá cả", url: "#" },
+        { text: "Thị trường", url: "#" },
+        { text: "Tính năng", url: "#" },
+        { text: "Tích hợp", url: "#" },
+        { text: "Bảng giá", url: "#" },
       ],
     },
     {
-      title: "Company",
+      title: "Công ty",
       links: [
-        { text: "About", url: "#" },
-        { text: "Team", url: "#" },
+        { text: "Giới thiệu", url: "#" },
+        { text: "Đội ngũ", url: "#" },
         { text: "Blog", url: "#" },
-        { text: "Careers", url: "#" },
-        { text: "Contact", url: "#" },
-        { text: "Privacy", url: "#" },
+        { text: "Tuyển dụng", url: "#" },
+        { text: "Liên hệ", url: "#" },
+        { text: "Quyền riêng tư", url: "#" },
       ],
     },
     {
-      title: "Resources",
+      title: "Tài nguyên",
       links: [
-        { text: "Help", url: "#" },
-        { text: "Sales", url: "#" },
-        { text: "Advertise", url: "#" },
+        { text: "Trợ giúp", url: "#" },
+        { text: "Bán hàng", url: "#" },
+        { text: "Quảng cáo", url: "#" },
       ],
     },
     {
-      title: "Social",
+      title: "Mạng xã hội",
       links: [
         { text: "Twitter", url: "#" },
         { text: "Instagram", url: "#" },

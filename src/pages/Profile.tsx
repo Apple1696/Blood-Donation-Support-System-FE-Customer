@@ -46,7 +46,7 @@ const Profile = () => {
   // Function to handle phone number update
   const handleUpdatePhone = async () => {
     if (!newPhone.trim()) {
-      toast.error("Phone number cannot be empty");
+      toast.error("Số điện thoại không được để trống");
       return;
     }
 
@@ -74,9 +74,9 @@ const Profile = () => {
 
       // Close the dialog on success
       setIsPhoneDialogOpen(false);
-      toast.success("Phone number updated successfully");
+      toast.success("Cập nhật số điện thoại thành công");
     } catch (error) {
-      toast.error("Failed to update phone number");
+      toast.error("Không thể cập nhật số điện thoại");
       console.error("Error updating phone:", error);
     } finally {
       setIsChangingPhone(false);
@@ -109,9 +109,9 @@ const Profile = () => {
   // Use the new update profile mutation hook
   const updateProfileMutation = ProfileService.useUpdateProfile(
     // onSuccess callback
-    () => toast.success("Profile updated successfully"),
+    () => toast.success("Hồ sơ đã được cập nhật thành công"),
     // onError callback
-    (error) => toast.error("Failed to update profile: " + error.message)
+    (error) => toast.error("Không thể cập nhật hồ sơ: " + error.message)
   );
 
   // Using the query hooks from AddressService
@@ -205,7 +205,7 @@ const Profile = () => {
 
   const handleSaveChanges = () => {
     if (!selectedWardId || !selectedDistrictId || !selectedProvinceId) {
-      toast.error("Please select all address fields");
+      toast.error("Vui lòng chọn đầy đủ thông tin địa chỉ");
       return;
     }
 
@@ -214,7 +214,7 @@ const Profile = () => {
     const selectedWard = wards?.find(w => w.id === selectedWardId);
 
     if (!selectedProvince || !selectedDistrict || !selectedWard) {
-      toast.error("Invalid address selection");
+      toast.error("Lựa chọn địa chỉ không hợp lệ");
       return;
     }
 
@@ -242,7 +242,7 @@ const Profile = () => {
   if (!isAuthenticated) {
     return (
       <div className="container mx-auto py-8 px-4">
-        <h1 className="text-2xl font-semibold mb-6">Please log in to view your profile</h1>
+        <h1 className="text-2xl font-semibold mb-6">Vui lòng đăng nhập để xem hồ sơ của bạn</h1>
       </div>
     );
   }
@@ -250,7 +250,7 @@ const Profile = () => {
   if (!isTokenAvailable) {
     return (
       <div className="container mx-auto py-8 px-4">
-        <h1 className="text-2xl font-semibold mb-6">Authenticating...</h1>
+        <h1 className="text-2xl font-semibold mb-6">Đang xác thực...</h1>
       </div>
     );
   }
@@ -258,7 +258,7 @@ const Profile = () => {
   if (isLoadingProfile) {
     return (
       <div className="container mx-auto py-8 px-4">
-        <h1 className="text-2xl font-semibold mb-6">Loading profile...</h1>
+        <h1 className="text-2xl font-semibold mb-6">Đang tải hồ sơ...</h1>
       </div>
     );
   }
@@ -266,8 +266,8 @@ const Profile = () => {
   if (profileError) {
     return (
       <div className="container mx-auto py-8 px-4">
-        <h1 className="text-2xl font-semibold mb-6 text-destructive">Error loading profile</h1>
-        <p className="text-muted-foreground">Please try refreshing the page</p>
+        <h1 className="text-2xl font-semibold mb-6 text-destructive">Lỗi khi tải hồ sơ</h1>
+        <p className="text-muted-foreground">Vui lòng thử làm mới trang</p>
       </div>
     );
   }
@@ -280,7 +280,7 @@ const Profile = () => {
 
   return (
     <div className="container mx-auto py-8 px-4">
-      <h1 className="text-2xl font-semibold mb-6">My Profile</h1>
+      <h1 className="text-2xl font-semibold mb-6">Hồ Sơ Của Tôi</h1>
 
       <Card className="mb-8">
         <CardContent className="pt-6">
@@ -289,14 +289,12 @@ const Profile = () => {
               <AvatarImage src={user.imageUrl} />
               <AvatarFallback className="text-xl">{initials}</AvatarFallback>
             </Avatar>
-            <p className="text-sm text-muted-foreground mt-2">
-              We support PNGs, JPEGs and GIFs under 2MB
-            </p>
+           
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
             <div>
-              <label className="text-sm font-medium">First Name</label>
+              <label className="text-sm font-medium">Tên</label>
               <Input
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
@@ -304,7 +302,7 @@ const Profile = () => {
               />
             </div>
             <div>
-              <label className="text-sm font-medium">Last Name</label>
+              <label className="text-sm font-medium">Họ</label>
               <Input
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
@@ -315,14 +313,14 @@ const Profile = () => {
 
           <div className="grid md:grid-cols-3 gap-6 mt-6">
             <div>
-              <label className="text-sm font-medium">Province</label>
+              <label className="text-sm font-medium">Tỉnh/Thành phố</label>
               <Select value={selectedProvinceId} onValueChange={handleProvinceChange}>
                 <SelectTrigger className="mt-1 w-full">
-                  <SelectValue placeholder="Select province" />
+                  <SelectValue placeholder="Chọn tỉnh/thành phố" />
                 </SelectTrigger>
                 <SelectContent>
                   {isLoadingProvinces ? (
-                    <SelectItem value="loading">Loading provinces...</SelectItem>
+                    <SelectItem value="loading">Đang tải dữ liệu...</SelectItem>
                   ) : (
                     provinces?.map((province) => (
                       <SelectItem key={province.id} value={province.id}>
@@ -334,18 +332,18 @@ const Profile = () => {
               </Select>
             </div>
             <div>
-              <label className="text-sm font-medium">District</label>
+              <label className="text-sm font-medium">Quận/Huyện</label>
               <Select
                 value={selectedDistrictId}
                 onValueChange={handleDistrictChange}
                 disabled={!selectedProvinceId}
               >
                 <SelectTrigger className="mt-1 w-full">
-                  <SelectValue placeholder="Select district" />
+                  <SelectValue placeholder="Chọn quận/huyện" />
                 </SelectTrigger>
                 <SelectContent>
                   {isLoadingDistricts ? (
-                    <SelectItem value="loading">Loading districts...</SelectItem>
+                    <SelectItem value="loading">Đang tải dữ liệu...</SelectItem>
                   ) : (
                     districts?.map((district) => (
                       <SelectItem key={district.id} value={district.id}>
@@ -357,18 +355,18 @@ const Profile = () => {
               </Select>
             </div>
             <div>
-              <label className="text-sm font-medium">Ward</label>
+              <label className="text-sm font-medium">Phường/Xã</label>
               <Select
                 value={selectedWardId}
                 onValueChange={handleWardChange}
                 disabled={!selectedDistrictId}
               >
                 <SelectTrigger className="mt-1 w-full">
-                  <SelectValue placeholder="Select ward" />
+                  <SelectValue placeholder="Chọn phường/xã" />
                 </SelectTrigger>
                 <SelectContent>
                   {isLoadingWards ? (
-                    <SelectItem value="loading">Loading wards...</SelectItem>
+                    <SelectItem value="loading">Đang tải dữ liệu...</SelectItem>
                   ) : (
                     wards?.map((ward) => (
                       <SelectItem key={ward.id} value={ward.id}>
@@ -383,7 +381,7 @@ const Profile = () => {
           </div>
 
           <div className="mt-6">
-            <label className="text-sm font-medium">Blood Type</label>
+            <label className="text-sm font-medium">Nhóm máu</label>
             <div className="flex gap-4 mt-1">
               <Select
                 value={selectedBloodGroup || "unknown"}
@@ -397,10 +395,10 @@ const Profile = () => {
                 }}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Blood Group" />
+                  <SelectValue placeholder="Nhóm máu" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="unknown">Not specified</SelectItem>
+                  <SelectItem value="unknown">Chưa xác định</SelectItem>
                   <SelectItem value="A">A</SelectItem>
                   <SelectItem value="B">B</SelectItem>
                   <SelectItem value="AB">AB</SelectItem>
@@ -414,20 +412,20 @@ const Profile = () => {
                 disabled={!selectedBloodGroup}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Rh Factor" />
+                  <SelectValue placeholder="Yếu tố Rh" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="unknown">Not specified</SelectItem>
-                  <SelectItem value="+">Positive (+)</SelectItem>
-                  <SelectItem value="-">Negative (-)</SelectItem>
+                  <SelectItem value="unknown">Chưa xác định</SelectItem>
+                  <SelectItem value="+">Dương (+)</SelectItem>
+                  <SelectItem value="-">Âm (-)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <p className="text-sm text-muted-foreground mt-2">
               {!selectedBloodGroup
-                ? "Select your blood type if known"
-                : `Your selected blood type: ${selectedBloodGroup}${selectedBloodRh || ''}`}
+                ? "Chọn nhóm máu của bạn nếu đã biết. Việc chọn 'Chưa xác định' sẽ xóa thông tin nhóm máu của bạn."
+                : `Nhóm máu đã chọn: ${selectedBloodGroup}${selectedBloodRh || ''}`}
             </p>
           </div>
 
@@ -437,14 +435,14 @@ const Profile = () => {
             onClick={handleSaveChanges}
             disabled={updateProfileMutation.isPending}
           >
-            {updateProfileMutation.isPending ? "Saving..." : "Save Changes"}
+            {updateProfileMutation.isPending ? "Đang lưu..." : "Lưu thay đổi"}
           </Button>
         </div>
       </Card>
 
       <Card className="mb-8">
         <CardContent className="pt-6">
-          <h2 className="text-xl font-semibold mb-4">Account Security</h2>
+          <h2 className="text-xl font-semibold mb-4">Bảo mật tài khoản</h2>
 
           <div className="space-y-6">
             <div>
@@ -459,19 +457,19 @@ const Profile = () => {
             </div>
 
             <div>
-              <label className="text-sm font-medium">Phone Number</label>
+              <label className="text-sm font-medium">Số điện thoại</label>
               <div className="flex gap-4 items-center mt-1">
                 <Input
                   value={profile.phone}
                   className="flex-1"
                   readOnly
                 />
-                <Button variant="outline" onClick={handleOpenPhoneDialog}>Change Phone</Button>
+                <Button variant="outline" onClick={handleOpenPhoneDialog}>Thay đổi SĐT</Button>
               </div>
             </div>
 
             <div>
-              <label className="text-sm font-medium">Password</label>
+              <label className="text-sm font-medium">Mật khẩu</label>
               <div className="flex gap-4 items-center mt-1">
                 <Input
                   type="password"
@@ -490,18 +488,18 @@ const Profile = () => {
       <Dialog open={isPhoneDialogOpen} onOpenChange={setIsPhoneDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Change Phone Number</DialogTitle>
+            <DialogTitle>Thay đổi số điện thoại</DialogTitle>
             <DialogDescription>
-              Enter your new phone number below.
+              Nhập số điện thoại mới của bạn dưới đây.
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <label htmlFor="new-phone" className="text-sm font-medium">New Phone Number</label>
+            <label htmlFor="new-phone" className="text-sm font-medium">Số điện thoại mới</label>
             <Input
               id="new-phone"
               value={newPhone}
               onChange={(e) => setNewPhone(e.target.value)}
-              placeholder="Enter new phone number"
+              placeholder="Nhập số điện thoại mới"
               className="mt-1"
             />
           </div>
@@ -511,13 +509,13 @@ const Profile = () => {
               onClick={() => setIsPhoneDialogOpen(false)}
               disabled={isChangingPhone}
             >
-              Cancel
+              Hủy
             </Button>
             <Button
               onClick={handleUpdatePhone}
               disabled={isChangingPhone}
             >
-              {isChangingPhone ? "Updating..." : "Update Phone"}
+              {isChangingPhone ? "Đang cập nhật..." : "Cập nhật"}
             </Button>
           </DialogFooter>
         </DialogContent>

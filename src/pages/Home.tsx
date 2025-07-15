@@ -12,7 +12,7 @@ export default function Home() {
           fourth: "/images/HomePage/BedPatient.jpg",
         }}
       />
-      <Hero45 heading="Your Blood Donation Journey Starts Here" />
+      <Hero45 heading="Hành Trình Hiến Máu Của Bạn Bắt Đầu Từ Đây" />
       <Gallery6/>
     </>
   )

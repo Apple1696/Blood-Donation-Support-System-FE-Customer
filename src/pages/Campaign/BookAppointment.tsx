@@ -146,7 +146,7 @@ export default function BookAppointment() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              {/* <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="latitude">Vĩ Độ</Label>
                   <Input
@@ -165,7 +165,7 @@ export default function BookAppointment() {
                     className="bg-gray-50"
                   />
                 </div>
-              </div>
+              </div> */}
 
               <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">

@@ -21,12 +21,17 @@ export interface EmergencyRequestPayload {
 export interface EmergencyResponse {
   id: string;
   requestedBy: Record<string, any>;
-  bloodUnit: Record<string, any>;
+  bloodUnit: Record<string, any> | null;
   usedVolume: number;
   requiredVolume: number;
-  bloodType: Record<string, any>;
+  bloodType: {
+    group: string;
+    rh: string;
+  };
   bloodTypeComponent: string;
   status: string;
+  description: string | null;
+  rejectionReason: string | null;
   startDate: string;
   endDate: string;
   wardCode: string;
@@ -80,7 +85,7 @@ const getEmergencyRequests = async (filters?: EmergencyRequestFilters): Promise<
 
 const getEmergencyRequestById = async (id: string): Promise<EmergencyResponse> => {
   const response = await api.get(`/emergency-requests/${id}`);
-  return response.data;
+  return response.data.data; // Return the data property which contains the EmergencyResponse
 };
 
 const updateEmergencyRequest = async ({ 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -6,10 +7,9 @@ import type { BloodInfo } from '@/services/BloodInfoService';
 
 interface BloodTypeCardProps {
   bloodInfo: BloodInfo;
-  onClick: () => void;
 }
 
-const BloodTypeCard: React.FC<BloodTypeCardProps> = ({ bloodInfo, onClick }) => {
+const BloodTypeCard: React.FC<BloodTypeCardProps> = ({ bloodInfo }) => {
   const { group, rh, frequency } = bloodInfo;
   
   // Define blood type background colors
@@ -34,19 +34,20 @@ const BloodTypeCard: React.FC<BloodTypeCardProps> = ({ bloodInfo, onClick }) => 
         <div className="flex justify-between items-center">
           <span className="text-3xl font-bold">{group}{rh}</span>
           <Badge variant={rh === '+' ? 'default' : 'outline'}>
-            {rh === '+' ? 'Positive' : 'Negative'}
+            {rh === '+' ? 'Dương' : 'Âm'}
           </Badge>
         </div>
       </CardHeader>
       <CardContent>
         <p className="text-sm text-muted-foreground mb-4">{frequency}</p>
-        <Button 
-          onClick={onClick}
-          variant="outline"
-          className="w-full"
-        >
-          View Details
-        </Button>
+        <Link to={`/blood-types/${group}/${rh}`}>
+          <Button 
+            variant="outline"
+            className="w-full"
+          >
+            Xem Chi Tiết
+          </Button>
+        </Link>
       </CardContent>
     </Card>
   );

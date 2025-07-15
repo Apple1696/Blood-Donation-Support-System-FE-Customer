@@ -18,7 +18,7 @@ interface Gallery6Props {
 }
 
 const Gallery6 = ({
-  heading = "Current Blood Donation Campaigns",
+  heading = "Các Chiến Dịch Hiến Máu Hiện Tại",
   demoUrl = "/campaigns",
 }: Gallery6Props) => {
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
@@ -58,11 +58,11 @@ const Gallery6 = ({
   }, [carouselApi]);
 
   if (loading) {
-    return <div className="py-32 text-center">Loading campaigns...</div>;
+    return <div className="py-32 text-center">Đang tải chiến dịch...</div>;
   }
 
   if (campaigns.length === 0) {
-    return <div className="py-32 text-center">No campaigns available.</div>;
+    return <div className="py-32 text-center">Không có chiến dịch nào.</div>;
   }
 
   return (
@@ -77,7 +77,7 @@ const Gallery6 = ({
               href={demoUrl}
               className="group inline-flex items-center gap-1 text-sm font-medium md:text-base lg:text-lg"
             >
-              View all campaigns
+              Xem tất cả chiến dịch
               <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-1" />
             </a>
           </div>
@@ -143,7 +143,7 @@ const Gallery6 = ({
                     {campaign.description}
                   </div>
                   <div className="flex items-center text-sm">
-                    Read more{" "}
+                    Xem thêm{" "}
                     <ArrowRight className="ml-2 size-5 transition-transform group-hover:translate-x-1" />
                   </div>
                 </a>

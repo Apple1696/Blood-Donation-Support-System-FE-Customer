@@ -19,30 +19,30 @@ interface Hero45Props {
 }
 
 const Hero45 = ({
-  badge = "Blood Donation Support System",
-  heading = "Your Blood Donation Journey Starts Here",
+  badge = "Hệ Thống Hỗ Trợ Hiến Máu",
+  heading = "Hành Trình Hiến Máu Của Bạn Bắt Đầu Từ Đây",
   imageSrc = "/images/HomePage/Hands.jpg",
-  imageAlt = "Blood donation illustration",
+  imageAlt = "Minh họa hiến máu",
   features = [
     {
       icon: <Calendar className="h-auto w-5" />,
-      title: "Easy Appointment Scheduling",
-      description: "Book your donation slots with just a few clicks, at your convenience."
+      title: "Đặt Lịch Hẹn Dễ Dàng",
+      description: "Đặt lịch hiến máu chỉ với vài cú nhấp chuột, theo sự thuận tiện của bạn."
     },
     {
       icon: <Activity className="h-auto w-5" />,
-      title: "Real-time Blood Bank Inventory",
-      description: "Stay informed about blood type availability and urgent needs in your area."
+      title: "Kho Ngân Hàng Máu Theo Thời Gian Thực",
+      description: "Cập nhật thông tin về tình trạng nhóm máu và nhu cầu khẩn cấp trong khu vực của bạn."
     },
     {
       icon: <HandHelping className="h-auto w-5" />,
-      title: "Donation Tracking and Rewards",
-      description: "Monitor your donation history and earn rewards for your lifesaving contributions."
+      title: "Theo Dõi Hiến Máu và Phần Thưởng",
+      description: "Theo dõi lịch sử hiến máu và nhận phần thưởng cho những đóng góp cứu mạng của bạn."
     },
     {
       icon: <AlertCircle className="h-auto w-5" />,
-      title: "Emergency Blood Requests",
-      description: "Respond quickly to urgent blood needs and help save lives in critical situations."
+      title: "Yêu Cầu Máu Khẩn Cấp",
+      description: "Phản hồi nhanh chóng với nhu cầu máu khẩn cấp và giúp cứu sống trong tình huống nguy cấp."
     }
   ],
 }: Hero45Props) => {

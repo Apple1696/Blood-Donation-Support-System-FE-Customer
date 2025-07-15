@@ -66,27 +66,27 @@ const CompatibilityChart: React.FC<CompatibilityChartProps> = ({ bloodInfo }) =>
     <div>
       <Tabs defaultValue="receive">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="receive">Who Can I Receive From?</TabsTrigger>
-          <TabsTrigger value="donate">Who Can I Donate To?</TabsTrigger>
+          <TabsTrigger value="receive">Tôi có thể nhận từ ai?</TabsTrigger>
+          <TabsTrigger value="donate">Tôi có thể hiến cho ai?</TabsTrigger>
         </TabsList>
         
         <TabsContent value="receive">
           <Card>
             <CardHeader>
-              <CardTitle>Blood Types That Can Donate to {bloodInfo.group}{bloodInfo.rh}</CardTitle>
+              <CardTitle className="text-primary">Nhóm máu có thể hiến cho {bloodInfo.group}{bloodInfo.rh}</CardTitle>
             </CardHeader>
             <CardContent>
               {loading ? (
-                <p>Loading compatibility information...</p>
+                <p>Đang tải thông tin tương thích...</p>
               ) : (
                 <div className="space-y-4">
                   {renderBloodTypeBadges(compatibility.canReceive)}
                   
                   <div className="mt-6 bg-amber-50 p-4 rounded-md">
-                    <h4 className="font-medium text-amber-800 mb-1">Important Note</h4>
+                    <h4 className="font-medium text-amber-800 mb-1">Lưu ý quan trọng</h4>
                     <p className="text-sm text-amber-700">
-                      Compatibility may vary for different blood components. Check the Component 
-                      Compatibility tab for more detailed information.
+                      Khả năng tương thích có thể khác nhau đối với các thành phần máu khác nhau. Kiểm tra 
+                      tab Tương thích thành phần để biết thông tin chi tiết hơn.
                     </p>
                   </div>
                 </div>
@@ -98,20 +98,20 @@ const CompatibilityChart: React.FC<CompatibilityChartProps> = ({ bloodInfo }) =>
         <TabsContent value="donate">
           <Card>
             <CardHeader>
-              <CardTitle>{bloodInfo.group}{bloodInfo.rh} Can Donate To These Blood Types</CardTitle>
+              <CardTitle className='text-primary'>{bloodInfo.group}{bloodInfo.rh} có thể hiến cho các nhóm máu này</CardTitle>
             </CardHeader>
             <CardContent>
               {loading ? (
-                <p>Loading compatibility information...</p>
+                <p>Đang tải thông tin tương thích...</p>
               ) : (
                 <div className="space-y-4">
                   {renderBloodTypeBadges(compatibility.canDonate)}
                   
                   <div className="mt-6 bg-amber-50 p-4 rounded-md">
-                    <h4 className="font-medium text-amber-800 mb-1">Important Note</h4>
+                    <h4 className="font-medium text-amber-800 mb-1">Lưu ý quan trọng</h4>
                     <p className="text-sm text-amber-700">
-                      Compatibility may vary for different blood components. Check the Component 
-                      Compatibility tab for more detailed information.
+                      Khả năng tương thích có thể khác nhau đối với các thành phần máu khác nhau. Kiểm tra 
+                      tab Tương thích thành phần để biết thông tin chi tiết hơn.
                     </p>
                   </div>
                 </div>

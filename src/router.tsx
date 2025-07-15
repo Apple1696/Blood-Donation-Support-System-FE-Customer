@@ -17,6 +17,8 @@ import { BlogDetail } from './components/BlogDetail'
 import BloodInfoPage2 from './pages/BloodInfo/BloodInfo'
 import RequestEmergency from './pages/Emergency/RequestEmergency'
 import EmergencyList from './pages/Emergency/EmergencyList'
+import EmergencyDetail from './pages/Emergency/EmergencyDetail'
+import BloodTypeDetail from './pages/BloodTypes/BloodTypeDetail'
 
 export const router = createBrowserRouter([
   {
@@ -79,6 +81,10 @@ export const router = createBrowserRouter([
         element: <BloodInfoPage />
       },
       {
+        path: 'blood-types/:group/:rh',
+        element: <BloodTypeDetail />
+      },
+      {
         path: 'blood-components',
         element: <BloodComponents />
       },
@@ -101,6 +107,10 @@ export const router = createBrowserRouter([
       {
         path: 'view-requests',
         element: <EmergencyList />
+      },
+      {
+        path: 'emergency/:id',
+        element: <EmergencyDetail />
       }
     
     ]

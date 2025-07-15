@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import type { BloodComponentCompatibility } from '@/services/BloodInfoService';
 import type { BloodInfo } from '@/services/BloodInfoService';
 import { Badge } from '@/components/ui/badge';
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 
 interface ComponentCompatibilityProps {
   compatibility: BloodComponentCompatibility[];
@@ -11,14 +12,37 @@ interface ComponentCompatibilityProps {
 
 // Component name explanations
 const componentDescriptions: Record<string, string> = {
-  plasma: "Liquid part of blood containing proteins and antibodies. Used for clotting disorders, immune deficiencies, and trauma.",
-  platelets: "Cell fragments that help with blood clotting. Used for cancer patients, surgeries, and bleeding disorders.",
-  red_cells: "Carry oxygen throughout the body. Used for anemia, blood loss, and many surgeries.",
-  whole_blood: "Complete blood with all components. Used in trauma, acute blood loss, and some surgeries."
+  plasma: "Phần lỏng của máu chứa protein và kháng thể. Được sử dụng cho rối loạn đông máu, suy giảm miễn dịch và chấn thương.",
+  platelets: "Các mảnh tế bào giúp đông máu. Được sử dụng cho bệnh nhân ung thư, phẫu thuật và rối loạn chảy máu.",
+  red_cells: "Vận chuyển oxy khắp cơ thể. Được sử dụng cho thiếu máu, mất máu và nhiều ca phẫu thuật.",
+  whole_blood: "Máu toàn phần với tất cả các thành phần. Được sử dụng trong chấn thương, mất máu cấp tính và một số ca phẫu thuật."
+};
+
+// Color mapping for blood types
+const getBloodTypeColor = (group: string, rh: string): string => {
+  if (group === 'O') {
+    return rh === '+' ? '#ef4444' : '#fca5a5';  // Red tones
+  } else if (group === 'A') {
+    return rh === '+' ? '#3b82f6' : '#93c5fd';  // Blue tones
+  } else if (group === 'B') {
+    return rh === '+' ? '#22c55e' : '#86efac';  // Green tones
+  } else if (group === 'AB') {
+    return rh === '+' ? '#8b5cf6' : '#c4b5fd';  // Purple tones
+  }
+  return '#d1d5db';  // Default gray
 };
 
 const ComponentCompatibility: React.FC<ComponentCompatibilityProps> = ({ compatibility }) => {
   const [activeTab, setActiveTab] = useState('plasma');
+  const [donorChartData, setDonorChartData] = useState<any[]>([]);
+  const [recipientChartData, setRecipientChartData] = useState<any[]>([]);
+
+  // Find the selected component data
+  const getSelectedComponentData = () => {
+    return compatibility.find((comp) => comp.componentType === activeTab);
+  };
+
+  const selectedComponent = getSelectedComponentData();
 
   // Function to render blood type list
   const renderBloodTypeList = (bloodTypes: BloodInfo[]) => {
@@ -47,21 +71,87 @@ const ComponentCompatibility: React.FC<ComponentCompatibilityProps> = ({ compati
     });
   };
 
-  // Find the selected component data
-  const getSelectedComponentData = () => {
-    return compatibility.find((comp) => comp.componentType === activeTab);
-  };
+  // Prepare chart data when the selected component changes
+  useEffect(() => {
+    if (!selectedComponent) return;
 
-  const selectedComponent = getSelectedComponentData();
+    // Process donor data
+    const donors = [...selectedComponent.compatibleDonors];
+    const donorFrequencies = donors.map(donor => {
+      // Extract the numerical percentage from the frequency string (e.g., "7% of population")
+      const match = donor.frequency.match(/(\d+(?:\.\d+)?)%/);
+      const percentage = match ? parseFloat(match[1]) : 0;
+      
+      return {
+        name: `${donor.group}${donor.rh}`,
+        value: percentage,
+        fullText: donor.frequency
+      };
+    });
+    
+    // Calculate total percentage covered by compatible donors
+    const totalDonorPercentage = donorFrequencies.reduce((sum, item) => sum + item.value, 0);
+    
+    // Add "Others" segment if total is less than 100%
+    if (totalDonorPercentage < 100) {
+      donorFrequencies.push({
+        name: 'Không tương thích',
+        value: 100 - totalDonorPercentage,
+        fullText: `${(100 - totalDonorPercentage).toFixed(1)}% dân số`
+      });
+    }
+    
+    setDonorChartData(donorFrequencies);
+
+    // Process recipient data
+    const recipients = [...selectedComponent.compatibleRecipients];
+    const recipientFrequencies = recipients.map(recipient => {
+      const match = recipient.frequency.match(/(\d+(?:\.\d+)?)%/);
+      const percentage = match ? parseFloat(match[1]) : 0;
+      
+      return {
+        name: `${recipient.group}${recipient.rh}`,
+        value: percentage,
+        fullText: recipient.frequency
+      };
+    });
+    
+    // Calculate total percentage covered by compatible recipients
+    const totalRecipientPercentage = recipientFrequencies.reduce((sum, item) => sum + item.value, 0);
+    
+    // Add "Others" segment if total is less than 100%
+    if (totalRecipientPercentage < 100) {
+      recipientFrequencies.push({
+        name: 'Không tương thích',
+        value: 100 - totalRecipientPercentage,
+        fullText: `${(100 - totalRecipientPercentage).toFixed(1)}% dân số`
+      });
+    }
+    
+    setRecipientChartData(recipientFrequencies);
+  }, [selectedComponent]);
+
+  // Custom tooltip for the charts
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white p-2 border rounded shadow-md">
+          <p className="font-medium">{payload[0].name}</p>
+          <p className="text-sm">{payload[0].payload.fullText}</p>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className="space-y-6">
       <Card>
         <CardContent className="pt-6">
-          <p className="text-muted-foreground">
-            Blood component compatibility is more specific than whole blood compatibility. 
-            Different components have different compatibility rules depending on the antigens 
-            and antibodies they contain.
+          <p className="text-muted-foreground text-primary">
+            Khả năng tương thích của các thành phần máu cụ thể hơn so với tương thích của máu toàn phần. 
+            Các thành phần khác nhau có các quy tắc tương thích khác nhau tùy thuộc vào kháng nguyên 
+            và kháng thể mà chúng chứa.
           </p>
         </CardContent>
       </Card>
@@ -83,31 +173,87 @@ const ComponentCompatibility: React.FC<ComponentCompatibilityProps> = ({ compati
           <>
             <CardDescription className="mb-4">
               {componentDescriptions[selectedComponent.componentType] || 
-                `${selectedComponent.componentType.replace('_', ' ')} compatibility information`}
+                `Thông tin tương thích ${selectedComponent.componentType.replace('_', ' ')}`}
             </CardDescription>
             
             <div className="grid md:grid-cols-2 gap-4">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Compatible Donors</CardTitle>
+                  <CardTitle className="text-lg text-primary">Người hiến tương thích</CardTitle>
                   <CardDescription>
-                    These blood types can donate {selectedComponent.componentType.replace('_', ' ')} to your blood type
+                    Những nhóm máu này có thể hiến {selectedComponent.componentType.replace('_', ' ')} cho nhóm máu của bạn
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {renderBloodTypeList(selectedComponent.compatibleDonors)}
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={donorChartData}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                          outerRadius={80}
+                          fill="#8884d8"
+                          dataKey="value"
+                        >
+                          {donorChartData.map((entry, index) => {
+                            // Use custom color for blood types, gray for "Not Compatible"
+                            const color = entry.name === 'Không tương thích' 
+                              ? '#d1d5db' 
+                              : getBloodTypeColor(entry.name.charAt(0), entry.name.charAt(1));
+                            return <Cell key={`cell-${index}`} fill={color} />;
+                          })}
+                        </Pie>
+                        <Tooltip content={<CustomTooltip />} />
+                        <Legend />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div className="mt-4 max-h-40 overflow-y-auto">
+                    {renderBloodTypeList(selectedComponent.compatibleDonors)}
+                  </div>
                 </CardContent>
               </Card>
               
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Compatible Recipients</CardTitle>
+                  <CardTitle className="text-lg text-primary">Người nhận tương thích</CardTitle>
                   <CardDescription>
-                    Your blood type can donate {selectedComponent.componentType.replace('_', ' ')} to these blood types
+                    Nhóm máu của bạn có thể hiến {selectedComponent.componentType.replace('_', ' ')} cho những nhóm máu này
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {renderBloodTypeList(selectedComponent.compatibleRecipients)}
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={recipientChartData}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                          outerRadius={80}
+                          fill="#8884d8"
+                          dataKey="value"
+                        >
+                          {recipientChartData.map((entry, index) => {
+                            // Use custom color for blood types, gray for "Not Compatible"
+                            const color = entry.name === 'Không tương thích' 
+                              ? '#d1d5db' 
+                              : getBloodTypeColor(entry.name.charAt(0), entry.name.charAt(1));
+                            return <Cell key={`cell-${index}`} fill={color} />;
+                          })}
+                        </Pie>
+                        <Tooltip content={<CustomTooltip />} />
+                        <Legend />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div className="mt-4 max-h-40 overflow-y-auto">
+                    {renderBloodTypeList(selectedComponent.compatibleRecipients)}
+                  </div>
                 </CardContent>
               </Card>
             </div>

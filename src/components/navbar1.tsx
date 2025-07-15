@@ -164,7 +164,7 @@ const Navbar1 = ({
       url: "/blog",
     },
     {
-      title: "Emergency",
+      title: "Khẩn Cấp",
       url: "/",
       items: [
         {
@@ -218,13 +218,13 @@ const Navbar1 = ({
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
-            <a href="/profile">Profile</a>
+            <a href="/profile">Hồ sơ</a>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <a href="/donation-history">Donation History</a>
+            <a href="/donation-history">Lịch sử hiến máu </a>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={handleSignOut}>
-            Sign out
+            Đăng xuất 
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

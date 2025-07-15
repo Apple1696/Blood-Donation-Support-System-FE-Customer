@@ -220,7 +220,7 @@ const InformationPanel = ({ bloodType }) => {
               className="p-4 bg-accent/10 rounded-lg border border-accent/20"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.2 }}
+              transition={{ delay: 0.5 }}
             >
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -256,7 +256,7 @@ const InformationPanel = ({ bloodType }) => {
               className="p-4 bg-accent/10 rounded-lg border border-accent/20"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.2 }}
+              transition={{ delay: 0.5 }}
             >
               <div className="grid grid-cols-2 gap-4">
                 <div>
