@@ -178,24 +178,7 @@ const EmergencyDetail: React.FC = () => {
 
         {/* Side Info Card */}
         <div className="space-y-6">
-          {emergency.requestedBy && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Requested By</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <p className="font-medium">{emergency.requestedBy.name || "Unknown"}</p>
-                  {emergency.requestedBy.email && (
-                    <p className="text-sm text-muted-foreground">{emergency.requestedBy.email}</p>
-                  )}
-                  {emergency.requestedBy.phone && (
-                    <p className="text-sm text-muted-foreground">{emergency.requestedBy.phone}</p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          )}
+        
 
           {emergency.bloodUnit && (
             <Card>

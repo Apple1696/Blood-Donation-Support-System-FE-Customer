@@ -32,18 +32,18 @@ import * as z from "zod";
 
 // Form schema validation
 const formSchema = z.object({
-  bloodGroup: z.string().min(1, "Blood group is required"),
-  bloodRh: z.string().min(1, "Blood Rh is required"),
-  bloodTypeComponent: z.string().min(1, "Blood component is required"),
-  requiredVolume: z.coerce.number().min(1, "Required volume must be at least 1"),
-  provinceCode: z.string().min(1, "Province is required"),
-  districtCode: z.string().min(1, "District is required"),
-  wardCode: z.string().min(1, "Ward is required"),
+  bloodGroup: z.string().min(1, "Nhóm máu là bắt buộc"),
+  bloodRh: z.string().min(1, "Yếu tố Rh là bắt buộc"),
+  bloodTypeComponent: z.string().min(1, "Thành phần máu là bắt buộc"),
+  requiredVolume: z.coerce.number().min(1, "Thể tích yêu cầu phải ít nhất là 1"),
+  provinceCode: z.string().min(1, "Tỉnh/Thành phố là bắt buộc"),
+  districtCode: z.string().min(1, "Quận/Huyện là bắt buộc"),
+  wardCode: z.string().min(1, "Phường/Xã là bắt buộc"),
   provinceName: z.string(),
   districtName: z.string(),
   wardName: z.string(),
-  longitude: z.string().min(1, "Longitude is required"),
-  latitude: z.string().min(1, "Latitude is required"),
+  longitude: z.string().min(1, "Kinh độ là bắt buộc"),
+  latitude: z.string().min(1, "Vĩ độ là bắt buộc"),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -64,10 +64,10 @@ const RequestEmergency = () => {
   const bloodGroups = ["A", "B", "AB", "O"];
   const bloodRhTypes = ["+", "-"];
   const bloodComponents = [
-    { id: "whole_blood", name: "Whole Blood" },
-    { id: "red_cells", name: "Red Blood Cells" },
-    { id: "platelets", name: "Platelets" },
-    { id: "plasma", name: "Plasma" }
+    { id: "whole_blood", name: "Máu toàn phần" },
+    { id: "red_cells", name: "Hồng cầu" },
+    { id: "platelets", name: "Tiểu cầu" },
+    { id: "plasma", name: "Huyết tương" }
   ];
 
   // Setup form
@@ -150,8 +150,8 @@ const RequestEmergency = () => {
     console.log("Submitting emergency request with values:", values);
     createEmergencyMutation.mutate(values as EmergencyRequestPayload, {
       onSuccess: () => {
-        toast.success("Emergency blood request created successfully", {
-          description: "Healthcare providers have been notified",
+        toast.success("Yêu cầu máu khẩn cấp đã được tạo thành công", {
+          description: "Các nhà cung cấp dịch vụ y tế đã được thông báo",
         });
         form.reset();
         setSelectedProvinceId("");
@@ -161,7 +161,7 @@ const RequestEmergency = () => {
         queryClient.invalidateQueries({ queryKey: ["emergencyRequests"] });
       },
       onError: (error) => {
-        toast.error("Failed to create emergency request", {
+        toast.error("Không thể tạo yêu cầu khẩn cấp", {
           description: (error as Error).message,
         });
       }
@@ -173,8 +173,8 @@ const RequestEmergency = () => {
       <div className="container mx-auto py-8">
         <Card>
           <CardHeader>
-            <CardTitle>Authentication Required</CardTitle>
-            <CardDescription>You need to be logged in to request emergency blood.</CardDescription>
+            <CardTitle>Yêu cầu xác thực</CardTitle>
+            <CardDescription>Bạn cần đăng nhập để yêu cầu máu khẩn cấp.</CardDescription>
           </CardHeader>
         </Card>
       </div>
@@ -186,10 +186,10 @@ const RequestEmergency = () => {
     <Card className="max-w-2xl mx-auto shadow-xl border-2 border-primary/20 overflow-hidden">
     <CardHeader className="py-2">
         <div className="flex items-center gap-3 mb-1">
-          <CardTitle className="text-3xl text-primary font-bold">Emergency Blood Request</CardTitle>
+          <CardTitle className="text-3xl text-primary font-bold">Yêu Cầu Máu Khẩn Cấp</CardTitle>
         </div>
         <CardDescription className="text-muted-foreground text-lg">
-          Critical need for blood donation - please complete all fields below
+          Nhu cầu cấp thiết về hiến máu - vui lòng điền đầy đủ thông tin dưới đây
         </CardDescription>
       </CardHeader>
       
@@ -208,10 +208,10 @@ const RequestEmergency = () => {
                     <path d="M17 16v5h5"></path>
                   </svg>
                 </span>
-                Blood Type Required
+                Nhóm Máu Cần Thiết
               </h3>
               <p className="text-sm text-muted-foreground">
-                Specify the exact blood type needed for this emergency situation
+                Chỉ rõ loại máu chính xác cần thiết cho tình huống khẩn cấp này
               </p>
             </div>
 
@@ -221,14 +221,14 @@ const RequestEmergency = () => {
                 name="bloodGroup"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
-                    <FormLabel className="font-medium">Blood Group</FormLabel>
+                    <FormLabel className="font-medium">Nhóm máu</FormLabel>
                     <Select 
                       onValueChange={field.onChange} 
                       defaultValue={field.value}
                     >
                       <FormControl>
                         <SelectTrigger className="bg-muted/50">
-                          <SelectValue placeholder="Select blood group" />
+                          <SelectValue placeholder="Chọn nhóm máu" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -247,14 +247,14 @@ const RequestEmergency = () => {
                 name="bloodRh"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
-                    <FormLabel className="font-medium">Rh Factor</FormLabel>
+                    <FormLabel className="font-medium">Yếu tố Rh</FormLabel>
                     <Select 
                       onValueChange={field.onChange} 
                       defaultValue={field.value}
                     >
                       <FormControl>
                         <SelectTrigger className="bg-muted/50">
-                          <SelectValue placeholder="Select Rh" />
+                          <SelectValue placeholder="Chọn Rh" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -273,14 +273,14 @@ const RequestEmergency = () => {
                 name="bloodTypeComponent"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
-                    <FormLabel className="font-medium">Blood Component</FormLabel>
+                    <FormLabel className="font-medium">Thành phần máu</FormLabel>
                     <Select 
                       onValueChange={field.onChange} 
                       defaultValue={field.value}
                     >
                       <FormControl>
                         <SelectTrigger className="bg-muted/50">
-                          <SelectValue placeholder="Select component" />
+                          <SelectValue placeholder="Chọn thành phần" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -302,18 +302,18 @@ const RequestEmergency = () => {
               name="requiredVolume"
               render={({ field }) => (
                 <FormItem className="space-y-2">
-                  <FormLabel className="font-medium">Required Volume (ml)</FormLabel>
+                  <FormLabel className="font-medium">Thể tích cần thiết (ml)</FormLabel>
                   <FormControl>
                     <Input 
                       type="number" 
-                      placeholder="Enter required volume" 
+                      placeholder="Nhập thể tích cần thiết" 
                       {...field}
                       min={1}
                       className="bg-muted/50"
                     />
                   </FormControl>
                   <FormDescription className="text-sm">
-                    Specify the volume of blood needed in milliliters
+                    Chỉ định thể tích máu cần thiết tính bằng mililít
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -329,10 +329,10 @@ const RequestEmergency = () => {
                     <path d="M9.17 15.5c.15.2.33.38.53.52a2.5 2.5 0 0 0 4.6 0 2.63 2.63 0 0 0 .53-.52"></path>
                   </svg>
                 </span>
-                Location Details
+                Chi tiết địa điểm
               </h3>
               <p className="text-sm text-muted-foreground">
-                Select the exact location where the blood is urgently needed
+                Chọn vị trí chính xác nơi cần máu khẩn cấp
               </p>
             </div>
 
@@ -342,19 +342,19 @@ const RequestEmergency = () => {
                 name="provinceCode"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
-                    <FormLabel className="font-medium">Province</FormLabel>
+                    <FormLabel className="font-medium">Tỉnh/Thành phố</FormLabel>
                     <Select 
                       onValueChange={handleProvinceChange} 
                       defaultValue={field.value}
                     >
                       <FormControl>
                         <SelectTrigger className="bg-muted/50">
-                          <SelectValue placeholder="Select province" />
+                          <SelectValue placeholder="Chọn tỉnh/thành phố" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         {isLoadingProvinces ? (
-                          <SelectItem value="loading" disabled>Loading provinces...</SelectItem>
+                          <SelectItem value="loading" disabled>Đang tải dữ liệu...</SelectItem>
                         ) : (
                           provinces?.map((province) => (
                             <SelectItem key={province.id} value={province.id}>
@@ -374,7 +374,7 @@ const RequestEmergency = () => {
                 name="districtCode"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
-                    <FormLabel className="font-medium">District</FormLabel>
+                    <FormLabel className="font-medium">Quận/Huyện</FormLabel>
                     <Select 
                       onValueChange={handleDistrictChange} 
                       defaultValue={field.value}
@@ -382,12 +382,12 @@ const RequestEmergency = () => {
                     >
                       <FormControl>
                         <SelectTrigger className={`bg-muted/50 ${!selectedProvinceId ? 'opacity-60' : ''}`}>
-                          <SelectValue placeholder="Select district" />
+                          <SelectValue placeholder="Chọn quận/huyện" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         {isLoadingDistricts ? (
-                          <SelectItem value="loading" disabled>Loading districts...</SelectItem>
+                          <SelectItem value="loading" disabled>Đang tải dữ liệu...</SelectItem>
                         ) : (
                           districts?.map((district) => (
                             <SelectItem key={district.id} value={district.id}>
@@ -407,7 +407,7 @@ const RequestEmergency = () => {
                 name="wardCode"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
-                    <FormLabel className="font-medium">Ward</FormLabel>
+                    <FormLabel className="font-medium">Phường/Xã</FormLabel>
                     <Select 
                       onValueChange={handleWardChange} 
                       defaultValue={field.value}
@@ -415,12 +415,12 @@ const RequestEmergency = () => {
                     >
                       <FormControl>
                         <SelectTrigger className={`bg-muted/50 ${!selectedDistrictId ? 'opacity-60' : ''}`}>
-                          <SelectValue placeholder="Select ward" />
+                          <SelectValue placeholder="Chọn phường/xã" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         {isLoadingWards ? (
-                          <SelectItem value="loading" disabled>Loading wards...</SelectItem>
+                          <SelectItem value="loading" disabled>Đang tải dữ liệu...</SelectItem>
                         ) : (
                           wards?.map((ward) => (
                             <SelectItem key={ward.id} value={ward.id}>
@@ -462,7 +462,7 @@ const RequestEmergency = () => {
               disabled={createEmergencyMutation.isPending}
               className="border-2 hover:bg-background/80"
             >
-              Cancel
+              Hủy bỏ
             </Button>
             <Button 
               type="submit" 
@@ -474,12 +474,12 @@ const RequestEmergency = () => {
                   <svg className="animate-spin" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
                   </svg>
-                  Processing...
+                  Đang xử lý...
                 </span>
               ) : (
                 <span className="flex items-center gap-2">
                   
-                  Submit Emergency Request
+                  Gửi yêu cầu khẩn cấp
                 </span>
               )}
             </Button>
