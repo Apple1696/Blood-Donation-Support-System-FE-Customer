@@ -1,4 +1,5 @@
-import axios from "axios";
+import axios from 'axios';
+import type { AxiosRequestHeaders } from "axios";
 import { Mutex } from 'async-mutex';
 
 declare global {
@@ -25,26 +26,28 @@ api.interceptors.request.use(
         // Acquire mutex lock for token operations
         const release = await tokenMutex.acquire();
         
-        try {
-            // This will be set by the auth context
-            const getToken = window.clerkGetToken;
-            if (getToken) {
-                const token = await getToken();
-                console.log('Token:', token);
-                if (token) {
-                    // Ensure headers object exists
-                    config.headers = config.headers || {};
-                    config.headers.Authorization = `Bearer ${token}`;
-                }
+     try {
+    // This will be set by the auth context
+    const getToken = window.clerkGetToken;
+    if (getToken) {
+        const token = await getToken();
+        console.log('Token:', token);
+        if (token) {
+            // Use type assertion to make TypeScript happy
+            if (!config.headers) {
+                config.headers = {} as AxiosRequestHeaders;
             }
-            return config;
-        } catch (error) {
-            console.error('Error getting Clerk token:', error);
-            return config;
-        } finally {
-            // Always release the mutex lock
-            release();
+            config.headers['Authorization'] = `Bearer ${token}`;
         }
+    }
+    return config;
+} catch (error) {
+    console.error('Error getting Clerk token:', error);
+    return config;
+} finally {
+    // Always release the mutex lock
+    release();
+}
     },
     (error) => {
         return Promise.reject(error);

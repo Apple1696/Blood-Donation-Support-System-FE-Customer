@@ -94,7 +94,7 @@ const BloodInfoPage: React.FC = () => {
       </h1>
 
       {/* Search Bar */}
-      <div className="flex justify-center mb-8">
+      {/* <div className="flex justify-center mb-8">
         <div className="flex w-full max-w-sm items-center space-x-2">
           <Input
             type="text"
@@ -105,7 +105,7 @@ const BloodInfoPage: React.FC = () => {
           />
           <Button type="submit" onClick={handleSearch}>Search</Button>
         </div>
-      </div>
+      </div> */}
 
       {loading ? (
         <div className="flex justify-center my-8">
