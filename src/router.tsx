@@ -16,6 +16,7 @@ import { Blog } from './components/Blog'
 import { BlogDetail } from './components/BlogDetail'
 import BloodInfoPage2 from './pages/BloodInfo/BloodInfo'
 import RequestEmergency from './pages/Emergency/RequestEmergency'
+import EmergencyList from './pages/Emergency/EmergencyList'
 
 export const router = createBrowserRouter([
   {
@@ -96,6 +97,10 @@ export const router = createBrowserRouter([
       {
         path: 'request-emergency',
         element: <RequestEmergency />
+      },
+      {
+        path: 'view-requests',
+        element: <EmergencyList />
       }
     
     ]

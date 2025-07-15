@@ -40,7 +40,7 @@ const handleSelect = (newDate: Date) => {
   return (
     <div className="grid gap-2">
       <Label htmlFor="date">
-        Date of Birth
+        Ngày Sinh
       </Label>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>

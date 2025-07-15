@@ -22,37 +22,36 @@ const BloodDonationAnimation = () => {
 
   // Animation variants for the connecting lines
   const lineVariants = {
-    hidden: { 
-      pathLength: 0,
-      opacity: 0
-    },
-    visible: { 
-      pathLength: 1,
-      opacity: 1,
-      transition: {
-        duration: 0.8,
-        ease: "easeInOut"
-      }
+  hidden: { 
+    pathLength: 0,
+    opacity: 0
+  },
+  visible: { 
+    pathLength: 1,
+    opacity: 1,
+    transition: {
+      duration: 0.8,
+      ease: "easeInOut" as const
     }
-  };
+  }
+};
 
   // Animation variants for the recipient circles
-  const recipientVariants = {
-    hidden: { 
-      scale: 0,
-      opacity: 0
-    },
-    visible: { 
-      scale: 1,
-      opacity: 1,
-      transition: {
-        duration: 0.5,
-        delay: 0.4,
-        ease: "easeOut"
-      }
+ const recipientVariants = {
+  hidden: { 
+    scale: 0,
+    opacity: 0
+  },
+  visible: { 
+    scale: 1,
+    opacity: 1,
+    transition: {
+      duration: 0.5,
+      delay: 0.4,
+      ease: "easeOut" as const
     }
-  };
-
+  }
+};
   const donors = ['O', 'A', 'B', 'AB'];
   const recipients = ['O', 'A', 'B', 'AB'];
   

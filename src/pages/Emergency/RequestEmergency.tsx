@@ -184,8 +184,8 @@ const RequestEmergency = () => {
  return (
   <div className="container mx-auto py-10">
     <Card className="max-w-2xl mx-auto shadow-xl border-2 border-primary/20 overflow-hidden">
-    <CardHeader className="py-8">
-        <div className="flex items-center gap-3 mb-2">
+    <CardHeader className="py-2">
+        <div className="flex items-center gap-3 mb-1">
           <CardTitle className="text-3xl text-primary font-bold">Emergency Blood Request</CardTitle>
         </div>
         <CardDescription className="text-muted-foreground text-lg">
@@ -195,7 +195,7 @@ const RequestEmergency = () => {
       
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <CardContent className="space-y-8 pt-8">
+          <CardContent className="space-y-6 pt-4">
             <div className="space-y-2">
               <h3 className="font-medium text-xl text-primary flex items-center gap-2">
                 <span className="p-1.5 rounded-md bg-destructive/10 text-destructive inline-flex">

@@ -8,18 +8,17 @@ const BloodTypeButton = ({ type, isSelected, onClick, className = "" }) => (
   <Button
     variant={isSelected ? "default" : "outline"}
     onClick={() => onClick(type)}
-    className={`w-14 h-14 text-base font-medium rounded-full ${
-      isSelected 
-        ? 'bg-primary hover:bg-primary/90 text-primary-foreground shadow-md' 
+    className={`w-14 h-14 text-base font-medium rounded-full ${isSelected
+        ? 'bg-primary hover:bg-primary/90 text-primary-foreground shadow-md'
         : 'border-primary/30 hover:border-primary/70 hover:bg-accent text-foreground'
-    } ${className}`}
+      } ${className}`}
   >
     {type}
   </Button>
 );
 
 const ParentFigure = ({ bloodType, parentNumber }) => (
-  <motion.div 
+  <motion.div
     className="flex flex-col items-center space-y-4"
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
@@ -35,7 +34,7 @@ const ParentFigure = ({ bloodType, parentNumber }) => (
         <div className="w-10 h-10 bg-secondary rounded-full absolute -top-5 left-1/2 transform -translate-x-1/2 shadow-sm"></div>
         {/* Blood type label */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <motion.span 
+          <motion.span
             className="text-4xl font-bold text-foreground bg-background border-2 border-primary rounded-full w-14 h-14 flex items-center justify-center shadow-lg"
             key={bloodType}
             initial={{ scale: 0.8 }}
@@ -53,7 +52,7 @@ const ParentFigure = ({ bloodType, parentNumber }) => (
 );
 
 const PossibleChildrenDisplay = ({ possibleTypes }) => (
-  <motion.div 
+  <motion.div
     className="flex flex-col items-center space-y-4"
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
@@ -71,7 +70,7 @@ const PossibleChildrenDisplay = ({ possibleTypes }) => (
         <div className="absolute inset-0 flex items-center justify-center p-2">
           <div className="text-center">
             {possibleTypes.map((type, index) => (
-              <motion.span 
+              <motion.span
                 key={type}
                 className="inline-block mx-1 text-2xl font-bold"
                 initial={{ opacity: 0 }}
@@ -112,7 +111,7 @@ const BloodTypeCalculator = () => {
     const p2Alleles = genetics[p2] || ['O', 'O'];
 
     const possibleCombinations = [];
-    
+
     for (let allele1 of p1Alleles) {
       for (let allele2 of p2Alleles) {
         const combination = [allele1, allele2].sort();
@@ -141,7 +140,7 @@ const BloodTypeCalculator = () => {
 
   return (
     <div className="max-w-6xl mx-auto p-6 min-h-screen">
-      <motion.h1 
+      <motion.h1
         className="text-3xl font-bold text-center mb-8 text-primary"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -150,7 +149,7 @@ const BloodTypeCalculator = () => {
         How Is My Blood Type Determined?
       </motion.h1>
 
-        <motion.p 
+      <motion.p
         className="text-foreground text-center mx-auto max-w-3xl mb-8 bg-accent/5 p-4 rounded-lg border border-accent/10"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -158,7 +157,7 @@ const BloodTypeCalculator = () => {
       >
         It's inherited. Like eye color, blood type is passed genetically from your parents. Whether your blood group is type A, B, AB or O is based on the blood types of your mother and father.
       </motion.p>
-      
+
       <Card className="bg-card shadow-xl border border-border">
         <CardHeader className="border-b border-border/30">
           <CardTitle className="text-2xl font-bold text-center">Blood Type Inheritance Calculator</CardTitle>
@@ -226,23 +225,23 @@ const BloodTypeCalculator = () => {
               <span className="inline-block w-3 h-3 rounded-full bg-primary"></span>
               Current Combination:
             </h4>
-            
+
             <div className="flex flex-wrap items-center justify-center gap-2 md:gap-3">
               <Badge variant="outline" className="bg-secondary text-secondary-foreground px-3 py-1">
                 Parent 1: Type {parent1Type}
               </Badge>
-              
+
               <span className="text-muted-foreground">+</span>
-              
+
               <Badge variant="outline" className="bg-secondary text-secondary-foreground px-3 py-1">
                 Parent 2: Type {parent2Type}
               </Badge>
-              
+
               <span className="text-muted-foreground">=</span>
-              
+
               <div className="flex flex-wrap gap-2">
-                {possibleChildren.map(type => (
-                  <motion.div 
+                {possibleChildren.map((type: string) => (
+                  <motion.div
                     key={type}
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
@@ -255,7 +254,7 @@ const BloodTypeCalculator = () => {
                 ))}
               </div>
             </div>
-            
+
             <p className="text-sm text-muted-foreground mt-3 text-center">
               Note: This shows the most common genetic scenarios. Actual inheritance can vary based on specific genotypes.
             </p>

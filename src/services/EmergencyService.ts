@@ -74,7 +74,8 @@ const getEmergencyRequests = async (filters?: EmergencyRequestFilters): Promise<
   const response = await api.get('/emergency-requests', { 
     params: filters 
   });
-  return response.data;
+  // Return the data property which contains the PaginatedResponse
+  return response.data.data;
 };
 
 const getEmergencyRequestById = async (id: string): Promise<EmergencyResponse> => {
