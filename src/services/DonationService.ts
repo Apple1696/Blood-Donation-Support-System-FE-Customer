@@ -79,12 +79,12 @@ const createDonationRequest = async (payload: DonationRequestPayload): Promise<A
     throw new Error(response.data.message || 'Failed to create donation request');
   } catch (error: any) {
     console.error('Error creating donation request:', error);
-    
+
     // Add better error handling
     if (error.response?.status === 401) {
       throw new Error('Authentication required. Please ensure you are logged in.');
     }
-    
+
     throw error;
   }
 };
@@ -98,11 +98,11 @@ const getMyDonationRequests = async (): Promise<DonationRequestsResponse> => {
     throw new Error(response.data.message || 'Failed to fetch donation requests');
   } catch (error: any) {
     console.error('Error fetching donation requests:', error);
-    
+
     if (error.response?.status === 401) {
       throw new Error('Authentication required. Please ensure you are logged in.');
     }
-    
+
     throw error;
   }
 };
@@ -116,14 +116,38 @@ const getDonationRequestById = async (id: string): Promise<DonationRequest> => {
     throw new Error(response.data.message || 'Failed to fetch donation request');
   } catch (error: any) {
     console.error('Error fetching donation request:', error);
-    
+
     if (error.response?.status === 401) {
       throw new Error('Authentication required. Please ensure you are logged in.');
     }
     if (error.response?.status === 404) {
       throw new Error('Donation request not found');
     }
-    
+
+    throw error;
+  }
+};
+
+const cancelDonationRequest = async (id: string): Promise<ApiResponse<DonationRequest>> => {
+  try {
+    const response = await api.patch<ApiResponse<DonationRequest>>(`/donations/my-requests/${id}/cancel`);
+    if (response.data.success) {
+      return response.data;
+    }
+    throw new Error(response.data.message || 'Failed to cancel donation request');
+  } catch (error: any) {
+    console.error('Error cancelling donation request:', error);
+
+    if (error.response?.status === 401) {
+      throw new Error('Authentication required. Please ensure you are logged in.');
+    }
+    if (error.response?.status === 404) {
+      throw new Error('Donation request not found');
+    }
+    if (error.response?.status === 400) {
+      throw new Error('Cannot cancel this donation request');
+    }
+
     throw error;
   }
 };
@@ -132,10 +156,11 @@ export const DonationService = {
   createDonationRequest,
   getMyDonationRequests,
   getDonationRequestById,
-  
+  cancelDonationRequest,
+
   useCreateDonationRequest: () => {
     const queryClient = useQueryClient();
-    
+
     return useMutation({
       mutationFn: createDonationRequest,
       onSuccess: () => {
@@ -144,19 +169,32 @@ export const DonationService = {
       }
     });
   },
-  
+
   useMyDonationRequests: () => {
     return useQuery({
       queryKey: ['donations', 'my-requests'],
       queryFn: getMyDonationRequests
     });
   },
-  
+
   useDonationRequestById: (id: string) => {
     return useQuery({
       queryKey: ['donations', 'my-requests', id],
       queryFn: () => getDonationRequestById(id),
       enabled: !!id // Only run the query if id is provided
+    });
+  },
+
+  useCancelDonationRequest: () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+      mutationFn: cancelDonationRequest,
+      onSuccess: (data, id) => {
+        // Invalidate related queries to refresh data
+        queryClient.invalidateQueries({ queryKey: ['donations', 'my-requests'] });
+        queryClient.invalidateQueries({ queryKey: ['donations', 'my-requests', id] });
+      }
     });
   }
 };
