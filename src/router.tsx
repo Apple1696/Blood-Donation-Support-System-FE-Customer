@@ -19,6 +19,7 @@ import RequestEmergency from './pages/Emergency/RequestEmergency'
 import EmergencyList from './pages/Emergency/EmergencyList'
 import EmergencyDetail from './pages/Emergency/EmergencyDetail'
 import BloodTypeDetail from './pages/BloodTypes/BloodTypeDetail'
+import BloodDonationSearch from './pages/SearchNearbyDonors/SearchNearbyDonors'
 
 export const router = createBrowserRouter([
   {
@@ -33,8 +34,7 @@ export const router = createBrowserRouter([
         path: 'campaigns',
         element: (
           <>
-              <CardCampaign />
-           
+            <CardCampaign />
           </>
         ),
       },
@@ -70,7 +70,16 @@ export const router = createBrowserRouter([
       },
       {
         path: 'donation-history',
-        element: <BloodDonationHistory />
+        element: (
+          <>
+            <SignedIn>
+              <BloodDonationHistory />
+            </SignedIn>
+            <SignedOut>
+              <Navigate to="/login" replace />
+            </SignedOut>
+          </>
+        )
       },
       {
         path: 'faq',
@@ -90,7 +99,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'blog',
-        element: <Blog/>
+        element: <Blog />
       },
       {
         path: 'blog/:slug',
@@ -102,23 +111,60 @@ export const router = createBrowserRouter([
       },
       {
         path: 'request-emergency',
-        element: <RequestEmergency />
+        element: (
+          <>
+            <SignedIn>
+              <RequestEmergency />
+            </SignedIn>
+            <SignedOut>
+              <Navigate to="/login" replace />
+            </SignedOut>
+          </>
+        )
       },
       {
         path: 'view-requests',
-        element: <EmergencyList />
+        element: (
+          <>
+            <SignedIn>
+              <EmergencyList />
+            </SignedIn>
+            <SignedOut>
+              <Navigate to="/login" replace />
+            </SignedOut>
+          </>
+        )
       },
       {
         path: 'emergency/:id',
-        element: <EmergencyDetail />
+        element: (
+          <>
+            <SignedIn>
+              <EmergencyDetail />
+            </SignedIn>
+            <SignedOut>
+              <Navigate to="/login" replace />
+            </SignedOut>
+          </>
+        )
+      },
+      {
+        path: 'find-nearby-donors',
+        element: (
+          <>
+            <SignedIn>
+              <BloodDonationSearch />
+            </SignedIn>
+            <SignedOut>
+              <Navigate to="/login" replace />
+            </SignedOut>
+          </>
+        )
       }
-    
     ]
   },
   {
     path: '/login',
     element: <LoginPage />
   },
- 
- 
 ]) 

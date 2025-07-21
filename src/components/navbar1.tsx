@@ -129,10 +129,10 @@ const Navbar1 = ({
       url: "#",
       items: [
         {
-          title: "Find a Donation Center",
-          description: "Get all the answers you need right here",
+          title: "Tìm kiếm người lân cận có cùng nhóm máu",
+          description: "Tìm kiếm người có cùng nhóm máu gần bạn để kết nối và hỗ trợ lẫn nhau.",
           icon: <Zap className="size-5 shrink-0" />,
-          url: "#",
+          url: "/find-nearby-donors",
         },
         {
           title: "Chiến dịch",
@@ -140,12 +140,12 @@ const Navbar1 = ({
           icon: <Sunset className="size-5 shrink-0" />,
           url: "/campaigns",
         },
-        {
-          title: "First-Time Donor Info",
-          description: "Check the current status of our services and APIs",
-          icon: <Trees className="size-5 shrink-0" />,
-          url: "#",
-        },
+        // {
+        //   title: "First-Time Donor Info",
+        //   description: "Check the current status of our services and APIs",
+        //   icon: <Trees className="size-5 shrink-0" />,
+        //   url: "#",
+        // },
         // {
         //   title: "Terms of Service",
         //   description: "Our terms and conditions for using our services",
@@ -168,14 +168,14 @@ const Navbar1 = ({
       url: "/",
       items: [
         {
-          title: "Request Blood",
-          description: "Request blood in case of emergency",
+          title: "Yêu cầu khẩn cấp",
+          description: "Yêu cầu máu trong trường hợp khẩn cấp",
           icon: <Zap className="size-5 shrink-0" />,
           url: "/request-emergency",
         },
         {
-          title: "Emergency Requests",
-          description: "View all emergency requests",
+          title: "Danh sách yêu cầu khẩn cấp",
+          description: "Xem tất cả các yêu cầu khẩn cấp",
           icon: <Sunset className="size-5 shrink-0" />,
           url: "/view-requests",
         },

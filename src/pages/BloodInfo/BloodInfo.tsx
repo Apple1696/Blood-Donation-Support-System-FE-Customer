@@ -4,7 +4,7 @@ import BloodTypeInterface from "./BloodTypeInterface";
 
 export default function BloodInfoPage2() {
   return (
-    <div className="min-h-screen p-8">
+    <div className="min-h-screen px-8 pb-8 pt-15">
       <div className="max-w-7xl mx-auto">
         
         {/* Blood Type Interface */}

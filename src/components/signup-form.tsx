@@ -14,6 +14,8 @@ import { AddressService } from "@/services/AddressService";
 import { DateOfBirth } from "./DateOfBirth"
 import { ProfileService } from "@/services/ProfileService"
 import { useAuthContext } from "@/providers/AuthProvider"
+import { toast } from "sonner"
+
 interface SignupFormProps extends React.ComponentPropsWithoutRef<"form"> {
   onSwitchToLogin?: () => void
 }
@@ -78,14 +80,41 @@ export function SignupForm({ className, onSwitchToLogin, ...props }: SignupFormP
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
     setError("");
 
+    // Validate form fields before proceeding
+    let isValid = true;
+
+    // Password must be 8 characters or above
+    if (password.length < 8) {
+      toast.error("Mật khẩu phải có ít nhất 8 ký tự");
+      isValid = false;
+    }
+
+    // Citizenship ID must be 12 characters
+    if (citizenId.length !== 12) {
+      toast.error("CCCD/CMND phải có đúng 12 chữ số");
+      isValid = false;
+    }
+
+    // Date must be selected
+    if (!dateOfBirth) {
+      toast.error("Vui lòng chọn ngày sinh");
+      isValid = false;
+    }
+
+    // Confirm password must match
     if (password !== confirmPassword) {
-      setError("Mật khẩu không khớp");
-      setIsLoading(false);
+      toast.error("Mật khẩu xác nhận không khớp");
+      isValid = false;
+    }
+
+    if (!isValid) {
       return;
     }
+
+    // If validation passes, continue with registration
+    setIsLoading(true);
 
     // Format date of birth as ISO string for API or use empty string if undefined
     const formattedDateOfBirth = dateOfBirth ? dateOfBirth.toISOString().split('T')[0] : "";
@@ -112,10 +141,19 @@ export function SignupForm({ className, onSwitchToLogin, ...props }: SignupFormP
         strategy: "email_code",
       });
 
+      toast.success("Vui lòng kiểm tra email để xác thực tài khoản");
       setVerifying(true);
     } catch (err: any) {
       console.error("Error:", err);
-      setError("Đã xảy ra lỗi trong quá trình đăng ký.");
+
+      // Check for specific email already in use error
+      if (err.errors && err.errors.some((e: any) =>
+        e.code === "form_identifier_exists" ||
+        e.message?.toLowerCase().includes("email") && e.message?.toLowerCase().includes("already"))) {
+        toast.error("Email này đã được sử dụng. Vui lòng sử dụng một địa chỉ email khác.");
+      } else {
+        toast.error(err.errors?.[0]?.message || "Đã xảy ra lỗi trong quá trình đăng ký.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -133,6 +171,7 @@ export function SignupForm({ className, onSwitchToLogin, ...props }: SignupFormP
 
       if (completeSignUp.status === "complete") {
         await setActive({ session: completeSignUp.createdSessionId });
+        toast.success("Xác minh tài khoản thành công!");
 
         // Wait a moment to ensure auth context is updated with the new session
         setTimeout(async () => {
@@ -175,33 +214,34 @@ export function SignupForm({ className, onSwitchToLogin, ...props }: SignupFormP
                 wardName: ward.name,
                 districtName: district.name,
                 provinceName: province.name,
-                bloodGroup: null,
-                bloodRh: null,
                 gender: userMetadata.gender,
-                dateOfBirth: userMetadata.dateOfBirth, // This is already formatted correctly from unsafeMetadata
+                dateOfBirth: userMetadata.dateOfBirth,
                 citizenId: userMetadata.citizenId
               });
 
+              toast.success("Hồ sơ đã được tạo thành công");
               console.log("Profile updated successfully");
             } else {
               console.error("Missing location data");
+              toast.error("Thiếu thông tin địa chỉ");
             }
           } catch (profileError) {
             console.error("Error updating user profile:", profileError);
+            toast.error("Không thể cập nhật hồ sơ");
             // Continue with navigation even if profile update fails
           } finally {
             // Navigate to home page when done, even if there were errors
             navigate("/");
           }
-        }, 2000); // Give a second for auth context to update
+        }, 2000); // Give time for auth context to update
       } else {
         console.error("Verification failed", completeSignUp);
-        setError("Xác minh thất bại. Vui lòng thử lại.");
+        toast.error("Xác minh thất bại. Vui lòng thử lại.");
         setIsLoading(false);
       }
     } catch (err) {
       console.error("Error:", err);
-      setError("Đã xảy ra lỗi trong quá trình xác minh.");
+      toast.error("Đã xảy ra lỗi trong quá trình xác minh.");
       setIsLoading(false);
     }
   };
@@ -254,7 +294,7 @@ export function SignupForm({ className, onSwitchToLogin, ...props }: SignupFormP
         {/* First Name and Last Name in same row */}
         <div className="grid grid-cols-2 gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="firstName">Tên</Label>
+            <Label htmlFor="firstName">Họ</Label>
             <Input
               id="firstName"
               type="text"
@@ -264,7 +304,7 @@ export function SignupForm({ className, onSwitchToLogin, ...props }: SignupFormP
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="lastName">Họ</Label>
+            <Label htmlFor="lastName">Tên</Label>
             <Input
               id="lastName"
               type="text"
@@ -379,9 +419,6 @@ export function SignupForm({ className, onSwitchToLogin, ...props }: SignupFormP
               pattern="[0-9]{12}"
               placeholder="Nhập CCCD/CMND của bạn"
             />
-            {citizenId && citizenId.length !== 12 && (
-              <p className="text-xs text-red-500 mt-1">CCCD/CMND phải có đúng 12 chữ số</p>
-            )}
           </div>
 
           <div className="grid gap-2">
@@ -416,7 +453,9 @@ export function SignupForm({ className, onSwitchToLogin, ...props }: SignupFormP
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            minLength={8}
           />
+          <p className="text-xs text-muted-foreground">Mật khẩu phải có ít nhất 8 ký tự</p>
         </div>
         <div className="grid gap-2">
           <Label htmlFor="confirmPassword">Xác nhận mật khẩu</Label>

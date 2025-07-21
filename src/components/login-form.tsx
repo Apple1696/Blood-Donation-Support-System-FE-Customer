@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useNavigate } from "react-router-dom"
+import { toast } from "sonner"
 
 interface LoginFormProps extends React.ComponentPropsWithoutRef<"form"> {
   onSwitchToSignup?: () => void
@@ -18,7 +19,6 @@ export function LoginForm({ className, onSwitchToSignup, ...props }: LoginFormPr
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   if (!isLoaded) {
@@ -28,7 +28,6 @@ export function LoginForm({ className, onSwitchToSignup, ...props }: LoginFormPr
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError("");
 
     try {
       const result = await signIn.create({
@@ -38,14 +37,31 @@ export function LoginForm({ className, onSwitchToSignup, ...props }: LoginFormPr
 
       if (result.status === "complete") {
         await setActive({ session: result.createdSessionId });
+        toast.success("Đăng nhập thành công");
         navigate("/");
       } else {
         console.error("Sign in failed", result);
-        setError("Đăng nhập thất bại. Vui lòng kiểm tra thông tin đăng nhập.");
+        toast.error("Đăng nhập thất bại. Vui lòng kiểm tra thông tin đăng nhập.");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error:", err);
-      setError("Đã xảy ra lỗi trong quá trình đăng nhập.");
+      
+      // Check for specific authentication errors
+      if (err.errors && err.errors.length > 0) {
+        const authError = err.errors[0];
+        
+        // Handle incorrect email/password error
+        if (authError.code === "form_password_incorrect" || 
+            authError.code === "form_identifier_not_found" ||
+            (authError.message && authError.message.toLowerCase().includes("password")) ||
+            (authError.message && authError.message.toLowerCase().includes("email"))) {
+          toast.error("Email hoặc mật khẩu không chính xác");
+        } else {
+          toast.error(authError.message || "Đã xảy ra lỗi trong quá trình đăng nhập");
+        }
+      } else {
+        toast.error("Đã xảy ra lỗi trong quá trình đăng nhập");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -60,7 +76,7 @@ export function LoginForm({ className, onSwitchToSignup, ...props }: LoginFormPr
       });
     } catch (err) {
       console.error("Error:", err);
-      setError("Đã xảy ra lỗi khi đăng nhập bằng Google.");
+      toast.error("Đã xảy ra lỗi khi đăng nhập bằng Google");
     }
   };
 
@@ -70,11 +86,6 @@ export function LoginForm({ className, onSwitchToSignup, ...props }: LoginFormPr
         <h1 className="text-2xl font-bold">Đăng nhập vào tài khoản</h1>
         <p className="text-balance text-sm text-muted-foreground">Nhập email của bạn để đăng nhập vào tài khoản</p>
       </div>
-      {error && (
-        <div className="text-sm text-red-500 text-center">
-          {error}
-        </div>
-      )}
       <div className="grid gap-6">
         <div className="grid gap-2">
           <Label htmlFor="email">Email</Label>

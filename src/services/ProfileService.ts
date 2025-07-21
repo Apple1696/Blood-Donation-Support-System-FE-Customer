@@ -31,6 +31,7 @@ export interface CustomerProfile {
   gender: string | null;
   dateOfBirth: string | null;
   citizenId: string | null;
+  lastDonationDate: string | null;
 }
 
 interface UpdateProfileRequest {
@@ -46,8 +47,8 @@ interface UpdateProfileRequest {
   districtName: string;
   provinceName: string;
   // Replace bloodType object with separate fields
-  bloodGroup: string | null;
-  bloodRh: string | null;
+  bloodGroup?: string | null;
+  bloodRh?: string | null;
   gender: string;
   dateOfBirth: string;
   citizenId: string;
@@ -58,6 +59,18 @@ interface ApiResponse<T> {
   message: string;
   data: T;
 }
+
+interface FindNearbyResponse {
+  customers: CustomerProfile[];
+  count: number;
+}
+
+interface FindNearbyParams {
+  radius: number; // in kilometers, max 100
+  bloodRh: "+" | "-";
+  bloodGroup: "A" | "B" | "AB" | "O";
+}
+
 
 export const ProfileService = {
   getProfile: async (): Promise<CustomerProfile> => {
@@ -86,6 +99,32 @@ export const ProfileService = {
     }
   },
 
+  findNearbyDonors: async (params: FindNearbyParams): Promise<FindNearbyResponse> => {
+    try {
+      const { radius, bloodRh, bloodGroup } = params;
+
+      if (radius > 100) {
+        throw new Error("Radius cannot exceed 100 kilometers");
+      }
+
+      const response = await api.get<ApiResponse<FindNearbyResponse>>('/customers/find-nearby', {
+        params: {
+          radius,
+          bloodRh,
+          bloodGroup
+        }
+      });
+
+      if (response.data.success) {
+        return response.data.data;
+      }
+      throw new Error(response.data.message || 'Failed to find nearby donors');
+    } catch (error) {
+      console.error('Error finding nearby donors:', error);
+      throw error;
+    }
+  },
+
   // React Query Hooks
   useProfile: (isAuthenticated: boolean, isTokenAvailable: boolean) => {
     return useQuery<CustomerProfile>({
@@ -98,7 +137,7 @@ export const ProfileService = {
 
   useUpdateProfile: (onSuccessCallback?: () => void, onErrorCallback?: (error: Error) => void) => {
     const queryClient = useQueryClient();
-    
+
     return useMutation({
       mutationFn: ProfileService.updateProfile,
       onSuccess: () => {
@@ -109,5 +148,15 @@ export const ProfileService = {
         onErrorCallback?.(error as Error);
       }
     });
+  },
+
+  useFindNearbyDonors: (params: FindNearbyParams | null, enabled = false) => {
+    return useQuery<FindNearbyResponse>({
+      queryKey: ["nearbyDonors", params],
+      queryFn: () => params ? ProfileService.findNearbyDonors(params) : Promise.reject("Missing parameters"),
+      enabled: !!params && enabled,
+      retry: false
+    });
   }
 };
+

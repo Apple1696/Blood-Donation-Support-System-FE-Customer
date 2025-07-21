@@ -187,7 +187,7 @@ export function BloodDonationFAQ() {
     ];
 
     return (
-        <div className="max-w-4xl mx-auto p-8 bg-background min-h-screen">
+        <div className="max-w-4xl mx-auto px-1 pt-15 pb-8 bg-background min-h-screen">
             {/* Title */}
             <div className="text-center mb-10">
                 <h1 className="text-4xl font-bold text-primary mb-3">

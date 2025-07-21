@@ -51,7 +51,7 @@ const Blog = ({
   }, [blogData]);
 
   return (
-    <section className="py-10">
+    <section className="py-20">
       <div className="container mx-auto flex flex-col items-center gap-16">
         <div className="text-center">
           <h2 className="mx-auto mb-6 text-3xl font-bold text-primary md:text-4xl">

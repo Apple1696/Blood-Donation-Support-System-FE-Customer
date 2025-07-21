@@ -194,10 +194,10 @@ const EmergencyList: React.FC = () => {
     };
 
     return (
-        <div className="container mx-auto py-8 px-4">
+        <div className="container mx-auto py-20 px-4">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold">Yêu Cầu Máu Khẩn Cấp</h1>
+                    <h1 className="text-3xl font-bold text-primary">Yêu Cầu Máu Khẩn Cấp</h1>
                     <p className="text-muted-foreground">Xem và quản lý các yêu cầu hiến máu khẩn cấp</p>
                 </div>
                 <Button onClick={() => navigate('/request-emergency')} className="mt-4 md:mt-0" variant="default">Yêu Cầu Mới</Button>

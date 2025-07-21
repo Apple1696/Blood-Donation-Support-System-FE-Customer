@@ -294,7 +294,7 @@ const Profile = () => {
 
           <div className="grid md:grid-cols-2 gap-6">
             <div>
-              <label className="text-sm font-medium">Tên</label>
+              <label className="text-sm font-medium">Họ</label>
               <Input
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
@@ -302,7 +302,7 @@ const Profile = () => {
               />
             </div>
             <div>
-              <label className="text-sm font-medium">Họ</label>
+              <label className="text-sm font-medium">Tên</label>
               <Input
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}

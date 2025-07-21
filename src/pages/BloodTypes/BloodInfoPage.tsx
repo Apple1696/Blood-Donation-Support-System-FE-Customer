@@ -28,9 +28,9 @@ const BloodInfoPage: React.FC = () => {
 
  
   return (
-    <div className="container mx-auto px-16 pb-8 max-w-7xl">
-      <h1 className="text-3xl pt-8 font-bold text-center mb-8">
-        Blood Type Information Center
+    <div className="container mx-auto py-15 px-16 pb-8 max-w-7xl">
+      <h1 className="text-3xl pt-8 font-bold text-center text-primary mb-8">
+       Thông Tin Nhóm Máu
       </h1>
 
    
