@@ -186,21 +186,21 @@ const CampaignDetail: React.FC = () => {
                       <div className="flex items-start space-x-3 p-4 bg-blue-50/50 rounded-lg border border-blue-100">
                         <Calendar className="w-5 h-5 text-blue-600 mt-0.5" />
                         <div>
-                          <p className="text-xs text-blue-600 font-medium uppercase tracking-wide">Ngày bắt đầu</p>
+                          <p className="text-xs text-blue-600 font-medium uppercase tracking-wide">Ngày bắt đầu đăng ký</p>
                           <p className="text-sm font-semibold text-gray-900">{formatDate(campaign.startDate)}</p>
                         </div>
                       </div>
                       <div className="flex items-start space-x-3 p-4 bg-red-50/50 rounded-lg border border-red-100">
                         <Calendar className="w-5 h-5 text-red-600 mt-0.5" />
                         <div>
-                          <p className="text-xs text-red-600 font-medium uppercase tracking-wide">Ngày kết thúc</p>
+                          <p className="text-xs text-red-600 font-medium uppercase tracking-wide">Ngày kết thúc đăng ký</p>
                           <p className="text-sm font-semibold text-gray-900">{formatDate(campaign.endDate)}</p>
                         </div>
                       </div>
                       <div className="flex items-start space-x-3 p-4 bg-green-50/50 rounded-lg border border-green-100">
                         <Droplets className="w-5 h-5 text-green-600 mt-0.5" />
                         <div>
-                          <p className="text-xs text-green-600 font-medium uppercase tracking-wide">Ngày thu gom máu</p>
+                          <p className="text-xs text-green-600 font-medium uppercase tracking-wide">Ngày hiến máu</p>
                           <p className="text-sm font-semibold text-gray-900">{formatDateTime(campaign.bloodCollectionDate)}</p>
                         </div>
                       </div>
@@ -269,7 +269,7 @@ const CampaignDetail: React.FC = () => {
                       <Calendar className="w-5 h-5 text-green-600" />
                     </div>
                     <div className="flex-1">
-                      <p className="text-xs text-green-600 font-medium uppercase tracking-wide mb-1">Ngày thu gom máu</p>
+                      <p className="text-xs text-green-600 font-medium uppercase tracking-wide mb-1">Ngày hiến máu</p>
                       <p className="text-sm font-semibold text-gray-900">{formatDateTime(campaign.bloodCollectionDate)}</p>
                     </div>
                   </div>
@@ -301,7 +301,7 @@ const CampaignDetail: React.FC = () => {
                 <div className="text-center space-y-4">
                   {campaign.status === CampaignStatus.ACTIVE && (
                     <>
-                      <h3 className="text-xl font-bold">Sẵn sàng cứu sống mạng người?</h3>
+                      <h3 className="text-xl font-bold">Hiến máu vì cộng đồng</h3>
                       <p className="opacity-90">Tham gia chiến dịch này và tạo nên sự khác biệt ngay hôm nay.</p>
                       <Button
                       onClick={() => navigate(`/book-appointment/${campaign.id}`)}

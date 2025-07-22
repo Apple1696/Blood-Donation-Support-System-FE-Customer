@@ -119,6 +119,11 @@ export function SignupForm({ className, onSwitchToLogin, ...props }: SignupFormP
     // Format date of birth as ISO string for API or use empty string if undefined
     const formattedDateOfBirth = dateOfBirth ? dateOfBirth.toISOString().split('T')[0] : "";
 
+    // Find location details from provinces, districts, and wards
+    const province = provinces?.find(p => p.id === selectedProvinceId);
+    const district = districts?.find(d => d.id === selectedDistrictId);
+    const ward = wards?.find(w => w.id === selectedWardId);
+
     try {
       await signUp.create({
         firstName,
@@ -132,7 +137,12 @@ export function SignupForm({ className, onSwitchToLogin, ...props }: SignupFormP
           citizenId,
           provinceId: selectedProvinceId,
           districtId: selectedDistrictId,
-          wardId: selectedWardId
+          wardId: selectedWardId,
+          provinceName: province?.name || "",
+          districtName: district?.name || "",
+          wardName: ward?.name || "",
+          longitude: ward?.longitude || "",
+          latitude: ward?.latitude || ""
         }
       });
 

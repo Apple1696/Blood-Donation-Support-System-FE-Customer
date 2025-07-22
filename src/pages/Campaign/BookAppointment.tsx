@@ -267,7 +267,7 @@ export default function BookAppointment() {
                           <Calendar className="w-5 h-5 text-blue-600" />
                         </div>
                         <div className="flex-1">
-                          <p className="text-xs text-blue-600 font-medium uppercase tracking-wide mb-1">Thời Gian Chiến Dịch</p>
+                          <p className="text-xs text-blue-600 font-medium uppercase tracking-wide mb-1">Thời Gian Đăng Ký Chiến Dịch</p>
                           <p className="text-sm font-semibold text-gray-900">
                             {formatDate(campaign.startDate)} - {formatDate(campaign.endDate)}
                           </p>
@@ -293,7 +293,7 @@ export default function BookAppointment() {
                           <Calendar className="w-5 h-5 text-green-600" />
                         </div>
                         <div className="flex-1">
-                          <p className="text-xs text-green-600 font-medium uppercase tracking-wide mb-1">Ngày Thu Thập Máu</p>
+                          <p className="text-xs text-green-600 font-medium uppercase tracking-wide mb-1">Ngày Hiến Máu</p>
                           <p className="text-sm font-semibold text-gray-900">{formatDateTime(campaign.bloodCollectionDate)}</p>
                         </div>
                       </div>
