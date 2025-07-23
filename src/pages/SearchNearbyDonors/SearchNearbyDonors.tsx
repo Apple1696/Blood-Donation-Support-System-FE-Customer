@@ -4,11 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
-import { MapPin, Calendar, Heart, Search, Users, AlertCircle } from 'lucide-react';
+import { MapPin, Calendar, Heart, Search, Users, AlertCircle, Map, List } from 'lucide-react';
 import { ProfileService } from '@/services/ProfileService';
 import { Loader2 } from 'lucide-react';
 // Replace the shadcn/ui toast import with sonner
 import { toast } from 'sonner';
+import DonorMap from '@/components/DonorMap';
 
 const BloodDonationSearch = () => {
   const [searchParams, setSearchParams] = useState({
@@ -18,6 +19,7 @@ const BloodDonationSearch = () => {
   });
 
   const [searchEnabled, setSearchEnabled] = useState(false);
+  const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
 
   // Use the React Query hook from ProfileService
   const {
@@ -118,7 +120,11 @@ const BloodDonationSearch = () => {
       radius: [50]
     });
     setSearchEnabled(false);
+    setViewMode('list');
   };
+
+  // Get Google Maps API key from environment variables
+  const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
   return (
     <div className="min-h-screen pt-20 px-4 pb-4">
@@ -210,6 +216,25 @@ const BloodDonationSearch = () => {
                     Tìm thấy {results.count} người hiến máu
                   </span>
                 </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant={viewMode === 'map' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setViewMode('map')}
+                    disabled={!googleMapsApiKey || googleMapsApiKey === 'your_google_maps_api_key_here'}
+                  >
+                    <Map className="h-4 w-4 mr-2" />
+                    Xem trên bản đồ
+                  </Button>
+                  <Button
+                    variant={viewMode === 'list' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setViewMode('list')}
+                  >
+                    <List className="h-4 w-4 mr-2" />
+                    Xem danh sách
+                  </Button>
+                </div>
               </div>
             )}
 
@@ -226,59 +251,93 @@ const BloodDonationSearch = () => {
 
             {/* Results Grid */}
             {!isLoading && results && results.count > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {results.customers.map((user) => (
-                  <Card key={user.id} className="hover:shadow-lg transition-shadow">
-                    <CardContent className="p-6">
-                      {/* Blood Type Badge */}
-                      <div className="flex justify-between items-start mb-4">
-                        <Badge className={`${getBloodTypeColor(user.bloodType.group, user.bloodType.rh)} text-lg font-bold px-3 py-1`}>
-                          {user.bloodType.group}{user.bloodType.rh}
-                        </Badge>
-                        {canDonateSoon(user.lastDonationDate) && (
-                          <Badge variant="outline" className="text-green-600 border-green-600">
-                            Có thể hiến
-                          </Badge>
-                        )}
-                      </div>
-
-                      {/* User Info */}
-                      <div className="space-y-3">
-                        <div>
-                          <h3 className="font-semibold text-lg">{user.firstName} {user.lastName}</h3>
-                          <p className="text-sm text-gray-500 capitalize">
-                            {user.gender === 'male' ? 'Nam' : user.gender === 'female' ? 'Nữ' : 'Không xác định'}
+              <>
+                {/* Map View */}
+                {viewMode === 'map' && (
+                  <>
+                    {!googleMapsApiKey || googleMapsApiKey === 'your_google_maps_api_key_here' ? (
+                      <Card className="text-center py-12 border-yellow-200 bg-yellow-50">
+                        <CardContent>
+                          <AlertCircle className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
+                          <h3 className="text-lg font-medium text-gray-900 mb-2">Cần cấu hình Google Maps API</h3>
+                          <p className="text-gray-600 mb-4">
+                            Để sử dụng tính năng bản đồ, vui lòng cấu hình Google Maps API key trong file .env:
                           </p>
-                        </div>
+                          <code className="bg-gray-100 px-2 py-1 rounded text-sm">
+                            VITE_GOOGLE_MAPS_API_KEY=your_api_key_here
+                          </code>
+                          <p className="text-sm text-gray-500 mt-2">
+                            Lấy API key tại: <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">Google Cloud Console</a>
+                          </p>
+                        </CardContent>
+                      </Card>
+                    ) : (
+                      <DonorMap
+                        donors={results.customers}
+                        apiKey={googleMapsApiKey}
+                        zoom={11}
+                      />
+                    )}
+                  </>
+                )}
 
-                        {/* Location */}
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <MapPin className="h-4 w-4" />
-                          <span>{user.districtName || 'Không xác định'}, {user.provinceName || 'Không xác định'}</span>
-                        </div>
-
-                        {/* Last Donation - Enhanced and Emphasized */}
-                        <div className={`flex items-center gap-2 p-3 rounded-md ${formatLastDonation(user.lastDonationDate).highlight
-                            ? 'bg-primary/10 text-primary font-medium border-l-4 border-primary'
-                            : 'border border-muted'
-                          }`}>
-                          <Calendar className="h-5 w-5" />
-                          <div>
-                            <div className="text-xs text-muted-foreground">Lần hiến máu cuối</div>
-                            <div className="font-semibold">{formatLastDonation(user.lastDonationDate).text}</div>
+                {/* List View */}
+                {viewMode === 'list' && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {results.customers.map((user) => (
+                      <Card key={user.id} className="hover:shadow-lg transition-shadow">
+                        <CardContent className="p-6">
+                          {/* Blood Type Badge */}
+                          <div className="flex justify-between items-start mb-4">
+                            <Badge className={`${getBloodTypeColor(user.bloodType.group, user.bloodType.rh)} text-lg font-bold px-3 py-1`}>
+                              {user.bloodType.group}{user.bloodType.rh}
+                            </Badge>
+                            {canDonateSoon(user.lastDonationDate) && (
+                              <Badge variant="outline" className="text-green-600 border-green-600">
+                                Có thể hiến
+                              </Badge>
+                            )}
                           </div>
-                        </div>
-                      </div>
 
-                      {/* Action Button */}
-                      {/* <Button className="w-full mt-4" variant="outline">
-                        <Phone className="h-4 w-4 mr-2" />
-                        Liên hệ người hiến máu
-                      </Button> */}
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+                          {/* User Info */}
+                          <div className="space-y-3">
+                            <div>
+                              <h3 className="font-semibold text-lg">{user.firstName} {user.lastName}</h3>
+                              <p className="text-sm text-gray-500 capitalize">
+                                {user.gender === 'male' ? 'Nam' : user.gender === 'female' ? 'Nữ' : 'Không xác định'}
+                              </p>
+                            </div>
+
+                            {/* Location */}
+                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                              <MapPin className="h-4 w-4" />
+                              <span>{user.districtName || 'Không xác định'}, {user.provinceName || 'Không xác định'}</span>
+                            </div>
+
+                            {/* Last Donation - Enhanced and Emphasized */}
+                            <div className={`flex items-center gap-2 p-3 rounded-md ${formatLastDonation(user.lastDonationDate).highlight
+                                ? 'bg-primary/10 text-primary font-medium border-l-4 border-primary'
+                                : 'border border-muted'
+                              }`}>
+                              <Calendar className="h-5 w-5" />
+                              <div>
+                                <div className="text-xs text-muted-foreground">Lần hiến máu cuối</div>
+                                <div className="font-semibold">{formatLastDonation(user.lastDonationDate).text}</div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Action Button */}
+                          {/* <Button className="w-full mt-4" variant="outline">
+                            <Phone className="h-4 w-4 mr-2" />
+                            Liên hệ người hiến máu
+                          </Button> */}
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </>
             )}
 
             {/* Empty State */}
