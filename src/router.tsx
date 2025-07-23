@@ -20,6 +20,7 @@ import EmergencyList from './pages/Emergency/EmergencyList'
 import EmergencyDetail from './pages/Emergency/EmergencyDetail'
 import BloodTypeDetail from './pages/BloodTypes/BloodTypeDetail'
 import BloodDonationSearch from './pages/SearchNearbyDonors/SearchNearbyDonors'
+import BloodDonationReminder from './pages/Reminder'
 
 export const router = createBrowserRouter([
   {
@@ -154,6 +155,19 @@ export const router = createBrowserRouter([
           <>
             <SignedIn>
               <BloodDonationSearch />
+            </SignedIn>
+            <SignedOut>
+              <Navigate to="/login" replace />
+            </SignedOut>
+          </>
+        )
+      },
+      {
+        path: 'reminder',
+        element: (
+          <>
+            <SignedIn>
+              <BloodDonationReminder />
             </SignedIn>
             <SignedOut>
               <Navigate to="/login" replace />

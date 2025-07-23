@@ -215,13 +215,12 @@ const BloodDonationHistory = () => {
   };
 
   return (
-    <div className="min-h-screen container mx-auto pt-8 pb-8">
+    <div className="min-h-screen container mx-auto pt-15 pb-8">
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
         <div className="text-center space-y-4">
           <div className="flex items-center justify-center space-x-2">
-            <Heart className="h-8 w-8 text-red-500" />
-            <h1 className="text-3xl font-bold text-gray-900">Hành Trình Hiến Máu Của Tôi</h1>
+            <h1 className="text-3xl font-bold text-gray-900 text-primary">Hành Trình Hiến Máu Của Tôi</h1>
           </div>
           <p className="text-gray-600">Theo dõi lịch sử hiến máu và tác động của bạn</p>
         </div>
@@ -241,7 +240,7 @@ const BloodDonationHistory = () => {
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="bg-white/80 backdrop-blur-sm">
                     <Filter className="h-4 w-4 mr-2" />
-                    Lọc theo trạng thái
+                    Lọc 
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
@@ -341,7 +340,7 @@ const BloodDonationHistory = () => {
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="bg-white/80 backdrop-blur-sm">
                     <Filter className="h-4 w-4 mr-2" />
-                    Lọc theo trạng thái
+                    Lọc 
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
@@ -428,7 +427,7 @@ const BloodDonationHistory = () => {
                   <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-lg font-semibold text-gray-600 mb-2">Không có lịch hẹn sắp tới</h3>
                   <p className="text-gray-500 mb-4">Sẵn sàng cứu thêm nhiều mạng sống? Đặt lịch hiến máu tiếp theo của bạn.</p>
-                  <Button className="bg-red-600 hover:bg-red-700">Đặt lịch hiến máu</Button>
+                  <Button onClick={() => navigate('/campaigns')} className="bg-red-600 hover:bg-red-700">Đặt lịch hiến máu</Button>
                 </CardContent>
               </Card>
             )}

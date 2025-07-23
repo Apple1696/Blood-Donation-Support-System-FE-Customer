@@ -1,4 +1,4 @@
-import { Menu, Sunset, Trees, Zap } from "lucide-react";
+import { Menu, Sunset, Trees, Zap, Bell } from "lucide-react";
 import { useUser, useClerk } from "@clerk/clerk-react";
 
 import {
@@ -154,16 +154,7 @@ const Navbar1 = ({
         // },
       ],
     },
-  
-    {
-      title: "FAQ",
-      url: "/faq",
-    },
      {
-      title: "Blog",
-      url: "/blog",
-    },
-    {
       title: "Khẩn Cấp",
       url: "/",
       items: [
@@ -180,7 +171,17 @@ const Navbar1 = ({
           url: "/view-requests",
         },
       ],
-    }
+    },
+  
+    {
+      title: "FAQ",
+      url: "/faq",
+    },
+     {
+      title: "Blog",
+      url: "/blog",
+    },
+   
   ],
   auth = {
     login: { title: "Đăng nhập", url: "/login" },
@@ -202,32 +203,43 @@ const Navbar1 = ({
       : user.emailAddresses[0].emailAddress[0].toUpperCase();
 
     return (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Avatar className="cursor-pointer">
-            <AvatarImage src={user.imageUrl} />
-            <AvatarFallback className="bg-primary text-primary-foreground">
-              {initials}
-            </AvatarFallback>
-          </Avatar>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem className="gap-2">
-            {/* <span>Signed in as</span> */}
-            <span className="font-medium">{`${user.firstName} ${user.lastName}`}</span>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem asChild>
-            <a href="/profile">Hồ sơ</a>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <a href="/donation-history">Lịch sử hiến máu </a>
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleSignOut}>
-            Đăng xuất 
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <div className="flex items-center gap-6">
+        {/* Bell icon for notifications */}
+        <a 
+          href="/reminder" 
+          className="p-2 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+        >
+          <Bell className="size-4" />
+        </a>
+        
+        {/* User Avatar Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Avatar className="cursor-pointer">
+              <AvatarImage src={user.imageUrl} />
+              <AvatarFallback className="bg-primary text-primary-foreground">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem className="gap-2">
+              {/* <span>Signed in as</span> */}
+              <span className="font-medium">{`${user.firstName} ${user.lastName}`}</span>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <a href="/profile">Hồ sơ</a>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <a href="/donation-history">Lịch sử hiến máu </a>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleSignOut}>
+              Đăng xuất 
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     );
   };
 
@@ -235,20 +247,24 @@ const Navbar1 = ({
     <section className="py-4" style={{ backgroundColor: '#B03F4A' }}>
       <div className="container  mx-auto">
         {/* Desktop Menu */}
-        <nav className="hidden justify-between lg:flex">
-          <div className="flex items-center gap-6">
-            {/* Logo */}
+        <nav className="hidden lg:flex items-center justify-between">
+          {/* Logo */}
+          <div className="flex items-center">
             <a href={logo.url} className="flex items-center gap-2">
               <img src={logo.src} className="max-h-12 transform scale-350" alt={logo.alt} />
             </a>
-            <div className="flex items-center">
-              <NavigationMenu>
-                <NavigationMenuList>
-                  {menu.map((item) => renderMenuItem(item))}
-                </NavigationMenuList>
-              </NavigationMenu>
-            </div>
           </div>
+          
+          {/* Centered Navigation Menu */}
+          <div className="flex items-center justify-center flex-1">
+            <NavigationMenu>
+              <NavigationMenuList>
+                {menu.map((item) => renderMenuItem(item))}
+              </NavigationMenuList>
+            </NavigationMenu>
+          </div>
+          
+          {/* Auth buttons */}
           <div className="flex gap-2 items-center">
             {user ? (
               <UserAvatar />

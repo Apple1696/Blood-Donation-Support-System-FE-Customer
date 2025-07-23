@@ -295,7 +295,7 @@ export default function BloodDonationCampaigns() {
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="bg-white/80 backdrop-blur-sm">
                 <Filter className="h-4 w-4 mr-2" />
-                Lọc trạng thái
+                Lọc
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
