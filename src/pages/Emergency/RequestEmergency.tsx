@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuthContext } from "@/providers/AuthProvider";
 import { AddressService } from "@/services/AddressService";
@@ -51,6 +52,7 @@ type FormValues = z.infer<typeof formSchema>;
 const RequestEmergency = () => {
   const { isAuthenticated } = useAuthContext();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   
   const [selectedProvinceId, setSelectedProvinceId] = useState<string>("");
   const [selectedDistrictId, setSelectedDistrictId] = useState<string>("");
@@ -159,6 +161,9 @@ const RequestEmergency = () => {
         
         // Invalidate relevant queries
         queryClient.invalidateQueries({ queryKey: ["emergencyRequests"] });
+        
+        // Redirect to view requests page
+        navigate("/view-requests");
       },
       onError: (error) => {
         toast.error("Không thể tạo yêu cầu khẩn cấp", {

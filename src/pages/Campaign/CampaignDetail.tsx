@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Calendar, Clock, ArrowLeft, MapPin, Phone, Mail, CheckCircle, Users, Droplets } from 'lucide-react';
+import { Calendar, Clock, ArrowLeft, MapPin, Phone, Mail, CheckCircle, Users, Droplets, AlertTriangle, Check } from 'lucide-react';
 import { useGetCampaignById, CampaignStatus } from '@/services/CampaignService';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,56 @@ const CampaignDetail: React.FC = () => {
   const navigate = useNavigate();
   const { data: campaignData, isLoading, error } = useGetCampaignById(id as string);
   const campaign = campaignData?.data;
+
+  // Fetch user's donation requests to check for existing requests
+  const { data: donationRequestsData, isLoading: isDonationLoading } = DonationService.useMyDonationRequests();
+
+  // Helper functions for checking donation status
+  const checkDonationStatus = () => {
+    if (!donationRequestsData?.items || !campaign) {
+      return {
+        hasActiveRequest: false,
+        hasRegisteredForThisCampaign: false,
+        hasCompletedThisCampaign: false,
+        activeDonationRequest: null,
+        thisCampaignRequest: null
+      };
+    }
+
+    const donations = donationRequestsData.items;
+    
+    // Check for active requests (not completed or cancelled)
+    const activeStatuses = ['pending', 'appointment_confirmed', 'customer_checked_in'];
+    const completedStatuses = ['completed', 'result_returned'];
+    
+    const activeDonations = donations.filter(donation => 
+      activeStatuses.includes(donation.currentStatus)
+    );
+    
+    // Check if user has any active donation request for other campaigns
+    const activeRequestForOtherCampaign = activeDonations.find(donation => 
+      donation.campaign.id !== campaign.id
+    );
+    
+    // Check if user has registered for this specific campaign
+    const thisCampaignRequest = donations.find(donation => 
+      donation.campaign.id === campaign.id
+    );
+    
+    // Check if user has completed this campaign
+    const hasCompletedThisCampaign = thisCampaignRequest && 
+      completedStatuses.includes(thisCampaignRequest.currentStatus);
+
+    return {
+      hasActiveRequest: !!activeRequestForOtherCampaign,
+      hasRegisteredForThisCampaign: !!thisCampaignRequest,
+      hasCompletedThisCampaign: !!hasCompletedThisCampaign,
+      activeDonationRequest: activeRequestForOtherCampaign,
+      thisCampaignRequest: thisCampaignRequest
+    };
+  };
+
+  const donationStatus = checkDonationStatus();
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('vi-VN', {
@@ -44,7 +94,7 @@ const CampaignDetail: React.FC = () => {
     return diffDays;
   };
 
-  if (isLoading) {
+  if (isLoading || isDonationLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-red-50/30 flex items-center justify-center">
         <div className="text-center">
@@ -296,43 +346,138 @@ const CampaignDetail: React.FC = () => {
             </Card>
 
             {/* Action Card */}
-            <Card className="bg-gradient-to-r from-red-600 to-pink-600 text-white">
-              <CardContent className="p-6">
-                <div className="text-center space-y-4">
-                  {campaign.status === CampaignStatus.ACTIVE && (
-                    <>
-                      <h3 className="text-xl font-bold">Hiến máu vì cộng đồng</h3>
-                      <p className="opacity-90">Tham gia chiến dịch này và tạo nên sự khác biệt ngay hôm nay.</p>
-                      <Button
-                      onClick={() => navigate(`/book-appointment/${campaign.id}`)}
-                      className="w-full bg-white text-red-600 hover:bg-gray-100">
-                        Đặt lịch hẹn
-                      </Button>
-                    </>
-                  )}
-                  {campaign.status === CampaignStatus.NOT_STARTED && (
-                    <>
-                      <h3 className="text-xl font-bold">Chiến dịch chưa bắt đầu</h3>
-                      {/* <p className="opacity-90">Hãy là người đầu tiên biết khi chiến dịch này bắt đầu.</p> */}
-                      <Button onClick={
-                        () => navigate('/campaigns')
-                      } className="w-full bg-white text-red-600 hover:bg-gray-100">
-                        Quay lại Chiến dịch
-                      </Button>
-                    </>
-                  )}
-                  {campaign.status === CampaignStatus.ENDED && (
-                    <>
-                      <h3 className="text-xl font-bold">Chiến dịch đã kết thúc</h3>
-                      <p className="opacity-90">Cảm ơn sự quan tâm của bạn. Hãy xem các chiến dịch đang diễn ra khác.</p>
-                      <Button className="w-full bg-white text-red-600 hover:bg-gray-100" onClick={() => navigate('/campaigns')}>
-                        Xem chiến dịch đang diễn ra
-                      </Button>
-                    </>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+            {/* Special case: NOT_STARTED campaigns bypass all donation status checks */}
+            {campaign.status === CampaignStatus.NOT_STARTED && (
+              <Card className="bg-gradient-to-r from-red-600 to-pink-600 text-white">
+                <CardContent className="p-6">
+                  <div className="text-center space-y-4">
+                    <h3 className="text-xl font-bold">Chiến dịch chưa bắt đầu</h3>
+                    <Button 
+                      onClick={() => navigate('/campaigns')} 
+                      className="w-full bg-white text-red-600 hover:bg-gray-100"
+                    >
+                      Quay lại Chiến dịch
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* For ACTIVE and ENDED campaigns, apply donation status logic */}
+            {campaign.status !== CampaignStatus.NOT_STARTED && (
+              <>
+                {/* Use Case 1: User has active donation request for another campaign */}
+                {donationStatus.hasActiveRequest && (
+                  <Card className="bg-gradient-to-r from-orange-500 to-red-500 text-white">
+                    <CardContent className="p-6">
+                      <div className="text-center space-y-4">
+                        <div className="flex justify-center">
+                          <AlertTriangle className="w-12 h-12 text-white" />
+                        </div>
+                        <h3 className="text-xl font-bold">Yêu cầu hiến máu đang hoạt động</h3>
+                        <p className="opacity-90">
+                          Bạn đã có 1 yêu cầu hiến máu chiến dịch khác đang hoạt động. 
+                          Vui lòng hoàn thành hoặc hủy yêu cầu ấy trước khi đăng ký cái mới.
+                        </p>
+                        <Button
+                          onClick={() => navigate('/campaigns')}
+                          className="w-full bg-white text-orange-600 hover:bg-gray-100"
+                        >
+                          Quay lại Chiến dịch
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Use Case 3: User has completed this campaign */}
+                {!donationStatus.hasActiveRequest && donationStatus.hasCompletedThisCampaign && (
+                  <Card className="bg-gradient-to-r from-green-500 to-emerald-500 text-white">
+                    <CardContent className="p-6">
+                      <div className="text-center space-y-4">
+                        <div className="flex justify-center">
+                          <Check className="w-12 h-12 text-white" />
+                        </div>
+                        <h3 className="text-xl font-bold">Chiến dịch đã hoàn thành</h3>
+                        <p className="opacity-90">
+                          Bạn đã hoàn thành chiến dịch này. Cảm ơn bạn đã đóng góp cho cộng đồng!
+                        </p>
+                        <Button
+                          onClick={() => navigate('/campaigns')}
+                          className="w-full bg-white text-green-600 hover:bg-gray-100"
+                        >
+                          Quay lại Chiến dịch
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Use Case 2: User has registered for this campaign but not completed */}
+                {!donationStatus.hasActiveRequest && donationStatus.hasRegisteredForThisCampaign && !donationStatus.hasCompletedThisCampaign && (
+                  <Card className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white">
+                    <CardContent className="p-6">
+                      <div className="text-center space-y-4">
+                        <div className="flex justify-center">
+                          <CheckCircle className="w-12 h-12 text-white" />
+                        </div>
+                        <h3 className="text-xl font-bold">Đã đăng ký</h3>
+                        <p className="opacity-90">
+                          Bạn đã đăng ký hiến máu cho chiến dịch này.
+                        </p>
+                        {donationStatus.thisCampaignRequest?.appointmentDate && (
+                          <div className="bg-white/20 rounded-lg p-3 mb-4">
+                            <p className="text-sm">
+                              Ngày hẹn: {formatDate(donationStatus.thisCampaignRequest.appointmentDate)}
+                            </p>
+                          </div>
+                        )}
+                        <Button
+                          onClick={() => navigate('/campaigns')}
+                          className="w-full bg-white text-blue-600 hover:bg-gray-100"
+                        >
+                          Quay lại Chiến dịch
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Default Action Card - Only show if no other conditions are met */}
+                {!donationStatus.hasActiveRequest && !donationStatus.hasRegisteredForThisCampaign && (
+                  <Card className="bg-gradient-to-r from-red-600 to-pink-600 text-white">
+                    <CardContent className="p-6">
+                      <div className="text-center space-y-4">
+                        {campaign.status === CampaignStatus.ACTIVE && (
+                          <>
+                            <h3 className="text-xl font-bold">Hiến máu vì cộng đồng</h3>
+                            <p className="opacity-90">Tham gia chiến dịch này và tạo nên sự khác biệt ngay hôm nay.</p>
+                            <Button
+                              onClick={() => navigate(`/book-appointment/${campaign.id}`)}
+                              className="w-full bg-white text-red-600 hover:bg-gray-100"
+                            >
+                              Đặt lịch hẹn
+                            </Button>
+                          </>
+                        )}
+                        {campaign.status === CampaignStatus.ENDED && (
+                          <>
+                            <h3 className="text-xl font-bold">Chiến dịch đã kết thúc</h3>
+                            <p className="opacity-90">Cảm ơn sự quan tâm của bạn. Hãy xem các chiến dịch đang diễn ra khác.</p>
+                            <Button 
+                              className="w-full bg-white text-red-600 hover:bg-gray-100" 
+                              onClick={() => navigate('/campaigns')}
+                            >
+                              Xem chiến dịch đang diễn ra
+                            </Button>
+                          </>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </>
+            )}
           </div>
         </div>
       </div>
