@@ -23,7 +23,7 @@ interface Blog8Props {
 }
 
 const Blog = ({
-  heading = "Blog Posts",
+  heading = "Bài Blog",
   description = "Khám phá những thông tin chi tiết và bài viết mới nhất về hiến máu, sức khỏe và các nỗ lực nhân đạo.",
   posts: initialPosts,
 }: Blog8Props) => {
