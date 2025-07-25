@@ -32,7 +32,6 @@ export interface CustomerProfile {
   dateOfBirth: string | null;
   citizenId: string | null;
   lastDonationDate: string | null;
-  avatar: string | null;
 }
 
 interface UpdateProfileRequest {
@@ -53,7 +52,6 @@ interface UpdateProfileRequest {
   gender: string;
   dateOfBirth: string;
   citizenId: string;
-  avatar: string | null;
 }
 
 interface ApiResponse<T> {
