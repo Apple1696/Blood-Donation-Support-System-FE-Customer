@@ -1,3 +1,39 @@
+interface UpdateHospitalProfileRequest {
+  name: string;
+  phone: string;
+  longitude: string;
+  latitude: string;
+  wardCode: string;
+  districtCode: string;
+  provinceCode: string;
+  wardName: string;
+  districtName: string;
+  provinceName: string;
+}
+export interface HospitalProfile {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  account: {
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    email: string;
+    role: string;
+  };
+  name: string;
+  phone: string;
+  longitude: string;
+  latitude: string;
+  wardCode: string;
+  districtCode: string;
+  provinceCode: string;
+  wardName: string;
+  districtName: string;
+  provinceName: string;
+  status: string;
+  avatar: string | null;
+}
 import api from "@/config/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -73,6 +109,31 @@ interface FindNearbyParams {
 
 
 export const ProfileService = {
+  updateHospitalProfile: async (profileData: UpdateHospitalProfileRequest): Promise<HospitalProfile> => {
+    try {
+      const response = await api.patch<ApiResponse<HospitalProfile>>('/hospitals/me', profileData);
+      if (response.data.success) {
+        return response.data.data;
+      }
+      throw new Error(response.data.message || 'Failed to update hospital profile');
+    } catch (error) {
+      console.error('Error updating hospital profile:', error);
+      throw error;
+    }
+  },
+  getHospitalProfile: async (): Promise<HospitalProfile> => {
+    try {
+      const response = await api.get<ApiResponse<HospitalProfile>>('/hospitals/me');
+      if (response.data.success) {
+        return response.data.data;
+      }
+      throw new Error(response.data.message || 'Failed to fetch hospital profile');
+    } catch (error) {
+      console.error('Error fetching hospital profile:', error);
+      throw error;
+    }
+  },
+
   getProfile: async (): Promise<CustomerProfile> => {
     try {
       const response = await api.get<ApiResponse<CustomerProfile>>('/customers/me');
@@ -126,6 +187,28 @@ export const ProfileService = {
   },
 
   // React Query Hooks
+  useUpdateHospitalProfile: (onSuccessCallback?: () => void, onErrorCallback?: (error: Error) => void) => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+      mutationFn: ProfileService.updateHospitalProfile,
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["hospitalProfile"] });
+        onSuccessCallback?.();
+      },
+      onError: (error) => {
+        onErrorCallback?.(error as Error);
+      }
+    });
+  },
+  useHospitalProfile: (isAuthenticated: boolean, isTokenAvailable: boolean) => {
+    return useQuery<HospitalProfile>({
+      queryKey: ["hospitalProfile"],
+      queryFn: ProfileService.getHospitalProfile,
+      enabled: isAuthenticated && isTokenAvailable,
+      retry: false
+    });
+  },
   useProfile: (isAuthenticated: boolean, isTokenAvailable: boolean) => {
     return useQuery<CustomerProfile>({
       queryKey: ["profile"],

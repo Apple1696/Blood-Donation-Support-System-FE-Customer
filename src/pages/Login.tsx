@@ -37,7 +37,7 @@ export default function LoginPage() {
       </div>
       <div className="col-span-2 relative bg-muted">
         <img
-          src="public\images\LoginPage\BloodEquipment.jpg"
+          src="/images/LoginPage/BloodEquipment.jpg"
           alt="Image"
           className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
         />

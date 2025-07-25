@@ -1,9 +1,9 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuthContext } from "@/providers/AuthProvider";
-import { AddressService } from "@/services/AddressService";
+import { ProfileService } from "@/services/ProfileService";
 import EmergencyService from "@/services/EmergencyService";
 import type { EmergencyRequestPayload } from "@/services/EmergencyService";
 
@@ -53,14 +53,12 @@ const RequestEmergency = () => {
   const { isAuthenticated } = useAuthContext();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  
-  const [selectedProvinceId, setSelectedProvinceId] = useState<string>("");
-  const [selectedDistrictId, setSelectedDistrictId] = useState<string>("");
 
-  // Get address data from AddressService
-  const { data: provinces, isLoading: isLoadingProvinces } = AddressService.useProvinces();
-  const { data: districts, isLoading: isLoadingDistricts } = AddressService.useDistricts(selectedProvinceId);
-  const { data: wards, isLoading: isLoadingWards } = AddressService.useWards(selectedDistrictId);
+  // Get profile data using ProfileService
+  const { data: profile, isLoading: isLoadingProfile, error: profileError } = ProfileService.useProfile(
+    isAuthenticated, 
+    isAuthenticated // assuming token is available when authenticated
+  );
 
   // Blood types
   const bloodGroups = ["A", "B", "AB", "O"];
@@ -71,7 +69,7 @@ const RequestEmergency = () => {
     { id: "plasma", name: "Huyết tương" }
   ];
 
-  // Setup form
+  // Setup form with profile data as default values
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -79,69 +77,30 @@ const RequestEmergency = () => {
       bloodRh: "",
       bloodTypeComponent: "",
       requiredVolume: 1,
-      provinceCode: "",
-      districtCode: "",
-      wardCode: "",
-      provinceName: "",
-      districtName: "",
-      wardName: "",
-      longitude: "",
-      latitude: "",
+      provinceCode: profile?.provinceCode || "",
+      districtCode: profile?.districtCode || "",
+      wardCode: profile?.wardCode || "",
+      provinceName: profile?.provinceName || "",
+      districtName: profile?.districtName || "",
+      wardName: profile?.wardName || "",
+      longitude: profile?.longitude || "",
+      latitude: profile?.latitude || "",
     },
   });
 
-  // Handle province selection
-  const handleProvinceChange = (value: string) => {
-    setSelectedProvinceId(value);
-    setSelectedDistrictId("");
-    
-    const selectedProvince = provinces?.find(p => p.id === value);
-    if (selectedProvince) {
-      form.setValue("provinceCode", value);
-      form.setValue("provinceName", selectedProvince.name);
-      form.setValue("districtCode", "");
-      form.setValue("districtName", "");
-      form.setValue("wardCode", "");
-      form.setValue("wardName", "");
-      form.setValue("longitude", "");
-      form.setValue("latitude", "");
+  // Update form when profile data is loaded
+  React.useEffect(() => {
+    if (profile) {
+      form.setValue("provinceCode", profile.provinceCode || "");
+      form.setValue("districtCode", profile.districtCode || "");
+      form.setValue("wardCode", profile.wardCode || "");
+      form.setValue("provinceName", profile.provinceName || "");
+      form.setValue("districtName", profile.districtName || "");
+      form.setValue("wardName", profile.wardName || "");
+      form.setValue("longitude", profile.longitude || "");
+      form.setValue("latitude", profile.latitude || "");
     }
-  };
-
-  // Handle district selection
-  const handleDistrictChange = (value: string) => {
-    setSelectedDistrictId(value);
-    
-    const selectedDistrict = districts?.find(d => d.id === value);
-    if (selectedDistrict) {
-      form.setValue("districtCode", value);
-      form.setValue("districtName", selectedDistrict.name);
-      form.setValue("wardCode", "");
-      form.setValue("wardName", "");
-      form.setValue("longitude", "");
-      form.setValue("latitude", "");
-    }
-  };
-
-  // Handle ward selection
-  const handleWardChange = (value: string) => {
-    const selectedWard = wards?.find(w => w.id === value);
-    if (selectedWard) {
-      form.setValue("wardCode", value);
-      form.setValue("wardName", selectedWard.name);
-      
-      // Explicitly set longitude and latitude from ward data
-      if (selectedWard.longitude && selectedWard.latitude) {
-        form.setValue("longitude", selectedWard.longitude);
-        form.setValue("latitude", selectedWard.latitude);
-        console.log(`Set location coordinates: ${selectedWard.longitude}, ${selectedWard.latitude}`);
-      } else {
-        console.warn("Selected ward does not have longitude/latitude data");
-        form.setValue("longitude", "0");
-        form.setValue("latitude", "0");
-      }
-    }
-  };
+  }, [profile, form]);
 
   // Use the provided hook from EmergencyService
   const createEmergencyMutation = EmergencyService.useCreateEmergencyRequest();
@@ -155,8 +114,6 @@ const RequestEmergency = () => {
           description: "Các nhà cung cấp dịch vụ y tế đã được thông báo",
         });
         form.reset();
-        setSelectedProvinceId("");
-        setSelectedDistrictId("");
         
         // Invalidate relevant queries
         queryClient.invalidateQueries({ queryKey: ["emergencyRequests"] });
@@ -185,314 +142,344 @@ const RequestEmergency = () => {
     );
   }
 
- return (
-  <div className="container mx-auto py-10">
-    <Card className="max-w-2xl mx-auto shadow-xl border-2 border-primary/20 overflow-hidden">
-    <CardHeader className="py-2">
-        <div className="flex items-center gap-3 mb-1">
-          <CardTitle className="text-3xl text-primary font-bold">Yêu Cầu Máu Khẩn Cấp</CardTitle>
-        </div>
-        <CardDescription className="text-muted-foreground text-lg">
-          Nhu cầu cấp thiết về hiến máu - vui lòng điền đầy đủ thông tin dưới đây
-        </CardDescription>
-      </CardHeader>
-      
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <CardContent className="space-y-6 pt-4">
-            <div className="space-y-2">
-              <h3 className="font-medium text-xl text-primary flex items-center gap-2">
-                <span className="p-1.5 rounded-md bg-destructive/10 text-destructive inline-flex">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M18 11V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v13c0 1 1 2 2 2h16"></path>
-                    <path d="M12 16H6"></path>
-                    <path d="M12 11H6"></path>
-                    <path d="M12 6H6"></path>
-                    <path d="M17 21l5-5"></path>
-                    <path d="M17 16v5h5"></path>
-                  </svg>
-                </span>
-                Nhóm Máu Cần Thiết
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Chỉ rõ loại máu chính xác cần thiết cho tình huống khẩn cấp này
-              </p>
-            </div>
+  if (isLoadingProfile) {
+    return (
+      <div className="container mx-auto py-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Đang tải thông tin...</CardTitle>
+            <CardDescription>Vui lòng chờ trong giây lát.</CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    );
+  }
 
-            <div className="grid md:grid-cols-3 gap-6">
+  if (profileError || !profile) {
+    return (
+      <div className="container mx-auto py-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Lỗi tải thông tin</CardTitle>
+            <CardDescription>
+              Không thể tải thông tin hồ sơ. Vui lòng kiểm tra lại kết nối hoặc cập nhật hồ sơ của bạn.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    );
+  }
+
+  // Check if profile has required location data
+  const hasLocationData = profile.provinceCode && profile.districtCode && profile.wardCode && 
+                         profile.longitude && profile.latitude;
+
+  if (!hasLocationData) {
+    return (
+      <div className="container mx-auto py-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Thông tin địa chỉ chưa đầy đủ</CardTitle>
+            <CardDescription>
+              Bạn cần cập nhật đầy đủ thông tin địa chỉ trong hồ sơ để có thể tạo yêu cầu máu khẩn cấp.
+            </CardDescription>
+          </CardHeader>
+          <CardFooter>
+            <Button onClick={() => navigate("/profile")}>
+              Cập nhật hồ sơ
+            </Button>
+          </CardFooter>
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto py-10">
+      <Card className="max-w-2xl mx-auto shadow-xl border-2 border-primary/20 overflow-hidden">
+        <CardHeader className="py-2">
+          <div className="flex items-center gap-3 mb-1">
+            <CardTitle className="text-3xl text-primary font-bold">Yêu Cầu Máu Khẩn Cấp</CardTitle>
+          </div>
+          <CardDescription className="text-muted-foreground text-lg">
+            Nhu cầu cấp thiết về hiến máu - vui lòng điền đầy đủ thông tin dưới đây
+          </CardDescription>
+        </CardHeader>
+        
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <CardContent className="space-y-6 pt-4">
+              <div className="space-y-2">
+                <h3 className="font-medium text-xl text-primary flex items-center gap-2">
+                  <span className="p-1.5 rounded-md bg-destructive/10 text-destructive inline-flex">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M18 11V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v13c0 1 1 2 2 2h16"></path>
+                      <path d="M12 16H6"></path>
+                      <path d="M12 11H6"></path>
+                      <path d="M12 6H6"></path>
+                      <path d="M17 21l5-5"></path>
+                      <path d="M17 16v5h5"></path>
+                    </svg>
+                  </span>
+                  Nhóm Máu Cần Thiết
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Chỉ rõ loại máu chính xác cần thiết cho tình huống khẩn cấp này
+                </p>
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-6">
+                <FormField
+                  control={form.control}
+                  name="bloodGroup"
+                  render={({ field }) => (
+                    <FormItem className="space-y-2">
+                      <FormLabel className="font-medium">Nhóm máu</FormLabel>
+                      <Select 
+                        onValueChange={field.onChange} 
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="bg-muted/50">
+                            <SelectValue placeholder="Chọn nhóm máu" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {bloodGroups.map((group) => (
+                            <SelectItem key={group} value={group}>{group}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="bloodRh"
+                  render={({ field }) => (
+                    <FormItem className="space-y-2">
+                      <FormLabel className="font-medium">Yếu tố Rh</FormLabel>
+                      <Select 
+                        onValueChange={field.onChange} 
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="bg-muted/50">
+                            <SelectValue placeholder="Chọn Rh" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {bloodRhTypes.map((rh) => (
+                            <SelectItem key={rh} value={rh}>{rh}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="bloodTypeComponent"
+                  render={({ field }) => (
+                    <FormItem className="space-y-2">
+                      <FormLabel className="font-medium">Thành phần máu</FormLabel>
+                      <Select 
+                        onValueChange={field.onChange} 
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="bg-muted/50">
+                            <SelectValue placeholder="Chọn thành phần" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {bloodComponents.map((component) => (
+                            <SelectItem key={component.id} value={component.id}>
+                              {component.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
               <FormField
                 control={form.control}
-                name="bloodGroup"
+                name="requiredVolume"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
-                    <FormLabel className="font-medium">Nhóm máu</FormLabel>
-                    <Select 
-                      onValueChange={field.onChange} 
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="bg-muted/50">
-                          <SelectValue placeholder="Chọn nhóm máu" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {bloodGroups.map((group) => (
-                          <SelectItem key={group} value={group}>{group}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <FormLabel className="font-medium">Thể tích cần thiết (ml)</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number" 
+                        placeholder="Nhập thể tích cần thiết" 
+                        {...field}
+                        min={1}
+                        className="bg-muted/50"
+                      />
+                    </FormControl>
+                    <FormDescription className="text-sm">
+                      Chỉ định thể tích máu cần thiết tính bằng mililít
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="bloodRh"
-                render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <FormLabel className="font-medium">Yếu tố Rh</FormLabel>
-                    <Select 
-                      onValueChange={field.onChange} 
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="bg-muted/50">
-                          <SelectValue placeholder="Chọn Rh" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {bloodRhTypes.map((rh) => (
-                          <SelectItem key={rh} value={rh}>{rh}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="space-y-2 pt-2">
+                <h3 className="font-medium text-xl text-primary flex items-center gap-2">
+                  <span className="p-1.5 rounded-md bg-destructive/10 text-destructive inline-flex">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M12 8v4"></path>
+                      <path d="M9.17 15.5c.15.2.33.38.53.52a2.5 2.5 0 0 0 4.6 0 2.63 2.63 0 0 0 .53-.52"></path>
+                    </svg>
+                  </span>
+                  Chi tiết địa điểm
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Địa điểm được lấy từ thông tin hồ sơ của bạn
+                </p>
+              </div>
 
-              <FormField
-                control={form.control}
-                name="bloodTypeComponent"
-                render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <FormLabel className="font-medium">Thành phần máu</FormLabel>
-                    <Select 
-                      onValueChange={field.onChange} 
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="bg-muted/50">
-                          <SelectValue placeholder="Chọn thành phần" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {bloodComponents.map((component) => (
-                          <SelectItem key={component.id} value={component.id}>
-                            {component.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+              {/* Display location information from profile */}
+              <div className="grid md:grid-cols-3 gap-6">
+                <div className="space-y-2">
+                  <label className="font-medium text-sm">Tỉnh/Thành phố</label>
+                  <div className="p-3 bg-muted/50 rounded-md border">
+                    <span className="text-sm">{profile.provinceName || "Chưa cập nhật"}</span>
+                  </div>
+                </div>
 
-            <FormField
-              control={form.control}
-              name="requiredVolume"
-              render={({ field }) => (
-                <FormItem className="space-y-2">
-                  <FormLabel className="font-medium">Thể tích cần thiết (ml)</FormLabel>
-                  <FormControl>
-                    <Input 
-                      type="number" 
-                      placeholder="Nhập thể tích cần thiết" 
-                      {...field}
-                      min={1}
-                      className="bg-muted/50"
-                    />
-                  </FormControl>
-                  <FormDescription className="text-sm">
-                    Chỉ định thể tích máu cần thiết tính bằng mililít
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                <div className="space-y-2">
+                  <label className="font-medium text-sm">Quận/Huyện</label>
+                  <div className="p-3 bg-muted/50 rounded-md border">
+                    <span className="text-sm">{profile.districtName || "Chưa cập nhật"}</span>
+                  </div>
+                </div>
 
-            <div className="space-y-2 pt-2">
-              <h3 className="font-medium text-xl text-primary flex items-center gap-2">
-                <span className="p-1.5 rounded-md bg-destructive/10 text-destructive inline-flex">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <path d="M12 8v4"></path>
-                    <path d="M9.17 15.5c.15.2.33.38.53.52a2.5 2.5 0 0 0 4.6 0 2.63 2.63 0 0 0 .53-.52"></path>
-                  </svg>
-                </span>
-                Chi tiết địa điểm
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Chọn vị trí chính xác nơi cần máu khẩn cấp
-              </p>
-            </div>
+                <div className="space-y-2">
+                  <label className="font-medium text-sm">Phường/Xã</label>
+                  <div className="p-3 bg-muted/50 rounded-md border">
+                    <span className="text-sm">{profile.wardName || "Chưa cập nhật"}</span>
+                  </div>
+                </div>
+              </div>
 
-            <div className="grid md:grid-cols-3 gap-6">
+              <div className="p-4 bg-blue-50 border border-blue-200 rounded-md">
+                <p className="text-sm text-blue-800">
+                  <strong>Lưu ý:</strong> Địa điểm yêu cầu máu sẽ dựa trên thông tin địa chỉ trong hồ sơ của bạn. 
+                  Nếu cần thay đổi, vui lòng cập nhật hồ sơ trước khi tạo yêu cầu.
+                </p>
+              </div>
+              
+              {/* Hidden fields for form submission */}
               <FormField
                 control={form.control}
                 name="provinceCode"
                 render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <FormLabel className="font-medium">Tỉnh/Thành phố</FormLabel>
-                    <Select 
-                      onValueChange={handleProvinceChange} 
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="bg-muted/50">
-                          <SelectValue placeholder="Chọn tỉnh/thành phố" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {isLoadingProvinces ? (
-                          <SelectItem value="loading" disabled>Đang tải dữ liệu...</SelectItem>
-                        ) : (
-                          provinces?.map((province) => (
-                            <SelectItem key={province.id} value={province.id}>
-                              {province.name}
-                            </SelectItem>
-                          ))
-                        )}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
+                  <input type="hidden" {...field} />
                 )}
               />
-
+              
               <FormField
                 control={form.control}
                 name="districtCode"
                 render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <FormLabel className="font-medium">Quận/Huyện</FormLabel>
-                    <Select 
-                      onValueChange={handleDistrictChange} 
-                      defaultValue={field.value}
-                      disabled={!selectedProvinceId}
-                    >
-                      <FormControl>
-                        <SelectTrigger className={`bg-muted/50 ${!selectedProvinceId ? 'opacity-60' : ''}`}>
-                          <SelectValue placeholder="Chọn quận/huyện" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {isLoadingDistricts ? (
-                          <SelectItem value="loading" disabled>Đang tải dữ liệu...</SelectItem>
-                        ) : (
-                          districts?.map((district) => (
-                            <SelectItem key={district.id} value={district.id}>
-                              {district.name}
-                            </SelectItem>
-                          ))
-                        )}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
+                  <input type="hidden" {...field} />
                 )}
               />
-
+              
               <FormField
                 control={form.control}
                 name="wardCode"
                 render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <FormLabel className="font-medium">Phường/Xã</FormLabel>
-                    <Select 
-                      onValueChange={handleWardChange} 
-                      defaultValue={field.value}
-                      disabled={!selectedDistrictId}
-                    >
-                      <FormControl>
-                        <SelectTrigger className={`bg-muted/50 ${!selectedDistrictId ? 'opacity-60' : ''}`}>
-                          <SelectValue placeholder="Chọn phường/xã" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {isLoadingWards ? (
-                          <SelectItem value="loading" disabled>Đang tải dữ liệu...</SelectItem>
-                        ) : (
-                          wards?.map((ward) => (
-                            <SelectItem key={ward.id} value={ward.id}>
-                              {ward.name}
-                            </SelectItem>
-                          ))
-                        )}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
+                  <input type="hidden" {...field} />
                 )}
               />
-            </div>
-            
-            {/* Hidden fields for longitude and latitude */}
-            <FormField
-              control={form.control}
-              name="longitude"
-              render={({ field }) => (
-                <input type="hidden" {...field} />
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="latitude"
-              render={({ field }) => (
-                <input type="hidden" {...field} />
-              )}
-            />
-          </CardContent>
+              
+              <FormField
+                control={form.control}
+                name="provinceName"
+                render={({ field }) => (
+                  <input type="hidden" {...field} />
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="districtName"
+                render={({ field }) => (
+                  <input type="hidden" {...field} />
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="wardName"
+                render={({ field }) => (
+                  <input type="hidden" {...field} />
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="longitude"
+                render={({ field }) => (
+                  <input type="hidden" {...field} />
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="latitude"
+                render={({ field }) => (
+                  <input type="hidden" {...field} />
+                )}
+              />
+            </CardContent>
 
-          <CardFooter className="flex justify-between border-t pt-8 pb-8 bg-muted/30">
-            <Button 
-              variant="outline" 
-              type="button"
-              onClick={() => form.reset()}
-              disabled={createEmergencyMutation.isPending}
-              className="border-2 hover:bg-background/80"
-            >
-              Hủy bỏ
-            </Button>
-            <Button 
-              type="submit" 
-              className=" px-8 py-6 font-semibold"
-              disabled={createEmergencyMutation.isPending}
-            >
-              {createEmergencyMutation.isPending ? (
-                <span className="flex items-center gap-2">
-                  <svg className="animate-spin" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
-                  </svg>
-                  Đang xử lý...
-                </span>
-              ) : (
-                <span className="flex items-center gap-2">
-                  
-                  Gửi yêu cầu khẩn cấp
-                </span>
-              )}
-            </Button>
-          </CardFooter>
-        </form>
-      </Form>
-    </Card>
-  </div>
-);
+            <CardFooter className="flex justify-between border-t pt-8 pb-8 bg-muted/30">
+              <Button 
+                variant="outline" 
+                type="button"
+                onClick={() => navigate("/profile")}
+                disabled={createEmergencyMutation.isPending}
+                className="border-2 hover:bg-background/80"
+              >
+                Cập nhật hồ sơ
+              </Button>
+              <Button 
+                type="submit" 
+                className="px-8 py-6 font-semibold"
+                disabled={createEmergencyMutation.isPending}
+              >
+                {createEmergencyMutation.isPending ? (
+                  <span className="flex items-center gap-2">
+                    <svg className="animate-spin" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
+                    </svg>
+                    Đang xử lý...
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    Gửi yêu cầu khẩn cấp
+                  </span>
+                )}
+              </Button>
+            </CardFooter>
+          </form>
+        </Form>
+      </Card>
+    </div>
+  );
 };
 
 export default RequestEmergency;

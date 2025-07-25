@@ -10,10 +10,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useQuery } from "@tanstack/react-query";
 import { AddressService } from "@/services/AddressService";
 import { ProfileService } from "@/services/ProfileService";
-import type { CustomerProfile } from "@/services/ProfileService";
 import { useState, useEffect } from "react";
 import { useUser } from "@clerk/clerk-react";
 import { toast } from "sonner";

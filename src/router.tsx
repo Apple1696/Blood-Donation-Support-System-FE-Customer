@@ -4,7 +4,7 @@ import { Navigate } from 'react-router-dom'
 import CustomerLayout from '@/layouts/CustomerLayout'
 import Home from '@/pages/Home'
 import LoginPage from '@/pages/Login'
-import Profile from './pages/Profile'
+import Profile from './pages/Profile/Profile'
 import CardCampaign from './pages/Campaign/CardCampaign'
 import CampaignDetail from './pages/Campaign/CampaignDetail'
 import BookAppointment from './pages/Campaign/BookAppointment'
@@ -20,6 +20,7 @@ import EmergencyList from './pages/Emergency/EmergencyList'
 import EmergencyDetail from './pages/Emergency/EmergencyDetail'
 import BloodTypeDetail from './pages/BloodTypes/BloodTypeDetail'
 import BloodDonationSearch from './pages/SearchNearbyDonors/SearchNearbyDonors'
+import HospitalProfile from './pages/Profile/HospitalProfile'
 
 export const router = createBrowserRouter([
   {
@@ -161,19 +162,19 @@ export const router = createBrowserRouter([
           </>
         )
       },
-      // {
-      //   path: 'reminder',
-      //   element: (
-      //     <>
-      //       <SignedIn>
-      //         <BloodDonationReminder />
-      //       </SignedIn>
-      //       <SignedOut>
-      //         <Navigate to="/login" replace />
-      //       </SignedOut>
-      //     </>
-      //   )
-      // }
+      {
+        path: '/hospital-profile',
+        element: (
+          <>
+            <SignedIn>
+              <HospitalProfile />
+            </SignedIn>
+            <SignedOut>
+              <Navigate to="/login" replace />
+            </SignedOut>
+          </>
+        )
+      }
     ]
   },
   {
