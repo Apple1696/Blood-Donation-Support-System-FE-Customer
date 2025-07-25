@@ -56,9 +56,20 @@ const RequestEmergency = () => {
 
   // Get profile data using ProfileService
   const { data: profile, isLoading: isLoadingProfile, error: profileError } = ProfileService.useProfile(
-    isAuthenticated, 
+    isAuthenticated,
     isAuthenticated // assuming token is available when authenticated
   );
+  // Get hospital profile if role is hospital
+  const { data: hospitalProfile, isLoading: isLoadingHospitalProfile, error: hospitalProfileError } = ProfileService.useHospitalProfile(
+    isAuthenticated,
+    isAuthenticated
+  );
+
+  // Determine user role
+  const userRole = profile?.account?.role || hospitalProfile?.account?.role;
+
+  // Use hospital profile for address if role is hospital
+  const addressSource = userRole === "hospital" ? hospitalProfile : profile;
 
   // Blood types
   const bloodGroups = ["A", "B", "AB", "O"];
@@ -69,7 +80,7 @@ const RequestEmergency = () => {
     { id: "plasma", name: "Huyết tương" }
   ];
 
-  // Setup form with profile data as default values
+  // Setup form with address data from correct profile
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -77,33 +88,42 @@ const RequestEmergency = () => {
       bloodRh: "",
       bloodTypeComponent: "",
       requiredVolume: 1,
-      provinceCode: profile?.provinceCode || "",
-      districtCode: profile?.districtCode || "",
-      wardCode: profile?.wardCode || "",
-      provinceName: profile?.provinceName || "",
-      districtName: profile?.districtName || "",
-      wardName: profile?.wardName || "",
-      longitude: profile?.longitude || "",
-      latitude: profile?.latitude || "",
+      provinceCode: addressSource?.provinceCode || "",
+      districtCode: addressSource?.districtCode || "",
+      wardCode: addressSource?.wardCode || "",
+      provinceName: addressSource?.provinceName || "",
+      districtName: addressSource?.districtName || "",
+      wardName: addressSource?.wardName || "",
+      longitude: addressSource?.longitude || "",
+      latitude: addressSource?.latitude || "",
     },
   });
 
-  // Update form when profile data is loaded
+  // Update form when address data is loaded
   React.useEffect(() => {
-    if (profile) {
-      form.setValue("provinceCode", profile.provinceCode || "");
-      form.setValue("districtCode", profile.districtCode || "");
-      form.setValue("wardCode", profile.wardCode || "");
-      form.setValue("provinceName", profile.provinceName || "");
-      form.setValue("districtName", profile.districtName || "");
-      form.setValue("wardName", profile.wardName || "");
-      form.setValue("longitude", profile.longitude || "");
-      form.setValue("latitude", profile.latitude || "");
+    if (addressSource) {
+      form.setValue("provinceCode", addressSource.provinceCode || "");
+      form.setValue("districtCode", addressSource.districtCode || "");
+      form.setValue("wardCode", addressSource.wardCode || "");
+      form.setValue("provinceName", addressSource.provinceName || "");
+      form.setValue("districtName", addressSource.districtName || "");
+      form.setValue("wardName", addressSource.wardName || "");
+      form.setValue("longitude", addressSource.longitude || "");
+      form.setValue("latitude", addressSource.latitude || "");
     }
-  }, [profile, form]);
+  }, [addressSource, form]);
 
   // Use the provided hook from EmergencyService
   const createEmergencyMutation = EmergencyService.useCreateEmergencyRequest();
+
+  // Function to handle profile button click
+  const handleProfileButtonClick = () => {
+    if (userRole === "hospital") {
+      navigate("/hospital-profile");
+    } else {
+      navigate("/profile");
+    }
+  };
 
   // Form submission handler
   const onSubmit = (values: FormValues) => {
@@ -114,10 +134,10 @@ const RequestEmergency = () => {
           description: "Các nhà cung cấp dịch vụ y tế đã được thông báo",
         });
         form.reset();
-        
+
         // Invalidate relevant queries
         queryClient.invalidateQueries({ queryKey: ["emergencyRequests"] });
-        
+
         // Redirect to view requests page
         navigate("/view-requests");
       },
@@ -142,6 +162,19 @@ const RequestEmergency = () => {
     );
   }
 
+  if (userRole === "hospital" && isLoadingHospitalProfile) {
+    return (
+      <div className="container mx-auto py-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Đang tải thông tin bệnh viện...</CardTitle>
+            <CardDescription>Vui lòng chờ trong giây lát.</CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    );
+  }
+
   if (isLoadingProfile) {
     return (
       <div className="container mx-auto py-8">
@@ -155,7 +188,10 @@ const RequestEmergency = () => {
     );
   }
 
-  if (profileError || !profile) {
+  if (
+    (userRole === "hospital" && (hospitalProfileError || !hospitalProfile)) ||
+    (userRole !== "hospital" && (profileError || !profile))
+  ) {
     return (
       <div className="container mx-auto py-8">
         <Card>
@@ -171,8 +207,8 @@ const RequestEmergency = () => {
   }
 
   // Check if profile has required location data
-  const hasLocationData = profile.provinceCode && profile.districtCode && profile.wardCode && 
-                         profile.longitude && profile.latitude;
+  const hasLocationData = addressSource?.provinceCode && addressSource?.districtCode && addressSource?.wardCode &&
+    addressSource?.longitude && addressSource?.latitude;
 
   if (!hasLocationData) {
     return (
@@ -185,7 +221,7 @@ const RequestEmergency = () => {
             </CardDescription>
           </CardHeader>
           <CardFooter>
-            <Button onClick={() => navigate("/profile")}>
+            <Button onClick={handleProfileButtonClick}>
               Cập nhật hồ sơ
             </Button>
           </CardFooter>
@@ -205,7 +241,7 @@ const RequestEmergency = () => {
             Nhu cầu cấp thiết về hiến máu - vui lòng điền đầy đủ thông tin dưới đây
           </CardDescription>
         </CardHeader>
-        
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <CardContent className="space-y-6 pt-4">
@@ -235,8 +271,8 @@ const RequestEmergency = () => {
                   render={({ field }) => (
                     <FormItem className="space-y-2">
                       <FormLabel className="font-medium">Nhóm máu</FormLabel>
-                      <Select 
-                        onValueChange={field.onChange} 
+                      <Select
+                        onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
                         <FormControl>
@@ -261,8 +297,8 @@ const RequestEmergency = () => {
                   render={({ field }) => (
                     <FormItem className="space-y-2">
                       <FormLabel className="font-medium">Yếu tố Rh</FormLabel>
-                      <Select 
-                        onValueChange={field.onChange} 
+                      <Select
+                        onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
                         <FormControl>
@@ -287,8 +323,8 @@ const RequestEmergency = () => {
                   render={({ field }) => (
                     <FormItem className="space-y-2">
                       <FormLabel className="font-medium">Thành phần máu</FormLabel>
-                      <Select 
-                        onValueChange={field.onChange} 
+                      <Select
+                        onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
                         <FormControl>
@@ -317,9 +353,9 @@ const RequestEmergency = () => {
                   <FormItem className="space-y-2">
                     <FormLabel className="font-medium">Thể tích cần thiết (ml)</FormLabel>
                     <FormControl>
-                      <Input 
-                        type="number" 
-                        placeholder="Nhập thể tích cần thiết" 
+                      <Input
+                        type="number"
+                        placeholder="Nhập thể tích cần thiết"
                         {...field}
                         min={1}
                         className="bg-muted/50"
@@ -349,37 +385,37 @@ const RequestEmergency = () => {
                 </p>
               </div>
 
-              {/* Display location information from profile */}
+              {/* Display location information from addressSource */}
               <div className="grid md:grid-cols-3 gap-6">
                 <div className="space-y-2">
                   <label className="font-medium text-sm">Tỉnh/Thành phố</label>
                   <div className="p-3 bg-muted/50 rounded-md border">
-                    <span className="text-sm">{profile.provinceName || "Chưa cập nhật"}</span>
+                    <span className="text-sm">{addressSource?.provinceName || "Chưa cập nhật"}</span>
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <label className="font-medium text-sm">Quận/Huyện</label>
                   <div className="p-3 bg-muted/50 rounded-md border">
-                    <span className="text-sm">{profile.districtName || "Chưa cập nhật"}</span>
+                    <span className="text-sm">{addressSource?.districtName || "Chưa cập nhật"}</span>
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <label className="font-medium text-sm">Phường/Xã</label>
                   <div className="p-3 bg-muted/50 rounded-md border">
-                    <span className="text-sm">{profile.wardName || "Chưa cập nhật"}</span>
+                    <span className="text-sm">{addressSource?.wardName || "Chưa cập nhật"}</span>
                   </div>
                 </div>
               </div>
 
               <div className="p-4 bg-blue-50 border border-blue-200 rounded-md">
                 <p className="text-sm text-blue-800">
-                  <strong>Lưu ý:</strong> Địa điểm yêu cầu máu sẽ dựa trên thông tin địa chỉ trong hồ sơ của bạn. 
+                  <strong>Lưu ý:</strong> Địa điểm yêu cầu máu sẽ dựa trên thông tin địa chỉ trong hồ sơ của bạn.
                   Nếu cần thay đổi, vui lòng cập nhật hồ sơ trước khi tạo yêu cầu.
                 </p>
               </div>
-              
+
               {/* Hidden fields for form submission */}
               <FormField
                 control={form.control}
@@ -388,7 +424,7 @@ const RequestEmergency = () => {
                   <input type="hidden" {...field} />
                 )}
               />
-              
+
               <FormField
                 control={form.control}
                 name="districtCode"
@@ -396,7 +432,7 @@ const RequestEmergency = () => {
                   <input type="hidden" {...field} />
                 )}
               />
-              
+
               <FormField
                 control={form.control}
                 name="wardCode"
@@ -404,7 +440,7 @@ const RequestEmergency = () => {
                   <input type="hidden" {...field} />
                 )}
               />
-              
+
               <FormField
                 control={form.control}
                 name="provinceName"
@@ -412,7 +448,7 @@ const RequestEmergency = () => {
                   <input type="hidden" {...field} />
                 )}
               />
-              
+
               <FormField
                 control={form.control}
                 name="districtName"
@@ -420,7 +456,7 @@ const RequestEmergency = () => {
                   <input type="hidden" {...field} />
                 )}
               />
-              
+
               <FormField
                 control={form.control}
                 name="wardName"
@@ -428,7 +464,7 @@ const RequestEmergency = () => {
                   <input type="hidden" {...field} />
                 )}
               />
-              
+
               <FormField
                 control={form.control}
                 name="longitude"
@@ -436,7 +472,7 @@ const RequestEmergency = () => {
                   <input type="hidden" {...field} />
                 )}
               />
-              
+
               <FormField
                 control={form.control}
                 name="latitude"
@@ -447,17 +483,17 @@ const RequestEmergency = () => {
             </CardContent>
 
             <CardFooter className="flex justify-between border-t pt-8 pb-8 bg-muted/30">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 type="button"
-                onClick={() => navigate("/profile")}
+                onClick={handleProfileButtonClick}
                 disabled={createEmergencyMutation.isPending}
                 className="border-2 hover:bg-background/80"
               >
                 Cập nhật hồ sơ
               </Button>
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="px-8 py-6 font-semibold"
                 disabled={createEmergencyMutation.isPending}
               >

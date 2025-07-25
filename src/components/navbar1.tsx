@@ -196,12 +196,24 @@ const Navbar1 = ({
     signOut();
   };
 
+  // Filter menu items based on user role
+  const getFilteredMenu = () => {
+    if (!user || user?.publicMetadata?.role !== "hospital") {
+      return menu;
+    }
+    
+    // Filter out "Đặt lịch hẹn" menu for hospital users
+    return menu.filter(item => item.title !== "Đặt lịch hẹn");
+  };
+
   const UserAvatar = () => {
     if (!user) return null;
 
     const initials = user.firstName && user.lastName
       ? `${user.firstName[0]}${user.lastName[0]}`
       : user.emailAddresses[0].emailAddress[0].toUpperCase();
+
+    const isHospital = user?.publicMetadata?.role === "hospital";
 
     return (
       <div className="flex items-center gap-6">
@@ -225,11 +237,22 @@ const Navbar1 = ({
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <a href="/profile">Hồ sơ</a>
+              <a
+                href={
+                  isHospital
+                    ? "/hospital-profile"
+                    : "/profile"
+                }
+              >
+                Hồ sơ
+              </a>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <a href="/donation-history">Lịch sử hiến máu </a>
-            </DropdownMenuItem>
+            {/* Only show donation history for non-hospital users */}
+            {!isHospital && (
+              <DropdownMenuItem asChild>
+                <a href="/donation-history">Lịch sử hiến máu </a>
+              </DropdownMenuItem>
+            )}
             <DropdownMenuItem onClick={handleSignOut}>
               Đăng xuất 
             </DropdownMenuItem>
@@ -255,7 +278,7 @@ const Navbar1 = ({
           <div className="flex items-center justify-center flex-1">
             <NavigationMenu>
               <NavigationMenuList>
-                {menu.map((item) => renderMenuItem(item))}
+                {getFilteredMenu().map((item) => renderMenuItem(item))}
               </NavigationMenuList>
             </NavigationMenu>
           </div>
@@ -304,7 +327,7 @@ const Navbar1 = ({
                     collapsible
                     className="flex w-full flex-col gap-4"
                   >
-                    {menu.map((item) => renderMobileMenuItem(item))}
+                    {getFilteredMenu().map((item) => renderMobileMenuItem(item))}
                   </Accordion>
 
                   <div className="flex flex-col gap-3">

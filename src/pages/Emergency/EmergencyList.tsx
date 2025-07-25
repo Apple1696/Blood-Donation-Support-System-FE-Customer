@@ -448,201 +448,206 @@ const EmergencyList: React.FC = () => {
                                                     )}
 
                                                     <DialogFooter className="flex flex-row justify-end gap-3 pt-4">
-                                                        <Dialog open={isUpdateDialogOpen} onOpenChange={setIsUpdateDialogOpen}>
-                                                            <DialogTrigger asChild>
-                                                                <Button
-                                                                    variant="outline"
-                                                                    onClick={() => setIsUpdateDialogOpen(true)}
-                                                                    className="min-w-24"
-                                                                >
-                                                                    Cập Nhật
-                                                                </Button>
-                                                            </DialogTrigger>
-
-                                                            <DialogContent className="sm:max-w-md">
-                                                                <DialogHeader>
-                                                                    <DialogTitle>Cập Nhật Yêu Cầu Khẩn Cấp</DialogTitle>
-                                                                    <DialogDescription>
-                                                                        Cập nhật thông tin của yêu cầu máu khẩn cấp này
-                                                                    </DialogDescription>
-                                                                </DialogHeader>
-                                                                <form onSubmit={handleUpdateEmergency} className="space-y-4">
-                                                                    <div className="grid grid-cols-2 gap-4">
-                                                                        <div className="space-y-2">
-                                                                            <Label htmlFor="bloodGroup">Nhóm Máu</Label>
-                                                                            <Select name="bloodGroup" defaultValue={editingEmergency?.bloodType.group}>
-                                                                                <SelectTrigger>
-                                                                                    <SelectValue placeholder="Chọn Nhóm Máu" />
-                                                                                </SelectTrigger>
-                                                                                <SelectContent>
-                                                                                    <SelectItem value="A">A</SelectItem>
-                                                                                    <SelectItem value="B">B</SelectItem>
-                                                                                    <SelectItem value="AB">AB</SelectItem>
-                                                                                    <SelectItem value="O">O</SelectItem>
-                                                                                </SelectContent>
-                                                                            </Select>
-                                                                        </div>
-
-                                                                        <div className="space-y-2">
-                                                                            <Label htmlFor="bloodRh">Yếu Tố RH</Label>
-                                                                            <Select name="bloodRh" defaultValue={editingEmergency?.bloodType.rh}>
-                                                                                <SelectTrigger>
-                                                                                    <SelectValue placeholder="Chọn RH" />
-                                                                                </SelectTrigger>
-                                                                                <SelectContent>
-                                                                                    <SelectItem value="+">Dương (+)</SelectItem>
-                                                                                    <SelectItem value="-">Âm (-)</SelectItem>
-                                                                                </SelectContent>
-                                                                            </Select>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div className="space-y-2">
-                                                                        <Label htmlFor="bloodTypeComponent">Thành Phần</Label>
-                                                                        <Select name="bloodTypeComponent" defaultValue={editingEmergency?.bloodTypeComponent}>
-                                                                            <SelectTrigger>
-                                                                                <SelectValue placeholder="Chọn Thành Phần" />
-                                                                            </SelectTrigger>
-                                                                            <SelectContent>
-                                                                                <SelectItem value="plasma">Huyết Tương</SelectItem>
-                                                                                <SelectItem value="platelets">Tiểu Cầu</SelectItem>
-                                                                                <SelectItem value="red_cells">Hồng Cầu</SelectItem>
-                                                                            </SelectContent>
-                                                                        </Select>
-                                                                    </div>
-
-                                                                    <div className="space-y-2">
-                                                                        <Label htmlFor="requiredVolume">Lượng Máu Yêu Cầu (ml)</Label>
-                                                                        <Input
-                                                                            name="requiredVolume"
-                                                                            type="number"
-                                                                            defaultValue={editingEmergency?.requiredVolume}
-                                                                            min="1"
-                                                                        />
-                                                                    </div>
-
-                                                                    <div className="grid grid-cols-3 gap-4">
-                                                                        <div className="space-y-2">
-                                                                            <Label htmlFor="province">Tỉnh/Thành Phố</Label>
-                                                                            <Select
-                                                                                value={selectedProvinceId}
-                                                                                onValueChange={handleProvinceChange}
-                                                                                disabled={updateEmergencyMutation.isPending}
-                                                                            >
-                                                                                <SelectTrigger>
-                                                                                    <SelectValue placeholder="Chọn tỉnh/thành phố" />
-                                                                                </SelectTrigger>
-                                                                                <SelectContent>
-                                                                                    {isLoadingProvinces ? (
-                                                                                        <SelectItem value="loading" disabled>Đang tải tỉnh/thành phố...</SelectItem>
-                                                                                    ) : (
-                                                                                        provinces?.map((province) => (
-                                                                                            <SelectItem key={province.id} value={province.id}>
-                                                                                                {province.name}
-                                                                                            </SelectItem>
-                                                                                        ))
-                                                                                    )}
-                                                                                </SelectContent>
-                                                                            </Select>
-                                                                        </div>
-
-                                                                        <div className="space-y-2">
-                                                                            <Label htmlFor="district">Quận/Huyện</Label>
-                                                                            <Select
-                                                                                value={selectedDistrictId}
-                                                                                onValueChange={handleDistrictChange}
-                                                                                disabled={!selectedProvinceId || updateEmergencyMutation.isPending}
-                                                                            >
-                                                                                <SelectTrigger>
-                                                                                    <SelectValue placeholder={selectedProvinceId ? "Chọn quận/huyện" : "Chọn tỉnh/thành phố trước"} />
-                                                                                </SelectTrigger>
-                                                                                <SelectContent>
-                                                                                    {isLoadingDistricts ? (
-                                                                                        <SelectItem value="loading" disabled>Đang tải quận/huyện...</SelectItem>
-                                                                                    ) : (
-                                                                                        districts?.map((district) => (
-                                                                                            <SelectItem key={district.id} value={district.id}>
-                                                                                                {district.name}
-                                                                                            </SelectItem>
-                                                                                        ))
-                                                                                    )}
-                                                                                </SelectContent>
-                                                                            </Select>
-                                                                        </div>
-
-                                                                        <div className="space-y-2">
-                                                                            <Label htmlFor="ward">Phường/Xã</Label>
-                                                                            <Select
-                                                                                value={selectedWardId}
-                                                                                onValueChange={handleWardChange}
-                                                                                disabled={!selectedDistrictId || updateEmergencyMutation.isPending}
-                                                                            >
-                                                                                <SelectTrigger>
-                                                                                    <SelectValue placeholder={selectedDistrictId ? "Chọn phường/xã" : "Chọn quận/huyện trước"} />
-                                                                                </SelectTrigger>
-                                                                                <SelectContent>
-                                                                                    {isLoadingWards ? (
-                                                                                        <SelectItem value="loading" disabled>Đang tải phường/xã...</SelectItem>
-                                                                                    ) : (
-                                                                                        wards?.map((ward) => (
-                                                                                            <SelectItem key={ward.id} value={ward.id}>
-                                                                                                {ward.name}
-                                                                                            </SelectItem>
-                                                                                        ))
-                                                                                    )}
-                                                                                </SelectContent>
-                                                                            </Select>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <DialogFooter>
-                                                                        <Button type="submit" disabled={updateEmergencyMutation.isPending}>
-                                                                            {updateEmergencyMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                                                            Lưu Thay Đổi
+                                                        {/* Only show update and delete if status is pending */}
+                                                        {selectedEmergency?.status === "pending" && (
+                                                            <>
+                                                                <Dialog open={isUpdateDialogOpen} onOpenChange={setIsUpdateDialogOpen}>
+                                                                    <DialogTrigger asChild>
+                                                                        <Button
+                                                                            variant="outline"
+                                                                            onClick={() => setIsUpdateDialogOpen(true)}
+                                                                            className="min-w-24"
+                                                                        >
+                                                                            Cập Nhật
                                                                         </Button>
-                                                                    </DialogFooter>
-                                                                </form>
-                                                            </DialogContent>
-                                                        </Dialog>
+                                                                    </DialogTrigger>
 
-                                                        <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-                                                            <AlertDialogTrigger asChild>
-                                                                <Button
-                                                                    variant="destructive"
-                                                                    onClick={() => {
-                                                                        if (selectedEmergency) {
-                                                                            setEmergencyToDelete(selectedEmergency.id);
-                                                                            setIsDeleteDialogOpen(true);
-                                                                        }
-                                                                    }}
-                                                                    className="min-w-24"
-                                                                >
-                                                                    Xóa
-                                                                </Button>
-                                                            </AlertDialogTrigger>
-                                                            <AlertDialogContent>
-                                                                <AlertDialogHeader>
-                                                                    <AlertDialogTitle>Bạn có chắc chắn không?</AlertDialogTitle>
-                                                                    <AlertDialogDescription>
-                                                                        Hành động này không thể hoàn tác. Điều này sẽ xóa vĩnh viễn yêu cầu máu khẩn cấp.
-                                                                    </AlertDialogDescription>
-                                                                </AlertDialogHeader>
-                                                                <AlertDialogFooter>
-                                                                    <AlertDialogCancel>Hủy</AlertDialogCancel>
-                                                                    <AlertDialogAction
-                                                                        onClick={() => {
-                                                                            handleDeleteEmergency();
-                                                                            setIsDetailDialogOpen(false);
-                                                                        }}
-                                                                        className="bg-red-600 hover:bg-red-700"
-                                                                        disabled={deleteEmergencyMutation.isPending}
-                                                                    >
-                                                                        {deleteEmergencyMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                                                        Xóa
-                                                                    </AlertDialogAction>
-                                                                </AlertDialogFooter>
-                                                            </AlertDialogContent>
-                                                        </AlertDialog>
+                                                                    <DialogContent className="sm:max-w-md">
+                                                                        <DialogHeader>
+                                                                            <DialogTitle>Cập Nhật Yêu Cầu Khẩn Cấp</DialogTitle>
+                                                                            <DialogDescription>
+                                                                                Cập nhật thông tin của yêu cầu máu khẩn cấp này
+                                                                            </DialogDescription>
+                                                                        </DialogHeader>
+                                                                        <form onSubmit={handleUpdateEmergency} className="space-y-4">
+                                                                            <div className="grid grid-cols-2 gap-4">
+                                                                                <div className="space-y-2">
+                                                                                    <Label htmlFor="bloodGroup">Nhóm Máu</Label>
+                                                                                    <Select name="bloodGroup" defaultValue={editingEmergency?.bloodType.group}>
+                                                                                        <SelectTrigger>
+                                                                                            <SelectValue placeholder="Chọn Nhóm Máu" />
+                                                                                        </SelectTrigger>
+                                                                                        <SelectContent>
+                                                                                            <SelectItem value="A">A</SelectItem>
+                                                                                            <SelectItem value="B">B</SelectItem>
+                                                                                            <SelectItem value="AB">AB</SelectItem>
+                                                                                            <SelectItem value="O">O</SelectItem>
+                                                                                        </SelectContent>
+                                                                                    </Select>
+                                                                                </div>
+
+                                                                                <div className="space-y-2">
+                                                                                    <Label htmlFor="bloodRh">Yếu Tố RH</Label>
+                                                                                    <Select name="bloodRh" defaultValue={editingEmergency?.bloodType.rh}>
+                                                                                        <SelectTrigger>
+                                                                                            <SelectValue placeholder="Chọn RH" />
+                                                                                        </SelectTrigger>
+                                                                                        <SelectContent>
+                                                                                            <SelectItem value="+">Dương (+)</SelectItem>
+                                                                                            <SelectItem value="-">Âm (-)</SelectItem>
+                                                                                        </SelectContent>
+                                                                                    </Select>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div className="space-y-2">
+                                                                                <Label htmlFor="bloodTypeComponent">Thành Phần</Label>
+                                                                                <Select name="bloodTypeComponent" defaultValue={editingEmergency?.bloodTypeComponent}>
+                                                                                    <SelectTrigger>
+                                                                                        <SelectValue placeholder="Chọn Thành Phần" />
+                                                                                    </SelectTrigger>
+                                                                                    <SelectContent>
+                                                                                        <SelectItem value="plasma">Huyết Tương</SelectItem>
+                                                                                        <SelectItem value="platelets">Tiểu Cầu</SelectItem>
+                                                                                        <SelectItem value="red_cells">Hồng Cầu</SelectItem>
+                                                                                    </SelectContent>
+                                                                                </Select>
+                                                                            </div>
+
+                                                                            <div className="space-y-2">
+                                                                                <Label htmlFor="requiredVolume">Lượng Máu Yêu Cầu (ml)</Label>
+                                                                                <Input
+                                                                                    name="requiredVolume"
+                                                                                    type="number"
+                                                                                    defaultValue={editingEmergency?.requiredVolume}
+                                                                                    min="1"
+                                                                                />
+                                                                            </div>
+
+                                                                            <div className="grid grid-cols-3 gap-4">
+                                                                                <div className="space-y-2">
+                                                                                    <Label htmlFor="province">Tỉnh/Thành Phố</Label>
+                                                                                    <Select
+                                                                                        value={selectedProvinceId}
+                                                                                        onValueChange={handleProvinceChange}
+                                                                                        disabled={updateEmergencyMutation.isPending}
+                                                                                    >
+                                                                                        <SelectTrigger>
+                                                                                            <SelectValue placeholder="Chọn tỉnh/thành phố" />
+                                                                                        </SelectTrigger>
+                                                                                        <SelectContent>
+                                                                                            {isLoadingProvinces ? (
+                                                                                                <SelectItem value="loading" disabled>Đang tải tỉnh/thành phố...</SelectItem>
+                                                                                            ) : (
+                                                                                                provinces?.map((province) => (
+                                                                                                    <SelectItem key={province.id} value={province.id}>
+                                                                                                        {province.name}
+                                                                                                    </SelectItem>
+                                                                                                ))
+                                                                                            )}
+                                                                                        </SelectContent>
+                                                                                    </Select>
+                                                                                </div>
+
+                                                                                <div className="space-y-2">
+                                                                                    <Label htmlFor="district">Quận/Huyện</Label>
+                                                                                    <Select
+                                                                                        value={selectedDistrictId}
+                                                                                        onValueChange={handleDistrictChange}
+                                                                                        disabled={!selectedProvinceId || updateEmergencyMutation.isPending}
+                                                                                    >
+                                                                                        <SelectTrigger>
+                                                                                            <SelectValue placeholder={selectedProvinceId ? "Chọn quận/huyện" : "Chọn tỉnh/thành phố trước"} />
+                                                                                        </SelectTrigger>
+                                                                                        <SelectContent>
+                                                                                            {isLoadingDistricts ? (
+                                                                                                <SelectItem value="loading" disabled>Đang tải quận/huyện...</SelectItem>
+                                                                                            ) : (
+                                                                                                districts?.map((district) => (
+                                                                                                    <SelectItem key={district.id} value={district.id}>
+                                                                                                        {district.name}
+                                                                                                    </SelectItem>
+                                                                                                ))
+                                                                                            )}
+                                                                                        </SelectContent>
+                                                                                    </Select>
+                                                                                </div>
+
+                                                                                <div className="space-y-2">
+                                                                                    <Label htmlFor="ward">Phường/Xã</Label>
+                                                                                    <Select
+                                                                                        value={selectedWardId}
+                                                                                        onValueChange={handleWardChange}
+                                                                                        disabled={!selectedDistrictId || updateEmergencyMutation.isPending}
+                                                                                    >
+                                                                                        <SelectTrigger>
+                                                                                            <SelectValue placeholder={selectedDistrictId ? "Chọn phường/xã" : "Chọn quận/huyện trước"} />
+                                                                                        </SelectTrigger>
+                                                                                        <SelectContent>
+                                                                                            {isLoadingWards ? (
+                                                                                                <SelectItem value="loading" disabled>Đang tải phường/xã...</SelectItem>
+                                                                                            ) : (
+                                                                                                wards?.map((ward) => (
+                                                                                                    <SelectItem key={ward.id} value={ward.id}>
+                                                                                                        {ward.name}
+                                                                                                    </SelectItem>
+                                                                                                ))
+                                                                                            )}
+                                                                                        </SelectContent>
+                                                                                    </Select>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <DialogFooter>
+                                                                                <Button type="submit" disabled={updateEmergencyMutation.isPending}>
+                                                                                    {updateEmergencyMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                                                                    Lưu Thay Đổi
+                                                                                </Button>
+                                                                            </DialogFooter>
+                                                                        </form>
+                                                                    </DialogContent>
+                                                                </Dialog>
+
+                                                                <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                                                                    <AlertDialogTrigger asChild>
+                                                                        <Button
+                                                                            variant="destructive"
+                                                                            onClick={() => {
+                                                                                if (selectedEmergency) {
+                                                                                    setEmergencyToDelete(selectedEmergency.id);
+                                                                                    setIsDeleteDialogOpen(true);
+                                                                                }
+                                                                            }}
+                                                                            className="min-w-24"
+                                                                        >
+                                                                            Xóa
+                                                                        </Button>
+                                                                    </AlertDialogTrigger>
+                                                                    <AlertDialogContent>
+                                                                        <AlertDialogHeader>
+                                                                            <AlertDialogTitle>Bạn có chắc chắn không?</AlertDialogTitle>
+                                                                            <AlertDialogDescription>
+                                                                                Hành động này không thể hoàn tác. Điều này sẽ xóa vĩnh viễn yêu cầu máu khẩn cấp.
+                                                                            </AlertDialogDescription>
+                                                                        </AlertDialogHeader>
+                                                                        <AlertDialogFooter>
+                                                                            <AlertDialogCancel>Hủy</AlertDialogCancel>
+                                                                            <AlertDialogAction
+                                                                                onClick={() => {
+                                                                                    handleDeleteEmergency();
+                                                                                    setIsDetailDialogOpen(false);
+                                                                                }}
+                                                                                className="bg-red-600 hover:bg-red-700"
+                                                                                disabled={deleteEmergencyMutation.isPending}
+                                                                            >
+                                                                                {deleteEmergencyMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                                                                Xóa
+                                                                            </AlertDialogAction>
+                                                                        </AlertDialogFooter>
+                                                                    </AlertDialogContent>
+                                                                </AlertDialog>
+                                                            </>
+                                                        )}
                                                     </DialogFooter>
                                                 </DialogContent>
                                             </Dialog>

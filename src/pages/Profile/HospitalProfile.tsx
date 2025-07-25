@@ -65,6 +65,26 @@ const HospitalProfile = () => {
     }
   }, [profile]);
 
+  // Keep address names in sync with selected codes
+  const [provinceName, setProvinceName] = useState("");
+  const [districtName, setDistrictName] = useState("");
+  const [wardName, setWardName] = useState("");
+
+  useEffect(() => {
+    const province = provinces?.find(p => p.id === selectedProvinceId);
+    setProvinceName(province?.name || profile?.provinceName || "");
+  }, [selectedProvinceId, provinces, profile]);
+
+  useEffect(() => {
+    const district = districts?.find(d => d.id === selectedDistrictId);
+    setDistrictName(district?.name || profile?.districtName || "");
+  }, [selectedDistrictId, districts, profile]);
+
+  useEffect(() => {
+    const ward = wards?.find(w => w.id === selectedWardId);
+    setWardName(ward?.name || profile?.wardName || "");
+  }, [selectedWardId, wards, profile]);
+
   // Update longitude/latitude when ward changes
   useEffect(() => {
     if (selectedWardId && wards) {
@@ -76,10 +96,7 @@ const HospitalProfile = () => {
     }
   }, [selectedWardId, wards]);
 
-  // Get address names for display
-  const provinceName = provinces?.find(p => p.id === selectedProvinceId)?.name || profile?.provinceName || "";
-  const districtName = districts?.find(d => d.id === selectedDistrictId)?.name || profile?.districtName || "";
-  const wardName = wards?.find(w => w.id === selectedWardId)?.name || profile?.wardName || "";
+  // ...existing code...
 
   // Mutation for updating hospital profile
   const updateHospitalProfileMutation = ProfileService.useUpdateHospitalProfile(
@@ -120,11 +137,11 @@ const HospitalProfile = () => {
       phone,
       longitude: selectedWard.longitude,
       latitude: selectedWard.latitude,
-      wardCode: selectedWardId,
-      districtCode: selectedDistrictId,
-      provinceCode: selectedProvinceId,
+      wardCode: selectedWard.id,
       wardName: selectedWard.name,
+      districtCode: selectedDistrict.id,
       districtName: selectedDistrict.name,
+      provinceCode: selectedProvince.id,
       provinceName: selectedProvince.name,
     });
   };
@@ -200,6 +217,7 @@ const HospitalProfile = () => {
                   ))}
                 </SelectContent>
               </Select>
+              <div className="text-xs text-gray-500 mt-1">Tên: {provinceName}</div>
             </div>
             <div>
               <label className="text-sm font-medium">Quận/Huyện</label>
@@ -215,6 +233,7 @@ const HospitalProfile = () => {
                   ))}
                 </SelectContent>
               </Select>
+              <div className="text-xs text-gray-500 mt-1">Tên: {districtName}</div>
             </div>
             <div>
               <label className="text-sm font-medium">Phường/Xã</label>
@@ -230,6 +249,7 @@ const HospitalProfile = () => {
                   ))}
                 </SelectContent>
               </Select>
+              <div className="text-xs text-gray-500 mt-1">Tên: {wardName}</div>
             </div>
           </div>
           {/* Lat/Lng row */}
