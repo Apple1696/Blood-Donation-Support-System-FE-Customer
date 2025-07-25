@@ -124,27 +124,27 @@ export const ReminderSheet = () => {
                                             {/* Status Badge above campaign name */}
                                             <div className="mb-1">
                                                 <Badge className={
-                                                    statusVariants[activeReminders.data.campaignDonation.currentStatus] || "bg-gray-100 text-gray-800"
+                                                    statusVariants[activeReminders.data.campaignDonation?.currentStatus] || "bg-gray-100 text-gray-800"
                                                 }>
-                                                    {statusLabels[activeReminders.data.campaignDonation.currentStatus] ||
-                                                        activeReminders.data.campaignDonation.currentStatus}
+                                                    {statusLabels[activeReminders.data.campaignDonation?.currentStatus] ||
+                                                        activeReminders.data.campaignDonation?.currentStatus}
                                                 </Badge>
                                             </div>
-                                            <CardTitle className="text-lg">{activeReminders.data.campaignDonation.campaign.name}</CardTitle>
+                                            <CardTitle className="text-lg">{activeReminders.data.campaignDonation?.campaign.name}</CardTitle>
                                             <div className="text-sm text-muted-foreground space-y-1">
                                                 <p>
-                                                    <strong>Địa điểm:</strong> {activeReminders.data.campaignDonation.campaign.location}
+                                                    <strong>Địa điểm:</strong> {activeReminders.data.campaignDonation?.campaign.location}
                                                 </p>
                                                 <p>
-                                                    <strong>Ngày hẹn:</strong> {formatDate(activeReminders.data.campaignDonation.appointmentDate)}
+                                                    <strong>Ngày hẹn:</strong> {formatDate(activeReminders.data.campaignDonation?.appointmentDate)}
                                                 </p>
                                             </div>
                                         </div>
                                         {/* Campaign Banner */}
                                         <div>
                                             <img
-                                                src={activeReminders.data.campaignDonation.campaign.banner}
-                                                alt={activeReminders.data.campaignDonation.campaign.name}
+                                                src={activeReminders.data.campaignDonation?.campaign.banner}
+                                                alt={activeReminders.data.campaignDonation?.campaign.name}
                                                 className="w-full h-32 object-cover rounded-md"
                                             />
                                         </div>
