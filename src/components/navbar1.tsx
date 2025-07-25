@@ -263,7 +263,7 @@ const Navbar1 = ({
   };
 
   return (
-    <section className="py-4" style={{ backgroundColor: '#B03F4A' }}>
+    <section className="py-4" style={{ backgroundColor: '#B03F4A', position: 'sticky', top: 0, zIndex: 50, boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }}>
       <div className="container  mx-auto">
         {/* Desktop Menu */}
         <nav className="hidden lg:flex items-center justify-between">
