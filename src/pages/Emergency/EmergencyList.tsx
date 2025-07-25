@@ -99,6 +99,8 @@ const EmergencyList: React.FC = () => {
                 return <Badge variant="outline" className="flex items-center gap-1 bg-green-50 text-green-700 border-green-200"><CheckCircle className="h-3 w-3" /> Đã Duyệt</Badge>;
             case 'rejected':
                 return <Badge variant="outline" className="flex items-center gap-1 bg-red-50 text-red-700 border-red-200"><XCircle className="h-3 w-3" /> Từ Chối</Badge>;
+                case 'contacts_provided':
+                    return <Badge variant="outline" className="flex items-center gap-1 bg-blue-50 text-blue-700 border-blue-200"><CheckCircle className="h-3 w-3" />Cung Cấp Thông Tin Liên Hệ</Badge>;
             default:
                 return <Badge variant="outline">{status}</Badge>;
         }
@@ -117,7 +119,6 @@ const EmergencyList: React.FC = () => {
             'plasma': { label: 'Huyết Tương', className: 'bg-blue-100 text-blue-800 border-blue-200' },
             'platelets': { label: 'Tiểu Cầu', className: 'bg-purple-100 text-purple-800 border-purple-200' },
             'red_cells': { label: 'Hồng Cầu', className: 'bg-red-100 text-red-800 border-red-200' },
-            'whole_blood': { label: 'Máu Toàn Phần', className: 'bg-rose-100 text-rose-800 border-rose-200' },
         };
 
         const { label, className } = componentMap[component] || { label: component, className: '' };
@@ -237,6 +238,7 @@ const EmergencyList: React.FC = () => {
                                 <SelectItem value="pending">Đang Chờ</SelectItem>
                                 <SelectItem value="approved">Đã Duyệt</SelectItem>
                                 <SelectItem value="rejected">Từ Chối</SelectItem>
+                                <SelectItem value="contacts_provided">Cung Cấp Thông Tin Liên Hệ</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -291,7 +293,6 @@ const EmergencyList: React.FC = () => {
                                 <SelectItem value="plasma">Huyết Tương</SelectItem>
                                 <SelectItem value="platelets">Tiểu Cầu</SelectItem>
                                 <SelectItem value="red_cells">Hồng Cầu</SelectItem>
-                                <SelectItem value="whole_blood">Máu Toàn Phần</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -506,7 +507,6 @@ const EmergencyList: React.FC = () => {
                                                                                 <SelectItem value="plasma">Huyết Tương</SelectItem>
                                                                                 <SelectItem value="platelets">Tiểu Cầu</SelectItem>
                                                                                 <SelectItem value="red_cells">Hồng Cầu</SelectItem>
-                                                                                <SelectItem value="whole_blood">Máu Toàn Phần</SelectItem>
                                                                             </SelectContent>
                                                                         </Select>
                                                                     </div>

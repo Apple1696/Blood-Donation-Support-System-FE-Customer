@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Calendar, Clock, ArrowLeft, MapPin, Phone, Mail, CheckCircle, Users, Droplets, AlertTriangle, Check } from 'lucide-react';
+import { Calendar, Clock, ArrowLeft, MapPin, Phone, Mail, CheckCircle, Users, Droplets, AlertTriangle, Check, Heart } from 'lucide-react';
 import { useGetCampaignById, CampaignStatus } from '@/services/CampaignService';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -8,6 +8,7 @@ import { DonationService } from '@/services/DonationService';
 import { useAuthContext } from '@/providers/AuthProvider';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { useGetMyActiveReminders, type AfterDonationMetadata } from '@/services/ReminderService';
 
 const CampaignDetail: React.FC = () => {
   const { id } = useParams();
@@ -17,6 +18,9 @@ const CampaignDetail: React.FC = () => {
 
   // Fetch user's donation requests to check for existing requests
   const { data: donationRequestsData, isLoading: isDonationLoading } = DonationService.useMyDonationRequests();
+
+  // Fetch active reminders to check for rest period
+  const { data: activeRemindersData, isLoading: isRemindersLoading } = useGetMyActiveReminders();
 
   // Helper functions for checking donation status
   const checkDonationStatus = () => {
@@ -63,7 +67,43 @@ const CampaignDetail: React.FC = () => {
     };
   };
 
+  // Helper function to check if user is in rest period
+  const checkRestPeriod = () => {
+    if (!activeRemindersData?.data?.reminders) {
+      return {
+        isInRestPeriod: false,
+        nextEligibleDate: null
+      };
+    }
+
+    const afterDonationReminders = activeRemindersData.data.reminders.filter(
+      reminder => reminder.type === 'after_donation'
+    );
+
+    for (const reminder of afterDonationReminders) {
+      const metadata = reminder.metadata as AfterDonationMetadata;
+      if (metadata.nextEligibleDate) {
+        const nextEligibleDate = new Date(metadata.nextEligibleDate);
+        const currentDate = new Date();
+        
+        // If next eligible date is in the future, user is still in rest period
+        if (nextEligibleDate > currentDate) {
+          return {
+            isInRestPeriod: true,
+            nextEligibleDate: metadata.nextEligibleDate
+          };
+        }
+      }
+    }
+
+    return {
+      isInRestPeriod: false,
+      nextEligibleDate: null
+    };
+  };
+
   const donationStatus = checkDonationStatus();
+  const restPeriodStatus = checkRestPeriod();
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('vi-VN', {
@@ -94,7 +134,7 @@ const CampaignDetail: React.FC = () => {
     return diffDays;
   };
 
-  if (isLoading || isDonationLoading) {
+  if (isLoading || isDonationLoading || isRemindersLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-red-50/30 flex items-center justify-center">
         <div className="text-center">
@@ -443,8 +483,38 @@ const CampaignDetail: React.FC = () => {
                   </Card>
                 )}
 
+                {/* NEW Use Case 4: User is in rest period after donation */}
+                {!donationStatus.hasActiveRequest && !donationStatus.hasRegisteredForThisCampaign && restPeriodStatus.isInRestPeriod && (
+                  <Card className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white">
+                    <CardContent className="p-6">
+                      <div className="text-center space-y-4">
+                        <div className="flex justify-center">
+                          <Heart className="w-12 h-12 text-white" />
+                        </div>
+                        <h3 className="text-xl font-bold">Bạn đang cần thời gian nghỉ</h3>
+                        <p className="opacity-90">
+                          Cơ thể bạn cần thời gian để phục hồi sau lần hiến máu gần đây.
+                        </p>
+                        {restPeriodStatus.nextEligibleDate && (
+                          <div className="bg-white/20 rounded-lg p-3 mb-4">
+                            <p className="text-sm">
+                              Có thể hiến máu trở lại từ: {formatDate(restPeriodStatus.nextEligibleDate)}
+                            </p>
+                          </div>
+                        )}
+                        <Button
+                          onClick={() => navigate('/campaigns')}
+                          className="w-full bg-white text-purple-600 hover:bg-gray-100"
+                        >
+                          Quay lại
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
                 {/* Default Action Card - Only show if no other conditions are met */}
-                {!donationStatus.hasActiveRequest && !donationStatus.hasRegisteredForThisCampaign && (
+                {!donationStatus.hasActiveRequest && !donationStatus.hasRegisteredForThisCampaign && !restPeriodStatus.isInRestPeriod && (
                   <Card className="bg-gradient-to-r from-red-600 to-pink-600 text-white">
                     <CardContent className="p-6">
                       <div className="text-center space-y-4">

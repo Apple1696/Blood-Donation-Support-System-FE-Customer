@@ -66,7 +66,6 @@ const RequestEmergency = () => {
   const bloodGroups = ["A", "B", "AB", "O"];
   const bloodRhTypes = ["+", "-"];
   const bloodComponents = [
-    { id: "whole_blood", name: "Máu toàn phần" },
     { id: "red_cells", name: "Hồng cầu" },
     { id: "platelets", name: "Tiểu cầu" },
     { id: "plasma", name: "Huyết tương" }

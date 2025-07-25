@@ -18,6 +18,14 @@ const componentDescriptions: Record<string, string> = {
   whole_blood: "Máu toàn phần với tất cả các thành phần. Được sử dụng trong chấn thương, mất máu cấp tính và một số ca phẫu thuật."
 };
 
+// Vietnamese labels for blood components
+const componentLabels: Record<string, string> = {
+  plasma: "Huyết tương",
+  platelets: "Tiểu cầu",
+  red_cells: "Hồng cầu",
+  whole_blood: "Máu toàn phần"
+};
+
 // Color mapping for blood types
 const getBloodTypeColor = (group: string, rh: string): string => {
   if (group === 'O') {
@@ -164,7 +172,7 @@ const ComponentCompatibility: React.FC<ComponentCompatibilityProps> = ({ compati
         <TabsList className="grid grid-cols-4 mb-4">
           {compatibility.map((comp) => (
             <TabsTrigger key={comp.componentType} value={comp.componentType}>
-              {comp.componentType.replace('_', ' ')}
+              {componentLabels[comp.componentType] || comp.componentType.replace('_', ' ')}
             </TabsTrigger>
           ))}
         </TabsList>
