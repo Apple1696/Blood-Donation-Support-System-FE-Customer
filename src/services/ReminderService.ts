@@ -29,23 +29,83 @@ export interface Donor {
   provinceName: string;
   lastDonationDate: string;
   status: string;
+  avatar: string | null;
 }
 
-export interface ReminderMetadata {
-  eligibleDate: string;
-  lastDonationDate: string;
+// Campaign and CampaignDonation interfaces
+export interface Campaign {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  name: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  status: string;
+  banner: string;
+  location: string;
+  limitDonation: number;
+  bloodCollectionDate: string;
+  metadata: Record<string, any>;
 }
+
+export interface CampaignDonation {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  campaign: Campaign;
+  donor: string;
+  currentStatus: string;
+  appointmentDate: string;
+}
+
+export interface CampaignDonationWithDonor {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  campaign: Campaign;
+  donor: Donor;
+  currentStatus: string;
+  appointmentDate: string;
+}
+
+// Metadata types for different reminder types
+export interface BeforeDonationMetadata {
+  location: string;
+  campaignName: string;
+  appointmentDate: string;
+}
+
+export interface AfterDonationMetadata {
+  donationDate: string;
+  nextEligibleDate: string;
+}
+
+export type ReminderMetadata = BeforeDonationMetadata | AfterDonationMetadata;
+
+export type ReminderType = 'before_donation' | 'after_donation';
 
 export interface Reminder {
   id: string;
   createdAt: string;
   updatedAt: string;
   donor: Donor;
-  scheduledDate: string;
-  sentDate: string | null;
   message: string;
+  type: ReminderType;
   metadata: ReminderMetadata;
-  campaignDonation: any | null;
+  campaignDonation: CampaignDonation | null;
+}
+
+// Simplified reminder interface for active reminders API
+export interface ActiveReminder {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  donor: string;
+  message: string;
+  type: ReminderType;
+  metadata: ReminderMetadata;
+  campaignDonation: string;
 }
 
 export interface RemindersResponse {
@@ -57,10 +117,19 @@ export interface RemindersResponse {
   };
 }
 
+export interface ActiveRemindersResponse {
+  success: boolean;
+  message: string;
+  data: {
+    campaignDonation: CampaignDonationWithDonor;
+    reminders: ActiveReminder[];
+  };
+}
+
 export interface GetRemindersParams {
   page?: number;
   limit?: number;
-  filter?: string;
+  filter?: 'all' | 'before_donation' | 'after_donation';
 }
 
 // API service function
@@ -78,6 +147,12 @@ const getMyReminders = async (params: GetRemindersParams): Promise<RemindersResp
   return response.data;
 };
 
+// API service function for active reminders
+const getMyActiveReminders = async (): Promise<ActiveRemindersResponse> => {
+  const response = await api.get('/reminders/my/active');
+  return response.data;
+};
+
 // React Query hook
 export const useGetMyReminders = (params: GetRemindersParams = {}) => {
   return useQuery({
@@ -88,5 +163,15 @@ export const useGetMyReminders = (params: GetRemindersParams = {}) => {
   });
 };
 
-// Export the service function for direct use if needed
-export { getMyReminders };
+// React Query hook for active reminders
+export const useGetMyActiveReminders = () => {
+  return useQuery({
+    queryKey: ['reminders', 'my', 'active'],
+    queryFn: () => getMyActiveReminders(),
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    gcTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+// Export the service functions for direct use if needed
+export { getMyReminders, getMyActiveReminders };

@@ -1,291 +1,320 @@
-import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Calendar, Heart, Clock, User, Droplets, AlertCircle } from 'lucide-react';
-import { useGetMyReminders, type Reminder } from '@/services/ReminderService';
+import { useState } from "react";
+import { Bell } from "lucide-react";
+import { useGetMyActiveReminders, useGetMyReminders } from "@/services/ReminderService";
+import {
+    Sheet,
+    SheetContent,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+} from "@/components/ui/sheet";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 
-const BloodDonationReminder = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const limit = 10;
-
-  const { data, isLoading, error } = useGetMyReminders({
-    page: currentPage,
-    limit
-  });
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
-
-  const getDaysUntilEligible = (eligibleDate: string) => {
-    const today = new Date();
-    const eligible = new Date(eligibleDate);
-    const diffTime = eligible.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
-  };
-
-  const isEligibleNow = (eligibleDate: string) => {
-    const today = new Date();
-    const eligible = new Date(eligibleDate);
-    return today >= eligible;
-  };
-
-  const getWaitingPeriodProgress = (lastDonationDate: string, eligibleDate: string) => {
-    const lastDonation = new Date(lastDonationDate);
-    const eligible = new Date(eligibleDate);
-    const today = new Date();
-    
-    const totalPeriod = eligible.getTime() - lastDonation.getTime();
-    const elapsed = today.getTime() - lastDonation.getTime();
-    
-    return Math.min(100, Math.max(0, (elapsed / totalPeriod) * 100));
-  };
-
-  const ReminderCard = ({ reminder }: { reminder: Reminder }) => {
-    const daysUntilEligible = getDaysUntilEligible(reminder.metadata.eligibleDate);
-    const eligible = isEligibleNow(reminder.metadata.eligibleDate);
-    const progress = getWaitingPeriodProgress(
-      reminder.metadata.lastDonationDate, 
-      reminder.metadata.eligibleDate
-    );
-
-    return (
-      <Card className="border-l-4 border-l-red-500 hover:shadow-lg transition-all duration-300 bg-gradient-to-r from-white to-red-50/30">
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-red-100 rounded-full">
-                <Heart className="h-5 w-5 text-red-500" />
-              </div>
-              <div>
-                <CardTitle className="text-lg text-foreground">Blood Donation Reminder</CardTitle>
-                <CardDescription className="text-sm text-muted-foreground mt-1">
-                  ID: {reminder.id.slice(-8)}
-                </CardDescription>
-              </div>
-            </div>
-            <Badge 
-              variant={eligible ? "default" : "secondary"}
-              className={`${
-                eligible 
-                  ? "bg-green-500 hover:bg-green-600 text-white shadow-md" 
-                  : "bg-secondary text-secondary-foreground"
-              } transition-colors duration-200`}
-            >
-              {eligible ? "✓ Eligible Now" : `${daysUntilEligible} days left`}
-            </Badge>
-          </div>
-        </CardHeader>
-        
-        <CardContent className="space-y-6">
-          {/* Message */}
-          <div className="p-4 bg-primary/5 border border-primary/10 rounded-lg">
-            <p className="text-sm text-foreground font-medium leading-relaxed">
-              {reminder.message}
-            </p>
-          </div>
-
-          {/* Donor Information */}
-          <div className="flex items-center gap-4 p-4 bg-card border border-border rounded-lg">
-            <div className="p-2 bg-primary/10 rounded-full">
-              <User className="h-4 w-4 text-primary" />
-            </div>
-            <div className="flex-1">
-              <p className="font-semibold text-foreground text-lg">
-                {reminder.donor.firstName} {reminder.donor.lastName}
-              </p>
-              <div className="flex items-center gap-3 mt-2">
-                <div className="flex items-center gap-2">
-                  <Droplets className="h-4 w-4 text-red-500" />
-                  <span className="text-sm font-medium text-foreground">
-                    {reminder.donor.bloodType.group}{reminder.donor.bloodType.rh}
-                  </span>
-                </div>
-                <Badge variant="outline" className="text-xs">
-                  {reminder.donor.status}
-                </Badge>
-              </div>
-            </div>
-          </div>
-
-          {/* Date Information Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="p-4 bg-muted/50 rounded-lg border border-border">
-              <div className="flex items-center gap-2 text-sm font-semibold text-foreground mb-2">
-                <Calendar className="h-4 w-4 text-primary" />
-                Last Donation
-              </div>
-              <p className="text-foreground font-medium">
-                {formatDate(reminder.metadata.lastDonationDate)}
-              </p>
-            </div>
-            
-            <div className="p-4 bg-muted/50 rounded-lg border border-border">
-              <div className="flex items-center gap-2 text-sm font-semibold text-foreground mb-2">
-                <Clock className="h-4 w-4 text-primary" />
-                Eligible From
-              </div>
-              <p className="text-foreground font-medium">
-                {formatDate(reminder.metadata.eligibleDate)}
-              </p>
-            </div>
-          </div>
-
-          {/* Progress Indicator */}
-          <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-foreground">Waiting Period Progress</span>
-              <span className="text-sm font-semibold text-primary">
-                {eligible ? "Complete ✓" : `${Math.round(progress)}%`}
-              </span>
-            </div>
-            <div className="w-full bg-secondary rounded-full h-3 overflow-hidden">
-              <div 
-                className={`h-3 rounded-full transition-all duration-500 ease-out ${
-                  eligible ? "bg-green-500" : "bg-gradient-to-r from-red-500 to-red-400"
-                }`}
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-            <div className="text-xs text-muted-foreground text-center">
-              {eligible 
-                ? "You can now donate blood!" 
-                : `${Math.ceil((100 - progress) * 90 / 100)} days remaining approximately`
-              }
-            </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex gap-3 pt-2">
-            {eligible ? (
-              <>
-                <Button className="flex-1 bg-primary hover:bg-primary/90 shadow-md transition-all duration-200">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  Schedule Donation
-                </Button>
-                <Button variant="outline" className="hover:bg-secondary/80 transition-colors duration-200">
-                  <Heart className="w-4 h-4 mr-2" />
-                  Find Campaigns
-                </Button>
-              </>
-            ) : (
-              <Button variant="outline" className="flex-1" disabled>
-                <Clock className="w-4 h-4 mr-2" />
-                Not Eligible Yet
-              </Button>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-    );
-  };
-
-  if (isLoading) {
-    return (
-      <div className="max-w-4xl mx-auto p-6">
-        <div className="flex items-center justify-center min-h-96">
-          <div className="flex items-center gap-3">
-            <div className="h-6 w-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-            <span className="text-lg text-muted-foreground">Loading reminders...</span>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="max-w-4xl mx-auto p-6">
-        <Card className="border-destructive">
-          <CardContent className="flex items-center justify-center min-h-96">
-            <div className="text-center space-y-4">
-              <AlertCircle className="h-12 w-12 text-destructive mx-auto" />
-              <div>
-                <h3 className="text-lg font-semibold text-foreground">Error Loading Reminders</h3>
-                <p className="text-muted-foreground mt-2">
-                  Unable to fetch your reminders. Please try again later.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  const reminders = data?.data.items || [];
-  const total = data?.data.total || 0;
-  const totalPages = Math.ceil(total / limit);
-
-  return (
-    <div className="max-w-4xl mx-auto p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-4xl font-bold text-foreground mb-2">Blood Donation Reminders</h1>
-          <p className="text-muted-foreground">
-            {total > 0 ? `${total} reminder${total > 1 ? 's' : ''} found` : 'No reminders yet'}
-          </p>
-        </div>
-      </div>
-
-      {/* Reminders List */}
-      {reminders.length > 0 ? (
-        <div className="space-y-6">
-          {reminders.map((reminder) => (
-            <ReminderCard key={reminder.id} reminder={reminder} />
-          ))}
-        </div>
-      ) : (
-        <Card>
-          <CardContent className="flex items-center justify-center min-h-64">
-            <div className="text-center space-y-3">
-              <Heart className="h-16 w-16 text-muted-foreground mx-auto" />
-              <div>
-                <h3 className="text-lg font-semibold text-foreground">No Reminders</h3>
-                <p className="text-muted-foreground">
-                  You don't have any reminders with the current filter.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between">
-          <div className="text-sm text-muted-foreground">
-            Page {currentPage} of {totalPages}
-          </div>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-              disabled={currentPage === 1}
-            >
-              Previous
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </Button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+// Status label mapping and badge color mapping
+const statusLabels: Record<string, string> = {
+    completed: "Đã hoàn thành",
+    pending: "Chờ xác nhận",
+    rejected: "Bị từ chối",
+    result_returned: "Đã có kết quả",
+    appointment_confirmed: "Đã xác nhận lịch hẹn",
+    appointment_absent: "Vắng mặt",
+    customer_cancelled: "Đã hủy",
+    customer_checked_in: "Đã check-in",
 };
 
-export default BloodDonationReminder;
+const statusVariants: Record<string, string> = {
+    completed: "bg-green-100 text-green-800",
+    pending: "bg-yellow-100 text-yellow-800",
+    rejected: "bg-red-100 text-red-800",
+    result_returned: "bg-purple-100 text-purple-800",
+    appointment_confirmed: "bg-blue-100 text-blue-800",
+    appointment_absent: "bg-gray-100 text-gray-800",
+    customer_cancelled: "bg-red-100 text-red-800",
+    customer_checked_in: "bg-indigo-100 text-indigo-800",
+};
+
+export const ReminderSheet = () => {
+    const [isOpen, setIsOpen] = useState(false);
+    const { data: activeReminders, isLoading } = useGetMyActiveReminders();
+    const { data: allReminders } = useGetMyReminders({ filter: 'all' });
+    const { data: beforeReminders } = useGetMyReminders({ filter: 'before_donation' });
+    const { data: afterReminders } = useGetMyReminders({ filter: 'after_donation' });
+
+    const formatDate = (dateString: string) => {
+        return new Date(dateString).toLocaleDateString('vi-VN', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        });
+    };
+
+    const renderReminderCard = (reminder: any, showCampaignInfo: boolean = false) => (
+        <Card key={reminder.id} className="mb-3">
+            <CardContent className="p-4">
+                <div className="space-y-3">
+                    {/* Message - Priority emphasis */}
+                    <div className="p-3 bg-blue-50 rounded-md border border-blue-200">
+                        <p className="text-sm font-medium text-blue-900">{reminder.message}</p>
+                    </div>
+
+                    {/* Campaign Name - Always emphasized */}
+                    {(showCampaignInfo && reminder.campaignDonation) && (
+                        <div className="p-2 bg-gray-50 rounded-md">
+                            <p className="text-sm"><strong>Chiến dịch:</strong> {reminder.campaignDonation.campaign.name}</p>
+                        </div>
+                    )}
+
+                    {/* After donation specific info */}
+                    {reminder.type === 'after_donation' && 'donationDate' in reminder.metadata && (
+                        <div className="grid grid-cols-2 gap-2">
+                            <div className="p-2 bg-green-50 rounded-md border border-green-200">
+                                <p className="text-xs font-medium text-green-800">Ngày hiến máu:</p>
+                                <p className="text-sm font-bold text-green-900">
+                                    {formatDate(reminder.metadata.donationDate)}
+                                </p>
+                            </div>
+                            {'nextEligibleDate' in reminder.metadata && (
+                                <div className="p-2 bg-orange-50 rounded-md border border-orange-200">
+                                    <p className="text-xs font-medium text-orange-800">Ngày có thể hiến tiếp:</p>
+                                    <p className="text-sm font-bold text-orange-900">
+                                        {formatDate(reminder.metadata.nextEligibleDate)}
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    <div className="text-xs text-muted-foreground">
+                        {formatDate(reminder.createdAt)}
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+    );
+
+    return (
+        <Sheet open={isOpen} onOpenChange={setIsOpen}>
+            <SheetTrigger asChild>
+                <button className="p-2 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
+                    <Bell className="size-4" />
+                </button>
+            </SheetTrigger>
+            <SheetContent className="w-[60vw] min-w-[600px] overflow-y-auto">
+                <SheetHeader className="mb-6 px-6">
+                    <SheetTitle>Nhắc nhở hiến máu</SheetTitle>
+                </SheetHeader>
+
+                <div className="px-6">
+                    {isLoading ? (
+                        <div className="flex items-center justify-center py-8">
+                            <div className="text-muted-foreground">Đang tải...</div>
+                        </div>
+                    ) : activeReminders?.data ? (
+                        <div className="space-y-8">
+                            {/* Section Title */}
+                            <h2 className="text-xl font-semibold mb-2 text-primary">Nhắc nhở gần đây</h2>
+                            {/* Campaign Card */}
+                            <Card>
+                                <CardContent className="p-4">
+                                    <div className="grid grid-cols-2 gap-4 items-start">
+                                        {/* Campaign Info */}
+                                        <div className="space-y-3">
+                                            {/* Status Badge above campaign name */}
+                                            <div className="mb-1">
+                                                <Badge className={
+                                                    statusVariants[activeReminders.data.campaignDonation.currentStatus] || "bg-gray-100 text-gray-800"
+                                                }>
+                                                    {statusLabels[activeReminders.data.campaignDonation.currentStatus] ||
+                                                        activeReminders.data.campaignDonation.currentStatus}
+                                                </Badge>
+                                            </div>
+                                            <CardTitle className="text-lg">{activeReminders.data.campaignDonation.campaign.name}</CardTitle>
+                                            <div className="text-sm text-muted-foreground space-y-1">
+                                                <p>
+                                                    <strong>Địa điểm:</strong> {activeReminders.data.campaignDonation.campaign.location}
+                                                </p>
+                                                <p>
+                                                    <strong>Ngày hẹn:</strong> {formatDate(activeReminders.data.campaignDonation.appointmentDate)}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        {/* Campaign Banner */}
+                                        <div>
+                                            <img
+                                                src={activeReminders.data.campaignDonation.campaign.banner}
+                                                alt={activeReminders.data.campaignDonation.campaign.name}
+                                                className="w-full h-32 object-cover rounded-md"
+                                            />
+                                        </div>
+                                    </div>
+                                    {/* Emphasized message below campaign info */}
+                                    {activeReminders.data.reminders?.[0]?.message && (
+                                        <div className="mt-4 p-3 bg-blue-50 rounded-md border border-blue-200">
+                                            <p className="text-sm font-medium text-blue-900">
+                                                {activeReminders.data.reminders[0].message}
+                                            </p>
+                                        </div>
+                                    )}
+                                    {/* After donation specific info below the message */}
+                                    {activeReminders.data.reminders?.[0]?.type === "after_donation" &&
+                                        "donationDate" in activeReminders.data.reminders[0].metadata && (
+                                            <div className="mt-3 grid grid-cols-2 gap-2">
+                                                <div className="p-2 bg-green-50 rounded-md border border-green-200">
+                                                    <p className="text-xs font-medium text-green-800">Ngày hiến máu:</p>
+                                                    <p className="text-sm font-bold text-green-900">
+                                                        {formatDate(activeReminders.data.reminders[0].metadata.donationDate)}
+                                                    </p>
+                                                </div>
+                                                {"nextEligibleDate" in activeReminders.data.reminders[0].metadata && (
+                                                    <div className="p-2 bg-orange-50 rounded-md border border-orange-200">
+                                                        <p className="text-xs font-medium text-orange-800">Ngày có thể hiến tiếp:</p>
+                                                        <p className="text-sm font-bold text-orange-900">
+                                                            {formatDate(activeReminders.data.reminders[0].metadata.nextEligibleDate)}
+                                                        </p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                </CardContent>
+                            </Card>
+
+                            {/* Reminders Tabs Section Title */}
+                            <h2 className="text-xl font-semibold mb-2 mt-8 text-primary">Lịch sử nhắc nhở</h2>
+                            {/* Reminders Tabs */}
+                            <Tabs defaultValue="all" className="w-full">
+                                <TabsList className="grid w-full grid-cols-3">
+                                    <TabsTrigger value="all">Tất cả</TabsTrigger>
+                                    <TabsTrigger value="before_donation">Chuẩn bị</TabsTrigger>
+                                    <TabsTrigger value="after_donation">Sau hiến máu</TabsTrigger>
+                                </TabsList>
+
+                                <TabsContent value="all" className="mt-4">
+                                    <div className="space-y-2">
+                                        {allReminders?.data?.items?.length ? (
+                                            allReminders.data.items.map((reminder) => renderReminderCard(reminder, true))
+                                        ) : (
+                                            <div className="text-center py-8 text-muted-foreground">
+                                                <p>Không có nhắc nhở nào</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </TabsContent>
+
+                                <TabsContent value="before_donation" className="mt-4">
+                                    <div className="space-y-2">
+                                        {beforeReminders?.data?.items?.length ? (
+                                            beforeReminders.data.items.map((reminder) => renderReminderCard(reminder, true))
+                                        ) : (
+                                            <div className="text-center py-8 text-muted-foreground">
+                                                <p>Không có nhắc nhở chuẩn bị nào</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </TabsContent>
+
+                                <TabsContent value="after_donation" className="mt-4">
+                                    <div className="space-y-2">
+                                        {afterReminders?.data?.items?.length ? (
+                                            afterReminders.data.items.map((reminder) => renderReminderCard(reminder, true))
+                                        ) : (
+                                            <div className="text-center py-8 text-muted-foreground">
+                                                <p>Không có nhắc nhở sau hiến máu nào</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </TabsContent>
+                            </Tabs>
+                        </div>
+                    ) : (
+                        <div className="flex flex-col items-center justify-center py-8 text-center">
+                            <Bell className="size-12 text-muted-foreground mb-4" />
+                            <p className="text-muted-foreground">Không có nhắc nhở nào</p>
+                            <p className="text-sm text-muted-foreground mt-2">
+                                Bạn chưa có chiến dịch hiến máu nào gần đây
+                            </p>
+                        </div>
+                    )}
+                </div>
+            </SheetContent>
+        </Sheet>
+    );
+};
+
+// Main Reminder page component
+const Reminder = () => {
+    const { data: reminders, isLoading } = useGetMyReminders();
+
+    const formatDate = (dateString: string) => {
+        return new Date(dateString).toLocaleDateString('vi-VN', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        });
+    };
+
+    return (
+        <div className="container mx-auto py-8">
+            <h1 className="text-3xl font-bold mb-8">Nhắc nhở hiến máu</h1>
+
+            {isLoading ? (
+                <div className="flex items-center justify-center py-8">
+                    <div className="text-muted-foreground">Đang tải...</div>
+                </div>
+            ) : reminders?.data?.items?.length ? (
+                <div className="space-y-4">
+                    {reminders.data.items.map((reminder) => (
+                        <Card key={reminder.id}>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    {reminder.type === 'before_donation' ? '🔔' : '✅'}
+                                    {reminder.type === 'before_donation' ? 'Chuẩn bị hiến máu' : 'Sau khi hiến máu'}
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="space-y-4">
+                                    <p className="text-sm">{reminder.message}</p>
+
+                                    {reminder.campaignDonation && (
+                                        <div className="p-4 bg-gray-50 rounded-md">
+                                            <h4 className="font-medium mb-2">Thông tin chiến dịch:</h4>
+                                            <p className="text-sm"><strong>Tên:</strong> {reminder.campaignDonation.campaign.name}</p>
+                                            <p className="text-sm"><strong>Địa điểm:</strong> {reminder.campaignDonation.campaign.location}</p>
+                                            <p className="text-sm"><strong>Ngày hẹn:</strong> {formatDate(reminder.campaignDonation.appointmentDate)}</p>
+                                        </div>
+                                    )}
+
+                                    {reminder.type === 'after_donation' && 'nextEligibleDate' in reminder.metadata && (
+                                        <div className="p-3 bg-green-50 rounded-md border border-green-200">
+                                            <p className="text-sm font-medium text-green-800">
+                                                Ngày có thể hiến máu tiếp theo:
+                                            </p>
+                                            <p className="text-sm text-green-700">
+                                                {formatDate(reminder.metadata.nextEligibleDate)}
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    <div className="text-xs text-muted-foreground">
+                                        {formatDate(reminder.createdAt)}
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+            ) : (
+                <div className="flex flex-col items-center justify-center py-16 text-center">
+                    <Bell className="size-16 text-muted-foreground mb-4" />
+                    <h2 className="text-xl font-semibold mb-2">Không có nhắc nhở nào</h2>
+                    <p className="text-muted-foreground">
+                        Bạn chưa có nhắc nhở hiến máu nào. Hãy tham gia các chiến dịch để nhận được thông báo!
+                    </p>
+                </div>
+            )}
+        </div>
+    );
+};
+
+export default Reminder;

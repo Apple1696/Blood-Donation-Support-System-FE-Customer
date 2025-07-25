@@ -1,5 +1,6 @@
-import { Menu, Sunset, Trees, Zap, Bell } from "lucide-react";
+import { Menu, Sunset, Trees, Zap } from "lucide-react";
 import { useUser, useClerk } from "@clerk/clerk-react";
+import { ReminderSheet } from "@/pages/Reminder";
 
 import {
   Accordion,
@@ -205,12 +206,7 @@ const Navbar1 = ({
     return (
       <div className="flex items-center gap-6">
         {/* Bell icon for notifications */}
-        <a 
-          href="/reminder" 
-          className="p-2 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
-        >
-          <Bell className="size-4" />
-        </a>
+        <ReminderSheet />
         
         {/* User Avatar Dropdown */}
         <DropdownMenu>
