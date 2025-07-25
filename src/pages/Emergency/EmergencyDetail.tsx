@@ -1,30 +1,82 @@
-import React from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { useGetEmergencyRequestById } from "../../services/EmergencyService";
 import { format } from "date-fns";
-import { MapPin, Clock, Calendar, ArrowLeft, Loader2, AlertCircle } from "lucide-react";
-import { Button } from "../../components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../components/ui/card";
+import React, { useState, useEffect } from "react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../../components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../../components/ui/alert-dialog";
+import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label";
+import { toast } from "sonner";
+import { useUpdateEmergencyRequest, useDeleteEmergencyRequest } from "../../services/EmergencyService";
 import { Badge } from "../../components/ui/badge";
-import { Separator } from "../../components/ui/separator";
+import { Button } from "../../components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
+import { Loader2, MapPin, Calendar, Eye, Clock, CheckCircle, XCircle } from "lucide-react";
+import type { EmergencyResponse } from "../../services/EmergencyService";
+import { AddressService } from "@/services/AddressService";
+import { useQueryClient } from "@tanstack/react-query";
 
-const EmergencyDetail: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-  const { data: emergency, isLoading, isError } = useGetEmergencyRequestById(id || "");
+interface EmergencyDetailProps {
+  emergency: EmergencyResponse;
+  isOpen: boolean;
+  onClose: () => void;
+  children: React.ReactNode;
+}
 
-  const handleGoBack = () => {
-    navigate(-1);
+const EmergencyDetail: React.FC<EmergencyDetailProps> = ({ emergency, isOpen, onClose, children }) => {
+  const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const updateEmergencyMutation = useUpdateEmergencyRequest();
+  const deleteEmergencyMutation = useDeleteEmergencyRequest();
+  const queryClient = useQueryClient();
+
+  // Add state for address selection
+  const [selectedProvinceId, setSelectedProvinceId] = useState<string>("");
+  const [selectedDistrictId, setSelectedDistrictId] = useState<string>("");
+  const [selectedWardId, setSelectedWardId] = useState<string>("");
+
+  // Add address data queries
+  const { data: provinces = [], isLoading: isLoadingProvinces } = AddressService.useProvinces();
+  const { data: districts = [], isLoading: isLoadingDistricts } = AddressService.useDistricts(selectedProvinceId);
+  const { data: wards = [], isLoading: isLoadingWards } = AddressService.useWards(selectedDistrictId);
+
+  // Set location IDs when emergency changes
+  useEffect(() => {
+    if (emergency) {
+      setSelectedProvinceId(emergency.provinceCode || "");
+      setSelectedDistrictId(emergency.districtCode || "");
+      setSelectedWardId(emergency.wardCode || "");
+    }
+  }, [emergency]);
+
+  // Handle province selection
+  const handleProvinceChange = (value: string) => {
+    setSelectedProvinceId(value);
+    setSelectedDistrictId("");
+    setSelectedWardId("");
+  };
+
+  // Handle district selection
+  const handleDistrictChange = (value: string) => {
+    setSelectedDistrictId(value);
+    setSelectedWardId("");
+  };
+
+  // Handle ward selection
+  const handleWardChange = (value: string) => {
+    setSelectedWardId(value);
   };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'pending':
-        return <Badge variant="outline" className="flex items-center gap-1 bg-amber-50 text-amber-700 border-amber-200"><Clock className="h-3 w-3" /> Pending</Badge>;
+        return <Badge variant="outline" className="flex items-center gap-1 bg-amber-50 text-amber-700 border-amber-200"><Clock className="h-3 w-3" /> Đang Chờ</Badge>;
       case 'approved':
-        return <Badge variant="outline" className="flex items-center gap-1 bg-green-50 text-green-700 border-green-200"><Clock className="h-3 w-3" /> Approved</Badge>;
+        return <Badge variant="outline" className="flex items-center gap-1 bg-green-50 text-green-700 border-green-200"><CheckCircle className="h-3 w-3" /> Đã Duyệt</Badge>;
       case 'rejected':
-        return <Badge variant="outline" className="flex items-center gap-1 bg-red-50 text-red-700 border-red-200"><Clock className="h-3 w-3" /> Rejected</Badge>;
+        return <Badge variant="outline" className="flex items-center gap-1 bg-red-50 text-red-700 border-red-200"><XCircle className="h-3 w-3" /> Từ Chối</Badge>;
+      case 'contacts_provided':
+        return <Badge variant="outline" className="flex items-center gap-1 bg-blue-50 text-blue-700 border-blue-200"><CheckCircle className="h-3 w-3" />Cung Cấp Thông Tin Liên Hệ</Badge>;
+      case 'expired':
+        return <Badge variant="outline" className="flex items-center gap-1 bg-gray-50 text-gray-700 border-gray-200"><Clock className="h-3 w-3" /> Đã Hết Hạn</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -32,7 +84,7 @@ const EmergencyDetail: React.FC = () => {
 
   const getBloodTypeBadge = (bloodGroup: string, bloodRh: string) => {
     return (
-      <Badge className="bg-primary text-primary-foreground font-bold text-lg px-3 py-1">
+      <Badge className="bg-primary text-primary-foreground font-bold">
         {bloodGroup}{bloodRh}
       </Badge>
     );
@@ -40,215 +92,308 @@ const EmergencyDetail: React.FC = () => {
 
   const getComponentBadge = (component: string) => {
     const componentMap: Record<string, { label: string, className: string }> = {
-      'plasma': { label: 'Plasma', className: 'bg-blue-100 text-blue-800 border-blue-200' },
-      'platelets': { label: 'Platelets', className: 'bg-purple-100 text-purple-800 border-purple-200' },
-      'red_cells': { label: 'Red Cells', className: 'bg-red-100 text-red-800 border-red-200' },
-      'whole_blood': { label: 'Whole Blood', className: 'bg-rose-100 text-rose-800 border-rose-200' },
+      'plasma': { label: 'Huyết Tương', className: 'bg-blue-100 text-blue-800 border-blue-200' },
+      'platelets': { label: 'Tiểu Cầu', className: 'bg-purple-100 text-purple-800 border-purple-200' },
+      'red_cells': { label: 'Hồng Cầu', className: 'bg-red-100 text-red-800 border-red-200' },
     };
 
     const { label, className } = componentMap[component] || { label: component, className: '' };
     return <Badge variant="outline" className={className}>{label}</Badge>;
   };
 
-  if (isLoading) {
-    return (
-      <div className="container mx-auto py-16 px-4 flex flex-col items-center justify-center">
-        <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-        <p className="text-muted-foreground">Loading emergency request details...</p>
-      </div>
-    );
-  }
+  const handleUpdateEmergency = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!emergency) return;
 
-  if (isError || !emergency) {
-    return (
-      <div className="container mx-auto py-16 px-4 flex flex-col items-center justify-center text-destructive">
-        <AlertCircle className="h-12 w-12 mb-4" />
-        <h2 className="text-2xl font-bold mb-2">Error Loading Request</h2>
-        <p className="text-muted-foreground mb-8">Unable to load the emergency request details.</p>
-        <Button onClick={handleGoBack} variant="outline">
-          <ArrowLeft className="mr-2 h-4 w-4" /> Go Back
-        </Button>
-      </div>
+    const formData = new FormData(e.currentTarget);
+
+    // Find selected location names
+    const province = provinces?.find(p => p.id === selectedProvinceId);
+    const district = districts?.find(d => d.id === selectedDistrictId);
+    const ward = wards?.find(w => w.id === selectedWardId);
+
+    const payload = {
+      requiredVolume: Number(formData.get('requiredVolume')),
+      bloodGroup: formData.get('bloodGroup') as string,
+      bloodRh: formData.get('bloodRh') as string,
+      bloodTypeComponent: formData.get('bloodTypeComponent') as string,
+      provinceCode: selectedProvinceId,
+      districtCode: selectedDistrictId,
+      wardCode: selectedWardId,
+      provinceName: province?.name || "",
+      districtName: district?.name || "",
+      wardName: ward?.name || "",
+    };
+
+    updateEmergencyMutation.mutate(
+      { id: emergency.id, payload },
+      {
+        onSuccess: () => {
+          setIsUpdateDialogOpen(false);
+          onClose();
+          toast.success("Cập nhật yêu cầu khẩn cấp thành công");
+          queryClient.invalidateQueries({ queryKey: ['emergencyRequests'] });
+        },
+        onError: (error) => {
+          toast.error("Không thể cập nhật yêu cầu khẩn cấp");
+          console.error("Update error:", error);
+        }
+      }
     );
-  }
+  };
+
+  const handleDeleteEmergency = () => {
+    if (!emergency) return;
+
+    deleteEmergencyMutation.mutate(emergency.id, {
+      onSuccess: () => {
+        setIsDeleteDialogOpen(false);
+        onClose();
+        toast.success("Xóa yêu cầu khẩn cấp thành công");
+        queryClient.invalidateQueries({ queryKey: ['emergencyRequests'] });
+      },
+      onError: (error) => {
+        toast.error("Không thể xóa yêu cầu khẩn cấp");
+        console.error("Delete error:", error);
+      }
+    });
+  };
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <Button 
-        variant="ghost" 
-        onClick={handleGoBack} 
-        className="mb-6 hover:bg-transparent hover:text-primary"
-      >
-        <ArrowLeft className="mr-2 h-4 w-4" /> Back to Emergency Requests
-      </Button>
+    <Dialog open={isOpen} onOpenChange={(open) => {
+      if (!open) {
+        onClose();
+      }
+    }}>
+      <DialogTrigger asChild>
+        {children}
+      </DialogTrigger>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {/* Main Info Card */}
-        <Card className="md:col-span-2">
-          <CardHeader>
-            <div className="flex justify-between items-center">
-              <div>
-                <CardTitle className="text-2xl mb-2">
-                  Emergency Blood Request
-                </CardTitle>
-                <CardDescription>
-                  ID: {emergency.id}
-                </CardDescription>
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <div className="flex justify-between items-center">
+            {getStatusBadge(emergency.status)}
+          </div>
+        </DialogHeader>
+
+        <div className="space-y-4 py-2">
+          <div className="bg-muted/50 p-4 rounded-lg">
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="text-lg font-semibold">Thông Tin Máu Yêu Cầu</h3>
+              <div className="flex items-center gap-2">
+                {getBloodTypeBadge(emergency.bloodType.group, emergency.bloodType.rh)}
+                {getComponentBadge(emergency.bloodTypeComponent)}
               </div>
-              {getStatusBadge(emergency.status)}
             </div>
-          </CardHeader>
-          <Separator />
-          <CardContent className="pt-6">
-            <div className="space-y-6">
-              <div className="flex justify-between items-center">
-                <h3 className="text-lg font-medium">Required Blood</h3>
-                <div className="flex items-center gap-2">
-                  {getBloodTypeBadge(emergency.bloodType.group, emergency.bloodType.rh)}
-                  {getComponentBadge(emergency.bloodTypeComponent)}
-                </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <p className="text-sm text-muted-foreground">Lượng Máu Yêu Cầu</p>
+                <p className="font-medium text-lg">{emergency.requiredVolume} ml</p>
               </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {emergency.usedVolume > 0 && (
                 <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Required Volume</p>
-                  <p className="font-medium">{emergency.requiredVolume} ml</p>
+                  <p className="text-sm text-muted-foreground">Lượng Đã Sử Dụng</p>
+                  <p className="font-medium text-lg">{emergency.usedVolume} ml</p>
                 </div>
-                {emergency.usedVolume > 0 && (
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Used Volume</p>
-                    <p className="font-medium">{emergency.usedVolume} ml</p>
+              )}
+            </div>
+          </div>
+
+          <div className="bg-muted/50 p-4 rounded-lg">
+            <h3 className="text-lg font-semibold mb-3">Địa Điểm</h3>
+            <div className="flex items-start gap-2">
+              <MapPin className="h-5 w-5 text-muted-foreground mt-0.5" />
+              <div>
+                <p className="font-medium">{emergency.provinceName}</p>
+                <p className="text-muted-foreground">
+                  {emergency.districtName}, {emergency.wardName}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-muted/50 p-4 rounded-lg">
+            <h3 className="text-lg font-semibold mb-3">Ngày Tạo</h3>
+            <div className="flex items-center gap-2">
+              <Calendar className="h-4 w-4 text-muted-foreground" />
+              <p className="font-medium">{format(new Date(emergency.startDate), "dd/MM/yyyy")}</p>
+            </div>
+          </div>
+
+          {emergency.status === "contacts_provided" && emergency.suggestedContacts && emergency.suggestedContacts.length > 0 && (
+            <div className="bg-muted/50 p-4 rounded-lg">
+              <h3 className="text-lg font-semibold mb-3">Danh Sách Người Liên Hệ Đề Xuất</h3>
+              <div className="overflow-x-auto">
+                <table className="min-w-full border rounded-lg">
+                  <thead>
+                    <tr className="bg-muted">
+                      <th className="px-4 py-2 text-left font-semibold text-sm">Họ và Tên</th>
+                      <th className="px-4 py-2 text-left font-semibold text-sm">Số Điện Thoại</th>
+                      <th className="px-4 py-2 text-left font-semibold text-sm">Nhóm Máu</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {emergency.suggestedContacts.map((contact) => (
+                      <tr key={contact.id} className="border-t">
+                        <td className="px-4 py-2">{contact.lastName} {contact.firstName}</td>
+                        <td className="px-4 py-2">{contact.phone}</td>
+                        <td className="px-4 py-2">
+                          <Badge className="bg-primary text-primary-foreground font-bold">
+                            {contact.bloodType.group}{contact.bloodType.rh}
+                          </Badge>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {emergency.bloodUnit && (
+            <div className="bg-muted/50 p-4 rounded-lg">
+              <h3 className="text-lg font-semibold mb-3">Thông Tin Đơn Vị Máu</h3>
+              <div className="space-y-2">
+                <div>
+                  <p className="text-sm text-muted-foreground">Mã Đơn Vị</p>
+                  <p className="font-medium">{emergency.bloodUnit.id || "Chưa được phân bổ"}</p>
+                </div>
+                {emergency.bloodUnit.donatedBy && (
+                  <div>
+                    <p className="text-sm text-muted-foreground">Người Hiến</p>
+                    <p className="font-medium">{emergency.bloodUnit.donatedBy.name || "Ẩn danh"}</p>
                   </div>
                 )}
               </div>
-              
-              <div className="space-y-3">
-                <h3 className="text-lg font-medium">Location Details</h3>
-                <div className="flex items-start gap-2">
-                  <MapPin className="h-5 w-5 text-muted-foreground mt-0.5" />
-                  <div>
-                    <p className="font-medium">{emergency.wardName}</p>
-                    <p className="text-muted-foreground">
-                      {emergency.districtName}, {emergency.provinceName}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-3">
-                  <h3 className="text-lg font-medium">Date Information</h3>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-muted-foreground" />
-                      <div>
-                        <p className="text-sm text-muted-foreground">Start Date</p>
-                        <p>{format(new Date(emergency.startDate), "MMMM d, yyyy")}</p>
-                      </div>
-                    </div>
-                    {emergency.endDate && (
-                      <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 text-muted-foreground" />
-                        <div>
-                          <p className="text-sm text-muted-foreground">End Date</p>
-                          <p>{format(new Date(emergency.endDate), "MMMM d, yyyy")}</p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                
-                <div className="space-y-3">
-                  <h3 className="text-lg font-medium">Timestamps</h3>
-                  <div className="space-y-2">
-                    <div>
-                      <p className="text-sm text-muted-foreground">Created</p>
-                      <p>{format(new Date(emergency.createdAt), "MMM d, yyyy 'at' h:mm a")}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Last Updated</p>
-                      <p>{format(new Date(emergency.updatedAt), "MMM d, yyyy 'at' h:mm a")}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Side Info Card */}
-        <div className="space-y-6">
-        
-
-          {emergency.bloodUnit && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Blood Unit Information</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Unit ID</p>
-                    <p className="font-medium">{emergency.bloodUnit.id || "Not assigned"}</p>
-                  </div>
-                  {emergency.bloodUnit.donatedBy && (
-                    <div>
-                      <p className="text-sm text-muted-foreground">Donated By</p>
-                      <p className="font-medium">{emergency.bloodUnit.donatedBy.name || "Anonymous"}</p>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Action Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Actions</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {emergency.status === "pending" && (
-                <>
-                  <Button className="w-full" variant="default">Respond to Request</Button>
-                  <Button className="w-full" variant="outline">Contact Requester</Button>
-                </>
-              )}
-              {emergency.status === "approved" && (
-                <Button className="w-full" variant="outline">View Donation Details</Button>
-              )}
-              <Button className="w-full" variant="outline">Share Request</Button>
-            </CardContent>
-          </Card>
-
-          {/* Coordinates Card */}
-          {(emergency.latitude && emergency.longitude) && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Location Coordinates</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Latitude</p>
-                    <p className="font-medium">{emergency.latitude}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Longitude</p>
-                    <p className="font-medium">{emergency.longitude}</p>
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Button variant="outline" className="w-full" onClick={() => window.open(`https://maps.google.com/?q=${emergency.latitude},${emergency.longitude}`, '_blank')}>
-                  Open in Maps
-                </Button>
-              </CardFooter>
-            </Card>
           )}
         </div>
-      </div>
-    </div>
+
+        <DialogFooter className="flex flex-row justify-end gap-3 pt-4">
+          {/* Only show update and delete if status is pending */}
+          {emergency.status === "pending" && (
+            <>
+              <Dialog open={isUpdateDialogOpen} onOpenChange={setIsUpdateDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsUpdateDialogOpen(true)}
+                    className="min-w-24"
+                  >
+                    Cập Nhật
+                  </Button>
+                </DialogTrigger>
+
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Cập Nhật Yêu Cầu Khẩn Cấp</DialogTitle>
+                    <DialogDescription>
+                      Cập nhật thông tin của yêu cầu máu khẩn cấp này
+                    </DialogDescription>
+                  </DialogHeader>
+                  <form onSubmit={handleUpdateEmergency} className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="bloodGroup">Nhóm Máu</Label>
+                        <Select name="bloodGroup" defaultValue={emergency.bloodType.group}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Chọn Nhóm Máu" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="A">A</SelectItem>
+                            <SelectItem value="B">B</SelectItem>
+                            <SelectItem value="AB">AB</SelectItem>
+                            <SelectItem value="O">O</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="bloodRh">Yếu Tố RH</Label>
+                        <Select name="bloodRh" defaultValue={emergency.bloodType.rh}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Chọn RH" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="+">Dương (+)</SelectItem>
+                            <SelectItem value="-">Âm (-)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    {/* Thành Phần và Lượng Máu Yêu Cầu trên cùng một hàng */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="bloodTypeComponent">Thành Phần</Label>
+                        <Select name="bloodTypeComponent" defaultValue={emergency.bloodTypeComponent}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Chọn Thành Phần" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="plasma">Huyết Tương</SelectItem>
+                            <SelectItem value="platelets">Tiểu Cầu</SelectItem>
+                            <SelectItem value="red_cells">Hồng Cầu</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="requiredVolume">Lượng Máu Yêu Cầu (ml)</Label>
+                        <Input
+                          name="requiredVolume"
+                          type="number"
+                          defaultValue={emergency.requiredVolume}
+                          min="1"
+                        />
+                      </div>
+                    </div>
+
+                    <DialogFooter>
+                      <Button type="submit" disabled={updateEmergencyMutation.isPending}>
+                        {updateEmergencyMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        Lưu Thay Đổi
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                </DialogContent>
+              </Dialog>
+
+              <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="destructive"
+                    onClick={() => setIsDeleteDialogOpen(true)}
+                    className="min-w-24"
+                  >
+                    Xóa
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Bạn có chắc chắn không?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Hành động này không thể hoàn tác. Điều này sẽ xóa vĩnh viễn yêu cầu máu khẩn cấp.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Hủy</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleDeleteEmergency}
+                      className="bg-red-600 hover:bg-red-700"
+                      disabled={deleteEmergencyMutation.isPending}
+                    >
+                      {deleteEmergencyMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      Xóa
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </>
+          )}
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 

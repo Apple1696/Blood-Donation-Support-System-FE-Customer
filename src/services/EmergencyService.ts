@@ -18,6 +18,18 @@ export interface EmergencyRequestPayload {
   latitude: string;
 }
 
+export interface SuggestedContact {
+  id: string;
+  phone: string;
+  lastName: string;
+  firstName: string;
+  bloodType: {
+    group: string;
+    rh: string;
+  };
+}
+
+
 export interface EmergencyResponse {
   id: string;
   requestedBy: Record<string, any>;
@@ -44,6 +56,7 @@ export interface EmergencyResponse {
   latitude: string;
   createdAt: string;
   updatedAt: string;
+  suggestedContacts: SuggestedContact[] | null;
 }
 
 export interface PaginationMeta {
@@ -79,13 +92,17 @@ const getEmergencyRequests = async (filters?: EmergencyRequestFilters): Promise<
   const response = await api.get('/emergency-requests', { 
     params: filters 
   });
-  // Return the data property which contains the PaginatedResponse
-  return response.data.data;
+  // Updated to extract nested data and meta
+  return {
+    data: response.data.data.data,
+    meta: response.data.data.meta,
+  };
 };
 
 const getEmergencyRequestById = async (id: string): Promise<EmergencyResponse> => {
   const response = await api.get(`/emergency-requests/${id}`);
-  return response.data.data; // Return the data property which contains the EmergencyResponse
+  // Updated to extract nested data
+  return response.data.data;
 };
 
 const updateEmergencyRequest = async ({ 

@@ -17,7 +17,6 @@ import { BlogDetail } from './components/BlogDetail'
 import BloodInfoPage2 from './pages/BloodInfo/BloodInfo'
 import RequestEmergency from './pages/Emergency/RequestEmergency'
 import EmergencyList from './pages/Emergency/EmergencyList'
-import EmergencyDetail from './pages/Emergency/EmergencyDetail'
 import BloodTypeDetail from './pages/BloodTypes/BloodTypeDetail'
 import BloodDonationSearch from './pages/SearchNearbyDonors/SearchNearbyDonors'
 import HospitalProfile from './pages/Profile/HospitalProfile'
@@ -129,19 +128,6 @@ export const router = createBrowserRouter([
           <>
             <SignedIn>
               <EmergencyList />
-            </SignedIn>
-            <SignedOut>
-              <Navigate to="/login" replace />
-            </SignedOut>
-          </>
-        )
-      },
-      {
-        path: 'emergency/:id',
-        element: (
-          <>
-            <SignedIn>
-              <EmergencyDetail />
             </SignedIn>
             <SignedOut>
               <Navigate to="/login" replace />
