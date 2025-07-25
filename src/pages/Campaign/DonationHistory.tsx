@@ -26,7 +26,7 @@ import { useNavigate } from 'react-router-dom';
 
 // All possible status values
 type DonationStatus = 'pending' | 'rejected' | 'completed' | 'result_returned' |
-  'appointment_confirmed' | 'appointment_absent' |
+  'appointment_confirmed' | 'appointment_cancelled' |
   'customer_cancelled' | 'customer_checked_in';
 
 interface StatusBadgeProps {
@@ -42,7 +42,7 @@ const BloodDonationHistory = () => {
   // Status filters for each tab - initially include all statuses
   const allStatuses: DonationStatus[] = [
     'pending', 'rejected', 'completed', 'result_returned',
-    'appointment_confirmed', 'appointment_absent',
+    'appointment_confirmed', 'appointment_cancelled',
     'customer_cancelled', 'customer_checked_in'
   ];
 
@@ -88,7 +88,7 @@ const BloodDonationHistory = () => {
     'completed': 'Đã hiến máu',
     'result_returned': 'Đã có kết quả',
     'appointment_confirmed': 'Đã xác nhận lịch hẹn',
-    'appointment_absent': 'Vắng mặt',
+    'appointment_cancelled': 'Đã hủy lịch hẹn',
     'customer_cancelled': 'Đã hủy',
     'customer_checked_in': 'Đã check-in'
   };
@@ -101,7 +101,7 @@ const BloodDonationHistory = () => {
       status === 'completed' ||
       status === 'result_returned' ||
       status === 'appointment_confirmed' ||
-      status === 'appointment_absent' ||
+      status === 'appointment_cancelled' ||
       status === 'customer_cancelled' ||
       status === 'customer_checked_in'
     ) {
@@ -144,7 +144,7 @@ const BloodDonationHistory = () => {
       rejected: 'bg-red-100 text-red-800',
       result_returned: 'bg-purple-100 text-purple-800',
       appointment_confirmed: 'bg-blue-100 text-blue-800',
-      appointment_absent: 'bg-gray-100 text-gray-800',
+      appointment_cancelled: 'bg-gray-100 text-gray-800',
       customer_cancelled: 'bg-red-100 text-red-800',
       customer_checked_in: 'bg-indigo-100 text-indigo-800',
     };
