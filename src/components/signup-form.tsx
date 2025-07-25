@@ -138,11 +138,11 @@ export function SignupForm({ className, onSwitchToLogin, ...props }: SignupFormP
           provinceId: selectedProvinceId,
           districtId: selectedDistrictId,
           wardId: selectedWardId,
-          provinceName: province?.name || "",
-          districtName: district?.name || "",
-          wardName: ward?.name || "",
-          longitude: ward?.longitude || "",
-          latitude: ward?.latitude || ""
+          provinceName: province?.name || null,
+          districtName: district?.name || null,
+          wardName: ward?.name || null,
+          longitude: ward?.longitude || null,
+          latitude: ward?.latitude || null
         }
       });
 
