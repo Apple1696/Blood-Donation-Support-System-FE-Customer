@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
+import { SignedIn, SignedOut, useAuth } from "@clerk/clerk-react";
 
 interface CampaignCardProps {
   campaign: Campaign;
@@ -68,13 +69,13 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
   const daysUntilStart = Math.abs(getDaysRemaining(campaign.startDate));
 
   return (
-    <Card 
+    <Card
       className="group relative overflow-hidden border-0 bg-gradient-to-br from-white to-gray-50/50 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 backdrop-blur-sm cursor-pointer flex flex-col h-full"
       onClick={() => navigate(`/campaigns/${campaign.id}`)}
     >
       {/* Gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-red-500/5 via-transparent to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-      
+
       {/* Status badge */}
       <div className="absolute top-4 right-4 z-10">
         <div className={`px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-md border ${statusDetails.color} text-white ${statusDetails.borderColor} shadow-lg ${statusDetails.shadowColor}`}>
@@ -84,8 +85,8 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
 
       {/* Banner image */}
       <div className="relative h-48 overflow-hidden">
-        <img 
-          src={campaign.banner} 
+        <img
+          src={campaign.banner}
           alt={campaign.name}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
@@ -108,9 +109,9 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
             <Calendar className="w-4 h-4 text-blue-600" />
           </div>
           <div className="flex-1">              <p className="text-xs text-blue-600 font-medium uppercase tracking-wide">Thời gian</p>
-              <p className="text-sm font-semibold text-gray-900">
-                {formatDate(campaign.startDate)} - {formatDate(campaign.endDate)}
-              </p>
+            <p className="text-sm font-semibold text-gray-900">
+              {formatDate(campaign.startDate)} - {formatDate(campaign.endDate)}
+            </p>
           </div>
         </div>
 
@@ -145,22 +146,42 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
         <div className="flex-1" /> {/* Spacer */}
 
         {/* Action button */}
-        <button 
-          className="w-full bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white font-semibold py-3 px-6 rounded-lg shadow-lg shadow-red-500/25 hover:shadow-xl hover:shadow-red-500/30 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500/50"
-          onClick={(e) => {
-            e.stopPropagation();
-            navigate(`/campaigns/${campaign.id}`);
-          }}
-        >
-          <span className="flex items-center justify-center space-x-2">
-            <Users className="w-4 h-4" />
-            <span>
-              {campaign.status === CampaignStatus.ACTIVE && 'Tham gia chiến dịch'}
-              {campaign.status === CampaignStatus.NOT_STARTED && 'Tìm hiểu thêm'}
-              {/* {campaign.status === CampaignStatus.ENDED && 'Xem chi tiết'} */}
+        <SignedIn>
+          <button
+            className="w-full bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white font-semibold py-3 px-6 rounded-lg shadow-lg shadow-red-500/25 hover:shadow-xl hover:shadow-red-500/30 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500/50"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/campaigns/${campaign.id}`);
+            }}
+          >
+            <span className="flex items-center justify-center space-x-2">
+              <Users className="w-4 h-4" />
+              <span>
+                {campaign.status === CampaignStatus.ACTIVE && 'Tham gia chiến dịch'}
+                {campaign.status === CampaignStatus.NOT_STARTED && 'Tìm hiểu thêm'}
+                {/* {campaign.status === CampaignStatus.ENDED && 'Xem chi tiết'} */}
+              </span>
             </span>
-          </span>
-        </button>
+          </button>
+        </SignedIn>
+        <SignedOut>
+          <button
+            className="w-full bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white font-semibold py-3 px-6 rounded-lg shadow-lg shadow-red-500/25 hover:shadow-xl hover:shadow-red-500/30 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500/50"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate('/login');
+            }}
+          >
+            <span className="flex items-center justify-center space-x-2">
+              <Users className="w-4 h-4" />
+              <span>
+                {campaign.status === CampaignStatus.ACTIVE && 'Tham gia chiến dịch'}
+                {campaign.status === CampaignStatus.NOT_STARTED && 'Tìm hiểu thêm'}
+                {/* {campaign.status === CampaignStatus.ENDED && 'Xem chi tiết'} */}
+              </span>
+            </span>
+          </button>
+        </SignedOut>
       </CardContent>
 
       {/* Decorative elements */}
@@ -178,7 +199,7 @@ export default function BloodDonationCampaigns() {
     CampaignStatus.NOT_STARTED,
     // CampaignStatus.ENDED
   ]);
-  
+
   const sortCampaigns = (campaigns: Campaign[]) => {
     const statusOrder = {
       [CampaignStatus.ACTIVE]: 0,
@@ -215,9 +236,9 @@ export default function BloodDonationCampaigns() {
   if (isLoading) {
     return (
       <div className="container mx-auto min-h-screen bg-gradient-to-br from-gray-50 via-white to-red-50/30 flex items-center justify-center">          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500 mx-auto mb-4"></div>
-            <p className="text-gray-600">Đang tải chiến dịch...</p>
-          </div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500 mx-auto mb-4"></div>
+        <p className="text-gray-600">Đang tải chiến dịch...</p>
+      </div>
       </div>
     );
   }
@@ -327,8 +348,8 @@ export default function BloodDonationCampaigns() {
         {campaigns.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {campaigns.map((campaign, index) => (
-              <div 
-                key={campaign.id} 
+              <div
+                key={campaign.id}
                 className="animate-fadeInUp"
                 style={{ animationDelay: `${index * 150}ms` }}
               >
