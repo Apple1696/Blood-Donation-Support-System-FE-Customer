@@ -63,10 +63,10 @@ export interface PaginatedResponse<T> {
 export interface EmergencyRequestFilters {
   page?: number;
   limit?: number;
-  status?: 'pending' | 'approved' | 'rejected';
+  status?: 'pending' | 'approved' | 'rejected' | 'expired' | 'contacts_provided';
   bloodGroup?: 'A' | 'B' | 'AB' | 'O';
   bloodRh?: '+' | '-';
-  bloodTypeComponent?: 'plasma' | 'platelets' | 'red_cells' | 'whole_blood';
+  bloodTypeComponent?: 'plasma' | 'platelets' | 'red_cells';
 }
 
 // API functions

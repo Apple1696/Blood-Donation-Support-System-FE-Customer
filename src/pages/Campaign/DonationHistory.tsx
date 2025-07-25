@@ -228,10 +228,10 @@ const BloodDonationHistory = () => {
 
         {/* Main Content Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="history">Lịch Sử Hiến Máu</TabsTrigger>
             <TabsTrigger value="upcoming">Lịch Hẹn Sắp Tới</TabsTrigger>
-            <TabsTrigger value="achievements">Thành Tựu</TabsTrigger>
+            {/* <TabsTrigger value="achievements">Thành Tựu</TabsTrigger> */}
           </TabsList>
 
           {/* Donation History Tab */}
@@ -435,7 +435,7 @@ const BloodDonationHistory = () => {
           </TabsContent>
 
           {/* Achievements Tab */}
-          <TabsContent value="achievements" className="space-y-4">
+          {/* <TabsContent value="achievements" className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {achievements.map((achievement, index) => (
                 <Card key={index} className={`${achievement.earned ? 'bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200' : 'bg-gray-50'}`}>
@@ -463,7 +463,7 @@ const BloodDonationHistory = () => {
                 </Card>
               ))}
             </div>
-          </TabsContent>
+          </TabsContent> */}
         </Tabs>
 
         {/* Call to Action */}

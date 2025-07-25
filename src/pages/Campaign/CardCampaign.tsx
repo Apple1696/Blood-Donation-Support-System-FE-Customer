@@ -255,7 +255,7 @@ export default function BloodDonationCampaigns() {
 
       {/* Stats */}
       <div className="container mx-auto px-4 -mt-8 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
           <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/50">
             <div className="text-center">
               <div className="text-3xl font-bold text-gray-900 mb-2">{campaigns.length}</div>
@@ -270,12 +270,12 @@ export default function BloodDonationCampaigns() {
               <div className="text-gray-600 font-medium">Đang diễn ra</div>
             </div>
           </div>
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/50">
+          {/* <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/50">
             <div className="text-center">
               <div className="text-3xl font-bold text-green-600 mb-2">100+</div>
               <div className="text-gray-600 font-medium">Mạng sống được cứu</div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
 

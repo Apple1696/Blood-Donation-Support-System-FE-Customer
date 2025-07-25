@@ -101,6 +101,8 @@ const EmergencyList: React.FC = () => {
                 return <Badge variant="outline" className="flex items-center gap-1 bg-red-50 text-red-700 border-red-200"><XCircle className="h-3 w-3" /> Từ Chối</Badge>;
                 case 'contacts_provided':
                     return <Badge variant="outline" className="flex items-center gap-1 bg-blue-50 text-blue-700 border-blue-200"><CheckCircle className="h-3 w-3" />Cung Cấp Thông Tin Liên Hệ</Badge>;
+                    case 'expired':
+                        return <Badge variant="outline" className="flex items-center gap-1 bg-gray-50 text-gray-700 border-gray-200"><Clock className="h-3 w-3" /> Đã Hết Hạn</Badge>;
             default:
                 return <Badge variant="outline">{status}</Badge>;
         }
@@ -239,6 +241,7 @@ const EmergencyList: React.FC = () => {
                                 <SelectItem value="approved">Đã Duyệt</SelectItem>
                                 <SelectItem value="rejected">Từ Chối</SelectItem>
                                 <SelectItem value="contacts_provided">Cung Cấp Thông Tin Liên Hệ</SelectItem>
+                                <SelectItem value="expired">Đã hết hạn</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
