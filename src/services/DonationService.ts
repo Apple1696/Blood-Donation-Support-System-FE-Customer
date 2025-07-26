@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 export interface DonationRequestPayload {
   campaignId: string;
   appointmentDate: string;
+  volumeMl: number;
   note: string;
 }
 

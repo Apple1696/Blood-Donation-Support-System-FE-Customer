@@ -12,15 +12,17 @@ import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { toast } from 'sonner';
 import { useAuthContext } from '@/providers/AuthProvider';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 
 
 export default function BookAppointment() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [note, setNote] = React.useState('');
-   const { isAuthenticated } = useAuthContext();
+  const { isAuthenticated } = useAuthContext();
+  const [volume, setVolume] = React.useState<number>(200); // default value
 
-// Redirect if not authenticated
+  // Redirect if not authenticated
   React.useEffect(() => {
     if (!isAuthenticated) {
       toast.error('Vui lòng đăng nhập để đặt lịch hẹn');
@@ -37,7 +39,7 @@ export default function BookAppointment() {
   // Fetch campaign data
   const { data: campaignData, isLoading: isCampaignLoading } = useGetCampaignById(id as string);
   const campaign = campaignData?.data;
-  
+
   // Get collection date when campaign data is loaded
   const collectionDate = campaign ? new Date(campaign.bloodCollectionDate) : undefined;
 
@@ -70,14 +72,15 @@ export default function BookAppointment() {
       await createDonationMutation.mutateAsync({
         campaignId: campaign.id,
         appointmentDate: collectionDate.toISOString(),
-        note: note.trim()
+        note: note.trim(),
+        volumeMl: volume
       });
 
       toast.success('Lịch hẹn của bạn đã được đặt thành công.');
       navigate('/campaigns');
     } catch (error: any) {
       console.error('Error booking appointment:', error);
-      
+
       // Check for authentication issues
       if (error.message?.includes('Authentication')) {
         toast.error('Vui lòng đăng nhập lại để đặt lịch hẹn');
@@ -146,26 +149,7 @@ export default function BookAppointment() {
                 />
               </div>
 
-              {/* <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="latitude">Vĩ Độ</Label>
-                  <Input
-                    id="latitude"
-                    value={profileData?.latitude || ''}
-                    readOnly
-                    className="bg-gray-50"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="longitude">Kinh Độ</Label>
-                  <Input
-                    id="longitude"
-                    value={profileData?.longitude || ''}
-                    readOnly
-                    className="bg-gray-50"
-                  />
-                </div>
-              </div> */}
+
 
               <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
@@ -219,6 +203,24 @@ export default function BookAppointment() {
                 <p className="text-xs text-gray-500 mt-1">
                   Lịch hẹn của bạn được tự động sắp xếp vào ngày thu thập máu.
                 </p>
+              </div>
+
+              {/* Add this block below "Ngày hẹn" */}
+              <div className="space-y-2">
+                <Label htmlFor="volume">Lượng máu muốn hiến (ml)</Label>
+                <Select value={volume.toString()} onValueChange={v => setVolume(Number(v))}>
+                  <SelectTrigger id="volume" className="bg-gray-50">
+                    <SelectValue placeholder="Chọn lượng máu" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="200">200 ml</SelectItem>
+                    <SelectItem value="250">250 ml</SelectItem>
+                    <SelectItem value="300">300 ml</SelectItem>
+                    <SelectItem value="350">350 ml</SelectItem>
+                    <SelectItem value="450">450 ml</SelectItem>
+                    <SelectItem value="500">500 ml</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="space-y-2">

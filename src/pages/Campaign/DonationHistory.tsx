@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Calendar, MapPin, Award, Heart, Clock, Droplets, Loader2, Filter, Check } from 'lucide-react';
-import { DonationService } from '@/services/DonationService';
+import { DonationService, type DonationRequest } from '@/services/DonationService';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
@@ -25,7 +25,7 @@ import { useNavigate } from 'react-router-dom';
 
 
 // All possible status values
-type DonationStatus = 'pending' | 'rejected' | 'completed' | 'result_returned' |
+type DonationStatus = 'rejected' | 'completed' | 'result_returned' |
   'appointment_confirmed' | 'appointment_cancelled' |
   'customer_cancelled' | 'customer_checked_in';
 
@@ -39,7 +39,7 @@ const BloodDonationHistory = () => {
   const [cancelRequestId, setCancelRequestId] = useState<string | null>(null);
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
 
-   // State for result dialog
+  // State for result dialog
   const [resultDialogOpen, setResultDialogOpen] = useState(false);
   const [selectedDonationId, setSelectedDonationId] = useState<string | null>(null);
 
@@ -49,7 +49,7 @@ const BloodDonationHistory = () => {
 
   // Status filters for each tab - initially include all statuses
   const allStatuses: DonationStatus[] = [
-    'pending', 'rejected', 'completed', 'result_returned',
+    'rejected', 'completed', 'result_returned',
     'appointment_confirmed', 'appointment_cancelled',
     'customer_cancelled', 'customer_checked_in'
   ];
@@ -91,7 +91,6 @@ const BloodDonationHistory = () => {
 
   // Status labels for filter dropdown
   const statusLabels: Record<DonationStatus, string> = {
-    'pending': 'Chờ xác nhận',
     'rejected': 'Bị từ chối',
     'completed': 'Đã hiến máu',
     'result_returned': 'Đã có kết quả',
@@ -104,7 +103,6 @@ const BloodDonationHistory = () => {
   // Mapping API response status to our component status
   const mapStatusToDonationStatus = (status: string): DonationStatus => {
     if (
-      status === 'pending' ||
       status === 'rejected' ||
       status === 'completed' ||
       status === 'result_returned' ||
@@ -115,7 +113,7 @@ const BloodDonationHistory = () => {
     ) {
       return status as DonationStatus;
     }
-    return 'pending'; // Default fallback
+    return 'appointment_confirmed'; // Default fallback
   };
 
   // Stats calculation based on real data
@@ -144,11 +142,19 @@ const BloodDonationHistory = () => {
     { title: 'Nhà Vô Địch Cộng Đồng', description: 'Tham gia 3 chiến dịch khác nhau', earned: donationData?.items.filter((v, i, a) => a.findIndex(t => t.campaign.id === v.campaign.id) === i).length >= 3 }
   ];
 
+  const canCancelAppointment = (appointment: DonationRequest): boolean => {
+    if (appointment.currentStatus !== 'appointment_confirmed') return false;
+    const now = new Date();
+    const appointmentDate = new Date(appointment.appointmentDate);
+    // Check if appointment is more than 24 hours away
+    return appointmentDate.getTime() - now.getTime() > 24 * 60 * 60 * 1000;
+  };
+
+
   const StatusBadge = ({ status }: StatusBadgeProps) => {
     const variants: Record<string, string> = {
       completed: 'bg-green-100 text-green-800',
       confirmed: 'bg-blue-100 text-blue-800',
-      pending: 'bg-yellow-100 text-yellow-800',
       rejected: 'bg-red-100 text-red-800',
       result_returned: 'bg-purple-100 text-purple-800',
       appointment_confirmed: 'bg-blue-100 text-blue-800',
@@ -197,7 +203,8 @@ const BloodDonationHistory = () => {
       appointmentDate.setHours(0, 0, 0, 0); // Normalize to beginning of day for comparison
 
       return upcomingStatusFilters.includes(donation.currentStatus as DonationStatus) &&
-        appointmentDate >= today;
+        appointmentDate >= today &&
+        donation.currentStatus !== 'pending';
     }
   ) || [];
 
@@ -209,7 +216,8 @@ const BloodDonationHistory = () => {
 
       // Show history if status is in filter AND (date is in the past OR status is 'result_returned')
       return historyStatusFilters.includes(donation.currentStatus as DonationStatus) &&
-        (appointmentDate < today || donation.currentStatus === 'result_returned');
+        (appointmentDate < today || donation.currentStatus === 'result_returned') &&
+        donation.currentStatus !== 'pending';
     }
   ) || [];
 
@@ -220,7 +228,7 @@ const BloodDonationHistory = () => {
       appointmentDate.setHours(0, 0, 0, 0);
 
       return donation.currentStatus === status &&
-        (isPast ? appointmentDate < today : appointmentDate >= today);
+        (isPast ? appointmentDate < today : appointmentDate >= today)
     }).length || 0;
   };
 
@@ -281,7 +289,7 @@ const BloodDonationHistory = () => {
               </DropdownMenu>
             </div>
 
-           {completedDonations.length > 0 ? (
+            {completedDonations.length > 0 ? (
               completedDonations.map((donation) => (
                 <Card key={donation.id} className="border-l-4 border-l-pink-500 hover:shadow-lg transition-shadow">
                   <CardHeader>
@@ -335,58 +343,58 @@ const BloodDonationHistory = () => {
             )}
           </TabsContent>
 
- {/* Result Dialog */}
-        <Dialog open={resultDialogOpen} onOpenChange={setResultDialogOpen}>
-          <DialogContent className="max-w-lg">
-            <DialogHeader>
-              <DialogTitle>Kết quả hiến máu</DialogTitle>
-              <DialogDescription>
-                Thông tin chi tiết về lần hiến máu của bạn
-              </DialogDescription>
-            </DialogHeader>
-            {isResultLoading ? (
-              <div className="flex justify-center items-center py-8">
-                <Loader2 className="h-6 w-6 animate-spin text-red-500" />
-                <span className="ml-2">Đang tải kết quả...</span>
-              </div>
-            ) : resultError ? (
-              <div className="text-center text-red-500 py-8">
-                {(resultError as Error).message || 'Không thể tải kết quả'}
-              </div>
-            ) : donationResult ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-2">
-                <div>
-                  <p className="text-gray-500 mb-1">Nhóm máu</p>
-                  <p className="font-bold text-xl text-red-600 mb-2">
-                    {donationResult.bloodGroup}{donationResult.bloodRh}
-                  </p>
-                  <p className="text-gray-500 mb-1">Thể tích</p>
-                  <p className="font-bold text-lg text-pink-600 mb-2">
-                    {donationResult.volumeMl} ml
-                  </p>
-                  <p className="text-gray-500 mb-1">Ghi chú</p>
-                  <p className="font-semibold text-gray-800 mb-2">
-                    {donationResult.notes || 'Không có ghi chú'}
-                  </p>
+          {/* Result Dialog */}
+          <Dialog open={resultDialogOpen} onOpenChange={setResultDialogOpen}>
+            <DialogContent className="max-w-lg">
+              <DialogHeader>
+                <DialogTitle>Kết quả hiến máu</DialogTitle>
+                <DialogDescription>
+                  Thông tin chi tiết về lần hiến máu của bạn
+                </DialogDescription>
+              </DialogHeader>
+              {isResultLoading ? (
+                <div className="flex justify-center items-center py-8">
+                  <Loader2 className="h-6 w-6 animate-spin text-red-500" />
+                  <span className="ml-2">Đang tải kết quả...</span>
                 </div>
-                <div className="flex flex-col items-center justify-center">
-                  <p className="text-gray-500 mb-1">Người xử lý</p>
-                  <Avatar className="h-16 w-16 mb-2">
-                    <AvatarImage src={donationResult.processedBy.avatar} alt={donationResult.processedBy.firstName} />
-                    <AvatarFallback>
-                      {donationResult.processedBy.firstName[0]}
-                    </AvatarFallback>
-                  </Avatar>
-                  <p className="font-semibold text-gray-900">
-                    {donationResult.processedBy.firstName} {donationResult.processedBy.lastName}
-                  </p>
-                  <p className="text-sm text-gray-500">{donationResult.processedBy.role}</p>
+              ) : resultError ? (
+                <div className="text-center text-red-500 py-8">
+                  {(resultError as Error).message || 'Không thể tải kết quả'}
                 </div>
-              </div>
-            ) : null}
-          </DialogContent>
-        </Dialog>
-        
+              ) : donationResult ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-2">
+                  <div>
+                    <p className="text-gray-500 mb-1">Nhóm máu</p>
+                    <p className="font-bold text-xl text-red-600 mb-2">
+                      {donationResult.bloodGroup}{donationResult.bloodRh}
+                    </p>
+                    <p className="text-gray-500 mb-1">Thể tích</p>
+                    <p className="font-bold text-lg text-pink-600 mb-2">
+                      {donationResult.volumeMl} ml
+                    </p>
+                    <p className="text-gray-500 mb-1">Ghi chú</p>
+                    <p className="font-semibold text-gray-800 mb-2">
+                      {donationResult.notes || 'Không có ghi chú'}
+                    </p>
+                  </div>
+                  <div className="flex flex-col items-center justify-center">
+                    <p className="text-gray-500 mb-1">Người xử lý</p>
+                    <Avatar className="h-16 w-16 mb-2">
+                      <AvatarImage src={donationResult.processedBy.avatar} alt={donationResult.processedBy.firstName} />
+                      <AvatarFallback>
+                        {donationResult.processedBy.firstName[0]}
+                      </AvatarFallback>
+                    </Avatar>
+                    <p className="font-semibold text-gray-900">
+                      {donationResult.processedBy.firstName} {donationResult.processedBy.lastName}
+                    </p>
+                    <p className="text-sm text-gray-500">{donationResult.processedBy.role}</p>
+                  </div>
+                </div>
+              ) : null}
+            </DialogContent>
+          </Dialog>
+
           {/* Upcoming Appointments Tab */}
           <TabsContent value="upcoming" className="space-y-4">
             <div className="flex justify-end mb-4">
@@ -447,21 +455,29 @@ const BloodDonationHistory = () => {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="flex space-x-2">
+                    <div className="flex space-x-2 items-center">
+                      {/* Always show the message for appointment_confirmed */}
+                        {/* {appointment.currentStatus === 'appointment_confirmed' && (
+                          <span className="text-xs text-gray-500 self-center">
+                            Bạn chỉ có thể hủy lịch hẹn trước 24 giờ so với thời gian hẹn.
+                          </span>
+                        )} */}
                       {/* Hide "Hủy lịch hẹn" button for certain statuses */}
                       {!(
                         appointment.currentStatus === 'customer_checked_in' ||
                         appointment.currentStatus === 'completed' ||
                         appointment.currentStatus === 'result_returned' ||
                         appointment.currentStatus === 'customer_cancelled' ||
-                        appointment.currentStatus === 'appointment_cancelled' ||
-                        appointment.currentStatus === 'appointment_confirmed'
+                        appointment.currentStatus === 'appointment_cancelled'
                       ) && (
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() => handleCancelRequest(appointment.id)}
-                            disabled={isCancelling && cancelRequestId === appointment.id}
+                            disabled={
+                              appointment.currentStatus === 'appointment_confirmed' && !canCancelAppointment(appointment)
+                              || (isCancelling && cancelRequestId === appointment.id)
+                            }
                           >
                             {isCancelling && cancelRequestId === appointment.id ? (
                               <>
