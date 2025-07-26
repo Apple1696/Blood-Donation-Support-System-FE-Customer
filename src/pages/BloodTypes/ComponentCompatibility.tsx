@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Tabs, TabsList, TabsTrigger} from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { BloodComponentCompatibility } from '@/services/BloodInfoService';
 import type { BloodInfo } from '@/services/BloodInfoService';
 import { Badge } from '@/components/ui/badge';
@@ -57,7 +57,7 @@ const ComponentCompatibility: React.FC<ComponentCompatibilityProps> = ({ compati
     return bloodTypes.map((blood) => {
       // Determine badge color based on blood type
       let bgColor = "bg-gray-100";
-      
+
       if (blood.group === 'O') {
         bgColor = blood.rh === '+' ? "bg-red-100 text-red-800" : "bg-red-200 text-red-900";
       } else if (blood.group === 'A') {
@@ -67,7 +67,7 @@ const ComponentCompatibility: React.FC<ComponentCompatibilityProps> = ({ compati
       } else if (blood.group === 'AB') {
         bgColor = blood.rh === '+' ? "bg-purple-100 text-purple-800" : "bg-purple-200 text-purple-900";
       }
-      
+
       return (
         <div key={`${blood.group}${blood.rh}`} className="flex items-center mb-2 p-2 border rounded-md">
           <Badge className={`${bgColor} mr-2`}>
@@ -89,17 +89,17 @@ const ComponentCompatibility: React.FC<ComponentCompatibilityProps> = ({ compati
       // Extract the numerical percentage from the frequency string (e.g., "7% of population")
       const match = donor.frequency.match(/(\d+(?:\.\d+)?)%/);
       const percentage = match ? parseFloat(match[1]) : 0;
-      
+
       return {
         name: `${donor.group}${donor.rh}`,
         value: percentage,
         fullText: donor.frequency
       };
     });
-    
+
     // Calculate total percentage covered by compatible donors
     const totalDonorPercentage = donorFrequencies.reduce((sum, item) => sum + item.value, 0);
-    
+
     // Add "Others" segment if total is less than 100%
     if (totalDonorPercentage < 100) {
       donorFrequencies.push({
@@ -108,7 +108,7 @@ const ComponentCompatibility: React.FC<ComponentCompatibilityProps> = ({ compati
         fullText: `${(100 - totalDonorPercentage).toFixed(1)}% dân số`
       });
     }
-    
+
     setDonorChartData(donorFrequencies);
 
     // Process recipient data
@@ -116,17 +116,17 @@ const ComponentCompatibility: React.FC<ComponentCompatibilityProps> = ({ compati
     const recipientFrequencies = recipients.map(recipient => {
       const match = recipient.frequency.match(/(\d+(?:\.\d+)?)%/);
       const percentage = match ? parseFloat(match[1]) : 0;
-      
+
       return {
         name: `${recipient.group}${recipient.rh}`,
         value: percentage,
         fullText: recipient.frequency
       };
     });
-    
+
     // Calculate total percentage covered by compatible recipients
     const totalRecipientPercentage = recipientFrequencies.reduce((sum, item) => sum + item.value, 0);
-    
+
     // Add "Others" segment if total is less than 100%
     if (totalRecipientPercentage < 100) {
       recipientFrequencies.push({
@@ -135,7 +135,7 @@ const ComponentCompatibility: React.FC<ComponentCompatibilityProps> = ({ compati
         fullText: `${(100 - totalRecipientPercentage).toFixed(1)}% dân số`
       });
     }
-    
+
     setRecipientChartData(recipientFrequencies);
   }, [selectedComponent]);
 
@@ -157,15 +157,15 @@ const ComponentCompatibility: React.FC<ComponentCompatibilityProps> = ({ compati
       <Card>
         <CardContent className="pt-6">
           <p className="text-muted-foreground text-primary">
-            Khả năng tương thích của các thành phần máu cụ thể hơn so với tương thích của máu toàn phần. 
-            Các thành phần khác nhau có các quy tắc tương thích khác nhau tùy thuộc vào kháng nguyên 
+            Khả năng tương thích của các thành phần máu cụ thể hơn so với tương thích của máu toàn phần.
+            Các thành phần khác nhau có các quy tắc tương thích khác nhau tùy thuộc vào kháng nguyên
             và kháng thể mà chúng chứa.
           </p>
         </CardContent>
       </Card>
-      
-      <Tabs 
-        value={activeTab} 
+
+      <Tabs
+        value={activeTab}
         onValueChange={setActiveTab}
         className="w-full"
       >
@@ -176,20 +176,20 @@ const ComponentCompatibility: React.FC<ComponentCompatibilityProps> = ({ compati
             </TabsTrigger>
           ))}
         </TabsList>
-        
+
         {selectedComponent && (
           <>
             <CardDescription className="mb-4">
-              {componentDescriptions[selectedComponent.componentType] || 
+              {componentDescriptions[selectedComponent.componentType] ||
                 `Thông tin tương thích ${selectedComponent.componentType.replace('_', ' ')}`}
             </CardDescription>
-            
+
             <div className="grid md:grid-cols-2 gap-4">
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg text-primary">Người hiến tương thích</CardTitle>
                   <CardDescription>
-                    Những nhóm máu này có thể hiến {selectedComponent.componentType.replace('_', ' ')} cho nhóm máu của bạn
+                    Những nhóm máu này có thể hiến {componentLabels[selectedComponent.componentType]} cho nhóm máu của bạn
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -208,8 +208,8 @@ const ComponentCompatibility: React.FC<ComponentCompatibilityProps> = ({ compati
                         >
                           {donorChartData.map((entry, index) => {
                             // Use custom color for blood types, gray for "Not Compatible"
-                            const color = entry.name === 'Không tương thích' 
-                              ? '#d1d5db' 
+                            const color = entry.name === 'Không tương thích'
+                              ? '#d1d5db'
                               : getBloodTypeColor(entry.name.charAt(0), entry.name.charAt(1));
                             return <Cell key={`cell-${index}`} fill={color} />;
                           })}
@@ -224,12 +224,12 @@ const ComponentCompatibility: React.FC<ComponentCompatibilityProps> = ({ compati
                   </div>
                 </CardContent>
               </Card>
-              
+
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg text-primary">Người nhận tương thích</CardTitle>
                   <CardDescription>
-                    Nhóm máu của bạn có thể hiến {selectedComponent.componentType.replace('_', ' ')} cho những nhóm máu này
+                    Nhóm máu của bạn có thể hiến {componentLabels[selectedComponent.componentType]} cho những nhóm máu này
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -248,8 +248,8 @@ const ComponentCompatibility: React.FC<ComponentCompatibilityProps> = ({ compati
                         >
                           {recipientChartData.map((entry, index) => {
                             // Use custom color for blood types, gray for "Not Compatible"
-                            const color = entry.name === 'Không tương thích' 
-                              ? '#d1d5db' 
+                            const color = entry.name === 'Không tương thích'
+                              ? '#d1d5db'
                               : getBloodTypeColor(entry.name.charAt(0), entry.name.charAt(1));
                             return <Cell key={`cell-${index}`} fill={color} />;
                           })}
