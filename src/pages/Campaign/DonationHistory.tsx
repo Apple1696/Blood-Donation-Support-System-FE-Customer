@@ -199,8 +199,9 @@ const BloodDonationHistory = () => {
       const appointmentDate = new Date(donation.appointmentDate);
       appointmentDate.setHours(0, 0, 0, 0); // Normalize to beginning of day for comparison
 
+      // Show history if status is in filter AND (date is in the past OR status is 'result_returned')
       return historyStatusFilters.includes(donation.currentStatus as DonationStatus) &&
-        appointmentDate < today;
+        (appointmentDate < today || donation.currentStatus === 'result_returned');
     }
   ) || [];
 
@@ -241,7 +242,7 @@ const BloodDonationHistory = () => {
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="bg-white/80 backdrop-blur-sm">
                     <Filter className="h-4 w-4 mr-2" />
-                    Lọc 
+                    Lọc
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
@@ -274,7 +275,7 @@ const BloodDonationHistory = () => {
 
             {completedDonations.length > 0 ? (
               completedDonations.map((donation) => (
-                <Card key={donation.id} className="hover:shadow-lg transition-shadow">
+                <Card key={donation.id} className="border-l-4 border-l-pink-500 hover:shadow-lg transition-shadow">
                   <CardHeader>
                     <div className="flex justify-between items-start">
                       <div>
@@ -295,28 +296,6 @@ const BloodDonationHistory = () => {
                         <p className="text-gray-500">Nhóm máu</p>
                         <p className="font-semibold text-red-600">
                           {donation.donor.bloodType.group}{donation.donor.bloodType.rh}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">Lượng máu</p>
-                        <p className="font-semibold">450ml</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">Kiểm tra sức khỏe</p>
-                        <p className="font-semibold capitalize text-green-600">đạt yêu cầu</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">Đủ điều kiện hiến tiếp</p>
-                        <p className="font-semibold">
-                          {format(
-                            new Date(
-                              new Date(donation.appointmentDate).setMonth(
-                                new Date(donation.appointmentDate).getMonth() + 3
-                              )
-                            ),
-                            'dd/MM/yyyy',
-                            { locale: vi }
-                          )}
                         </p>
                       </div>
                     </div>
@@ -341,7 +320,7 @@ const BloodDonationHistory = () => {
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="bg-white/80 backdrop-blur-sm">
                     <Filter className="h-4 w-4 mr-2" />
-                    Lọc 
+                    Lọc
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
@@ -395,23 +374,31 @@ const BloodDonationHistory = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="flex space-x-2">
-                      {appointment.currentStatus !== 'customer_cancelled' && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleCancelRequest(appointment.id)}
-                          disabled={isCancelling && cancelRequestId === appointment.id}
-                        >
-                          {isCancelling && cancelRequestId === appointment.id ? (
-                            <>
-                              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                              Đang hủy...
-                            </>
-                          ) : (
-                            'Hủy lịch hẹn'
-                          )}
-                        </Button>
-                      )}
+                      {/* Hide "Hủy lịch hẹn" button for certain statuses */}
+                      {!(
+                        appointment.currentStatus === 'customer_checked_in' ||
+                        appointment.currentStatus === 'completed' ||
+                        appointment.currentStatus === 'result_returned' ||
+                        appointment.currentStatus === 'customer_cancelled' ||
+                        appointment.currentStatus === 'appointment_cancelled' ||
+                        appointment.currentStatus === 'appointment_confirmed'
+                      ) && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleCancelRequest(appointment.id)}
+                            disabled={isCancelling && cancelRequestId === appointment.id}
+                          >
+                            {isCancelling && cancelRequestId === appointment.id ? (
+                              <>
+                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                Đang hủy...
+                              </>
+                            ) : (
+                              'Hủy lịch hẹn'
+                            )}
+                          </Button>
+                        )}
                       <Button
                         size="sm"
                         onClick={() => window.open('https://maps.app.goo.gl/HdP1dnVhCjCznvcGA', '_blank')}
