@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/badge";
 
 // Status label mapping and badge color mapping
 const statusLabels: Record<string, string> = {
-    completed: "Đã hoàn thành",
+    completed: "Đã hiến máu",
     pending: "Chờ xác nhận",
     rejected: "Bị từ chối",
     result_returned: "Đã có kết quả",
