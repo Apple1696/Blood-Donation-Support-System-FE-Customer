@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Calendar, MapPin, Award, Heart, Clock, Droplets, Loader2, Filter, Check } from 'lucide-react';
+import { Calendar, MapPin, Award, Heart, Clock, Droplets, Loader2, Filter, Check, Trash2, Info } from 'lucide-react';
 import { DonationService, type DonationRequest } from '@/services/DonationService';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
-
+import DonationHistoryDetail from './DonationHistoryDetail';
 
 // All possible status values
 type DonationStatus = 'rejected' | 'completed' | 'result_returned' |
@@ -42,6 +42,10 @@ const BloodDonationHistory = () => {
   // State for result dialog
   const [resultDialogOpen, setResultDialogOpen] = useState(false);
   const [selectedDonationId, setSelectedDonationId] = useState<string | null>(null);
+
+  // State for detail dialog
+  const [detailDialogOpen, setDetailDialogOpen] = useState(false);
+  const [selectedDonation, setSelectedDonation] = useState<DonationRequest | null>(null);
 
   // Fetch donation result when dialog is open and id is set
   const { data: donationResult, isLoading: isResultLoading, error: resultError } =
@@ -67,6 +71,12 @@ const BloodDonationHistory = () => {
   const handleCancelRequest = (id: string) => {
     setCancelRequestId(id);
     setCancelDialogOpen(true);
+  };
+
+  // Function to handle detail view
+  const handleDetailView = (donation: DonationRequest) => {
+    setSelectedDonation(donation);
+    setDetailDialogOpen(true);
   };
 
   // Function to confirm cancellation
@@ -248,7 +258,6 @@ const BloodDonationHistory = () => {
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="history">Lịch Sử Hiến Máu</TabsTrigger>
             <TabsTrigger value="upcoming">Lịch Hẹn Sắp Tới</TabsTrigger>
-            {/* <TabsTrigger value="achievements">Thành Tựu</TabsTrigger> */}
           </TabsList>
 
           {/* Donation History Tab */}
@@ -292,33 +301,69 @@ const BloodDonationHistory = () => {
             {completedDonations.length > 0 ? (
               completedDonations.map((donation) => (
                 <Card key={donation.id} className="border-l-4 border-l-pink-500 hover:shadow-lg transition-shadow">
-                  <CardHeader>
+                  <CardHeader className="pb-4">
                     <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle className="text-lg">{donation.campaign.name}</CardTitle>
-                        <CardDescription className="flex items-center space-x-2 mt-1">
-                          <Calendar className="h-4 w-4" />
-                          <span>{format(new Date(donation.appointmentDate), 'dd/MM/yyyy', { locale: vi })}</span>
-                          <MapPin className="h-4 w-4 ml-2" />
-                          <span>{donation.campaign.location}</span>
+                      <div className="flex-1">
+                        <CardTitle className="text-lg mb-2">{donation.campaign.name}</CardTitle>
+                        {/* Campaign Banner */}
+                        {/* {donation.campaign.banner && (
+                          <div className="mb-3">
+                            <img 
+                              src={donation.campaign.banner} 
+                              alt={donation.campaign.name}
+                              className="w-full h-32 object-cover rounded-lg"
+                            />
+                          </div>
+                        )} */}
+                        <CardDescription className="flex items-center space-x-4">
+                          <div className="flex items-center space-x-1">
+                            <Calendar className="h-4 w-4" />
+                            <span>Ngày hiến máu: {format(new Date(donation.campaign.bloodCollectionDate), 'dd/MM/yyyy', { locale: vi })}</span>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <MapPin className="h-4 w-4" />
+                            <span>{donation.campaign.location}</span>
+                          </div>
                         </CardDescription>
                       </div>
                       <StatusBadge status={mapStatusToDonationStatus(donation.currentStatus)} />
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <div className="flex justify-between items-center">
                       <div>
-                        <p className="text-gray-500">Nhóm máu</p>
+                        <p className="text-gray-500 text-sm">Nhóm máu</p>
                         <p className="font-semibold text-red-600">
                           {donation.donor.bloodType.group}{donation.donor.bloodType.rh}
                         </p>
+                      </div>
+                      <div className="flex space-x-2">
+                        {/* Detail Button */}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDetailView(donation)}
+                        >
+                          <Info className="h-4 w-4 mr-1" />
+                          Chi tiết
+                        </Button>
+                        
+                        {/* Delete Button */}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleCancelRequest(donation.id)}
+                          className="text-red-600 border-red-200 hover:bg-red-50"
+                        >
+                          <Trash2 className="h-4 w-4 mr-1" />
+                          Xóa
+                        </Button>
+                        
                         {/* Show "Xem kết quả" button if result is returned */}
                         {donation.currentStatus === 'result_returned' && (
                           <Button
                             variant="outline"
                             size="sm"
-                            className="mt-2"
                             onClick={() => {
                               setSelectedDonationId(donation.id);
                               setResultDialogOpen(true);
@@ -395,6 +440,13 @@ const BloodDonationHistory = () => {
             </DialogContent>
           </Dialog>
 
+          {/* Detail Dialog */}
+          <DonationHistoryDetail 
+            donation={selectedDonation}
+            open={detailDialogOpen}
+            onOpenChange={setDetailDialogOpen}
+          />
+
           {/* Upcoming Appointments Tab */}
           <TabsContent value="upcoming" className="space-y-4">
             <div className="flex justify-end mb-4">
@@ -436,14 +488,24 @@ const BloodDonationHistory = () => {
             {upcomingAppointments.length > 0 ? (
               upcomingAppointments.map((appointment) => (
                 <Card key={appointment.id} className="border-l-4 border-l-pink-500">
-                  <CardHeader>
+                  <CardHeader className="pb-4">
                     <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle className="text-lg">{appointment.campaign.name}</CardTitle>
-                        <CardDescription className="flex items-center space-x-4 mt-2">
+                      <div className="flex-1">
+                        <CardTitle className="text-lg mb-2">{appointment.campaign.name}</CardTitle>
+                        {/* Campaign Banner */}
+                        {/* {appointment.campaign.banner && (
+                          <div className="mb-3">
+                            <img 
+                              src={appointment.campaign.banner} 
+                              alt={appointment.campaign.name}
+                              className="w-full h-32 object-cover rounded-lg"
+                            />
+                          </div>
+                        )} */}
+                        <CardDescription className="flex items-center space-x-4">
                           <div className="flex items-center space-x-1">
                             <Calendar className="h-4 w-4" />
-                            <span>{format(new Date(appointment.appointmentDate), 'dd/MM/yyyy', { locale: vi })}</span>
+                            <span>Ngày hiến máu: {format(new Date(appointment.campaign.bloodCollectionDate), 'dd/MM/yyyy', { locale: vi })}</span>
                           </div>
                           <div className="flex items-center space-x-1">
                             <MapPin className="h-4 w-4" />
@@ -455,46 +517,56 @@ const BloodDonationHistory = () => {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="flex space-x-2 items-center">
-                      {/* Always show the message for appointment_confirmed */}
-                        {/* {appointment.currentStatus === 'appointment_confirmed' && (
-                          <span className="text-xs text-gray-500 self-center">
-                            Bạn chỉ có thể hủy lịch hẹn trước 24 giờ so với thời gian hẹn.
-                          </span>
-                        )} */}
-                      {/* Hide "Hủy lịch hẹn" button for certain statuses */}
-                      {!(
-                        appointment.currentStatus === 'customer_checked_in' ||
-                        appointment.currentStatus === 'completed' ||
-                        appointment.currentStatus === 'result_returned' ||
-                        appointment.currentStatus === 'customer_cancelled' ||
-                        appointment.currentStatus === 'appointment_cancelled'
-                      ) && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleCancelRequest(appointment.id)}
-                            disabled={
-                              appointment.currentStatus === 'appointment_confirmed' && !canCancelAppointment(appointment)
-                              || (isCancelling && cancelRequestId === appointment.id)
-                            }
-                          >
-                            {isCancelling && cancelRequestId === appointment.id ? (
-                              <>
-                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                Đang hủy...
-                              </>
-                            ) : (
-                              'Hủy lịch hẹn'
-                            )}
-                          </Button>
-                        )}
-                      <Button
-                        size="sm"
-                        onClick={() => window.open('https://maps.app.goo.gl/HdP1dnVhCjCznvcGA', '_blank')}
-                      >
-                        Xem đường đi
-                      </Button>
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <p className="text-gray-500 text-sm">Nhóm máu</p>
+                        <p className="font-semibold text-red-600">
+                          {appointment.donor.bloodType.group}{appointment.donor.bloodType.rh}
+                        </p>
+                      </div>
+                      <div className="flex space-x-2">
+                        {/* Detail Button */}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDetailView(appointment)}
+                        >
+                          <Info className="h-4 w-4 mr-1" />
+                          Chi tiết
+                        </Button>
+                        
+                        {/* Hide "Hủy lịch hẹn" button for certain statuses */}
+                        {!(
+                          appointment.currentStatus === 'customer_checked_in' ||
+                          appointment.currentStatus === 'completed' ||
+                          appointment.currentStatus === 'result_returned' ||
+                          appointment.currentStatus === 'customer_cancelled' ||
+                          appointment.currentStatus === 'appointment_cancelled'
+                        ) && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleCancelRequest(appointment.id)}
+                              disabled={
+                                appointment.currentStatus === 'appointment_confirmed' && !canCancelAppointment(appointment)
+                                || (isCancelling && cancelRequestId === appointment.id)
+                              }
+                              className="text-red-600 border-red-200 hover:bg-red-50"
+                            >
+                              {isCancelling && cancelRequestId === appointment.id ? (
+                                <>
+                                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                  Đang hủy...
+                                </>
+                              ) : (
+                                <>
+                                  <Trash2 className="h-4 w-4 mr-1" />
+                                  Hủy lịch hẹn
+                                </>
+                              )}
+                            </Button>
+                          )}
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -510,37 +582,6 @@ const BloodDonationHistory = () => {
               </Card>
             )}
           </TabsContent>
-
-          {/* Achievements Tab */}
-          {/* <TabsContent value="achievements" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {achievements.map((achievement, index) => (
-                <Card key={index} className={`${achievement.earned ? 'bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200' : 'bg-gray-50'}`}>
-                  <CardContent className="p-6">
-                    <div className="flex items-start space-x-4">
-                      <Avatar className={`${achievement.earned ? 'bg-yellow-500' : 'bg-gray-300'}`}>
-                        <AvatarFallback>
-                          <Award className="h-6 w-6 text-white" />
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-lg">{achievement.title}</h3>
-                        <p className="text-gray-600 text-sm mb-2">{achievement.description}</p>
-                        {achievement.earned ? (
-                          <Badge className="bg-yellow-500 text-white">Đã đạt được!</Badge>
-                        ) : (
-                          <div className="space-y-2">
-                            <Progress value={achievement.progress} className="h-2" />
-                            <p className="text-xs text-gray-500">{Math.round(achievement.progress || 0)}% hoàn thành</p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent> */}
         </Tabs>
 
         {/* Call to Action */}
@@ -555,6 +596,7 @@ const BloodDonationHistory = () => {
           </CardContent>
         </Card>
       </div>
+      
       {/* Cancel Confirmation Dialog */}
       <AlertDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
         <AlertDialogContent>

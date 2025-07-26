@@ -53,7 +53,10 @@ export interface Donor {
   wardName: string;
   districtName: string;
   provinceName: string;
+  lastDonationDate?: string;
   status: string;
+  avatar?: string | null;
+  canChangeBloodType?: boolean; // <-- add this field, default true if missing
 }
 
 export interface DonationRequest {
@@ -149,6 +152,12 @@ const getMyDonationRequests = async (): Promise<DonationRequestsResponse> => {
   try {
     const response = await api.get<ApiResponse<DonationRequestsResponse>>('/donations/my-requests');
     if (response.data.success) {
+      // Ensure canChangeBloodType is always set (default true)
+      response.data.data.items.forEach(item => {
+        if (item.donor && typeof item.donor.canChangeBloodType === 'undefined') {
+          item.donor.canChangeBloodType = true;
+        }
+      });
       return response.data.data;
     }
     throw new Error(response.data.message || 'Failed to fetch donation requests');

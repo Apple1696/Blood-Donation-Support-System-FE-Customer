@@ -149,7 +149,8 @@ export const ProfileService = {
 
   updateProfile: async (profileData: UpdateProfileRequest): Promise<CustomerProfile> => {
     try {
-      const response = await api.patch<ApiResponse<CustomerProfile>>('/customers/me', profileData);
+      // Change PATCH to PUT
+      const response = await api.put<ApiResponse<CustomerProfile>>('/customers/me', profileData);
       if (response.data.success) {
         return response.data.data;
       }
