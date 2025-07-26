@@ -15,7 +15,7 @@ interface DonationHistoryDetailProps {
 
 type DonationStatus = 'rejected' | 'completed' | 'result_returned' |
   'appointment_confirmed' | 'appointment_cancelled' |
-  'customer_cancelled' | 'customer_checked_in';
+  'customer_cancelled' | 'customer_checked_in' | 'not_qualified' | 'no_show_after_checkin';
 
 const statusLabels: Record<DonationStatus, string> = {
   'rejected': 'Bị từ chối',
@@ -24,7 +24,9 @@ const statusLabels: Record<DonationStatus, string> = {
   'appointment_confirmed': 'Đã xác nhận lịch hẹn',
   'appointment_cancelled': 'Đã hủy lịch hẹn',
   'customer_cancelled': 'Đã hủy',
-  'customer_checked_in': 'Đã check-in'
+  'customer_checked_in': 'Đã check-in',
+  'not_qualified': 'Không đủ điều kiện',
+  'no_show_after_checkin': 'Không đến sau khi đã check-in'
 };
 
 const StatusBadge = ({ status }: { status: DonationStatus }) => {
@@ -37,6 +39,8 @@ const StatusBadge = ({ status }: { status: DonationStatus }) => {
     appointment_cancelled: 'bg-gray-100 text-gray-800',
     customer_cancelled: 'bg-red-100 text-red-800',
     customer_checked_in: 'bg-indigo-100 text-indigo-800',
+    not_qualified: 'bg-yellow-100 text-yellow-800',
+    no_show_after_checkin: 'bg-orange-100 text-orange-800'
   };
 
   return (
@@ -57,7 +61,9 @@ const DonationHistoryDetail = ({ donation, open, onOpenChange }: DonationHistory
       status === 'appointment_confirmed' ||
       status === 'appointment_cancelled' ||
       status === 'customer_cancelled' ||
-      status === 'customer_checked_in'
+      status === 'customer_checked_in' ||
+      status === 'not_qualified' ||
+      status === 'no_show_after_checkin'
     ) {
       return status as DonationStatus;
     }

@@ -68,6 +68,8 @@ export interface CustomerProfile {
   dateOfBirth: string | null;
   citizenId: string | null;
   lastDonationDate: string | null;
+  avatar?: string | null;
+  canChangeBloodType: boolean; // <-- Add this line
 }
 
 interface UpdateProfileRequest {
@@ -138,7 +140,11 @@ export const ProfileService = {
     try {
       const response = await api.get<ApiResponse<CustomerProfile>>('/customers/me');
       if (response.data.success) {
-        return response.data.data;
+        // Ensure canChangeBloodType is present and defaults to true if missing
+        return {
+          ...response.data.data,
+          canChangeBloodType: response.data.data.canChangeBloodType ?? true
+        };
       }
       throw new Error(response.data.message || 'Failed to fetch profile');
     } catch (error) {

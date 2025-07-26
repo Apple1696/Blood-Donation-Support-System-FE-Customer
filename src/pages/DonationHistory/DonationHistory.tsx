@@ -27,7 +27,7 @@ import DonationHistoryDetail from './DonationHistoryDetail';
 // All possible status values
 type DonationStatus = 'rejected' | 'completed' | 'result_returned' |
   'appointment_confirmed' | 'appointment_cancelled' |
-  'customer_cancelled' | 'customer_checked_in';
+  'customer_cancelled' | 'customer_checked_in' | 'not_qualified' | 'no_show_after_checkin';
 
 interface StatusBadgeProps {
   status: DonationStatus;
@@ -55,7 +55,7 @@ const BloodDonationHistory = () => {
   const allStatuses: DonationStatus[] = [
     'rejected', 'completed', 'result_returned',
     'appointment_confirmed', 'appointment_cancelled',
-    'customer_cancelled', 'customer_checked_in'
+    'customer_cancelled', 'customer_checked_in', 'not_qualified', 'no_show_after_checkin'
   ];
 
   const [historyStatusFilters, setHistoryStatusFilters] = useState<DonationStatus[]>(allStatuses);
@@ -107,7 +107,9 @@ const BloodDonationHistory = () => {
     'appointment_confirmed': 'Đã xác nhận lịch hẹn',
     'appointment_cancelled': 'Đã hủy lịch hẹn',
     'customer_cancelled': 'Đã hủy',
-    'customer_checked_in': 'Đã check-in'
+    'customer_checked_in': 'Đã check-in',
+    'not_qualified': 'Không đủ điều kiện',
+    'no_show_after_checkin': 'Không đến sau khi đã check-in'
   };
 
   // Mapping API response status to our component status
@@ -119,7 +121,9 @@ const BloodDonationHistory = () => {
       status === 'appointment_confirmed' ||
       status === 'appointment_cancelled' ||
       status === 'customer_cancelled' ||
-      status === 'customer_checked_in'
+      status === 'customer_checked_in' ||
+      status === 'not_qualified' ||
+      status === 'no_show_after_checkin'
     ) {
       return status as DonationStatus;
     }
@@ -171,6 +175,8 @@ const BloodDonationHistory = () => {
       appointment_cancelled: 'bg-gray-100 text-gray-800',
       customer_cancelled: 'bg-red-100 text-red-800',
       customer_checked_in: 'bg-indigo-100 text-indigo-800',
+      not_qualified: 'bg-yellow-100 text-yellow-800',
+      no_show_after_checkin: 'bg-orange-100 text-orange-800'
     };
 
     return (
@@ -226,7 +232,7 @@ const BloodDonationHistory = () => {
 
       // Show history if status is in filter AND (date is in the past OR status is 'result_returned')
       return historyStatusFilters.includes(donation.currentStatus as DonationStatus) &&
-        (appointmentDate < today || donation.currentStatus === 'result_returned') &&
+        (appointmentDate < today || donation.currentStatus === 'result_returned' || donation.currentStatus === 'not_qualified' || donation.currentStatus === 'no_show_after_checkin') &&
         donation.currentStatus !== 'pending';
     }
   ) || [];
@@ -409,7 +415,7 @@ const BloodDonationHistory = () => {
               ) : donationResult ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-2">
                   <div>
-                    <p className="text-gray-500 mb-1">Nhóm máu</p>
+                    <p className="text-gray-500 mb-1">Nhóm máu của bạn</p>
                     <p className="font-bold text-xl text-red-600 mb-2">
                       {donationResult.bloodGroup}{donationResult.bloodRh}
                     </p>
@@ -423,7 +429,7 @@ const BloodDonationHistory = () => {
                     </p>
                   </div>
                   <div className="flex flex-col items-center justify-center">
-                    <p className="text-gray-500 mb-1">Người xử lý</p>
+                    <p className="text-gray-500 mb-1 text-primary ">Người xử lý</p>
                     <Avatar className="h-16 w-16 mb-2">
                       <AvatarImage src={donationResult.processedBy.avatar} alt={donationResult.processedBy.firstName} />
                       <AvatarFallback>
@@ -541,7 +547,9 @@ const BloodDonationHistory = () => {
                           appointment.currentStatus === 'completed' ||
                           appointment.currentStatus === 'result_returned' ||
                           appointment.currentStatus === 'customer_cancelled' ||
-                          appointment.currentStatus === 'appointment_cancelled'
+                          appointment.currentStatus === 'appointment_cancelled' ||
+                          appointment.currentStatus === 'not_qualified' ||
+                          appointment.currentStatus === 'no_show_after_checkin'
                         ) && (
                             <Button
                               variant="outline"

@@ -287,7 +287,7 @@ const Profile = () => {
               <AvatarImage src={user.imageUrl} />
               <AvatarFallback className="text-xl">{initials}</AvatarFallback>
             </Avatar>
-           
+
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
@@ -384,14 +384,15 @@ const Profile = () => {
               <Select
                 value={selectedBloodGroup || "unknown"}
                 onValueChange={(value) => {
+                  if (profile && profile.canChangeBloodType === false) return; // Prevent change if not allowed
                   if (value === "unknown") {
                     setSelectedBloodGroup(null);
-                    setSelectedBloodRh(null); // Reset Rh when group is set to unknown
+                    setSelectedBloodRh(null);
                   } else {
                     setSelectedBloodGroup(value);
                   }
                 }}
-              >
+                disabled={profile && profile.canChangeBloodType === false}              >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Nhóm máu" />
                 </SelectTrigger>
@@ -406,9 +407,11 @@ const Profile = () => {
 
               <Select
                 value={selectedBloodRh || "unknown"}
-                onValueChange={(value) => setSelectedBloodRh(value === "unknown" ? null : value)}
-                disabled={!selectedBloodGroup}
-              >
+                onValueChange={(value) => {
+                  if (profile && profile.canChangeBloodType === false) return; // Prevent change if not allowed
+                  setSelectedBloodRh(value === "unknown" ? null : value);
+                }}
+                disabled={!selectedBloodGroup || (profile && profile.canChangeBloodType === false)}              >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Yếu tố Rh" />
                 </SelectTrigger>
@@ -419,11 +422,8 @@ const Profile = () => {
                 </SelectContent>
               </Select>
             </div>
-
-            <p className="text-sm text-muted-foreground mt-2">
-              {!selectedBloodGroup
-                ? "Chọn nhóm máu của bạn nếu đã biết. Việc chọn 'Chưa xác định' sẽ xóa thông tin nhóm máu của bạn."
-                : `Nhóm máu đã chọn: ${selectedBloodGroup}${selectedBloodRh || ''}`}
+            <p className="text-xs text-muted-foreground mt-2 text-primary">
+              Sau khi chúng tôi đã xác định được nhóm máu của bạn, bạn sẽ không đc chỉnh sửa nhóm máu nữa
             </p>
           </div>
 
