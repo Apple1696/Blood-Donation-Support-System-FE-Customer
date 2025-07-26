@@ -70,6 +70,61 @@ export interface DonationRequestsResponse {
   total: number;
 }
 
+export interface DonationResult {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  campaignDonation: {
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    campaign: string;
+    donor: Donor & {
+      lastDonationDate?: string;
+      avatar?: string | null;
+    };
+    currentStatus: string;
+    appointmentDate: string;
+  };
+  volumeMl: number;
+  bloodGroup: string;
+  bloodRh: string;
+  notes: string;
+  rejectReason: string;
+  status: string;
+  processedBy: {
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    account: string;
+    firstName: string;
+    lastName: string;
+    role: string;
+    avatar: string;
+  };
+}
+
+const getDonationResultById = async (id: string): Promise<DonationResult> => {
+  try {
+    const response = await api.get<ApiResponse<DonationResult>>(`/donations/my-requests/${id}/result`);
+    if (response.data.success) {
+      return response.data.data;
+    }
+    throw new Error(response.data.message || 'Failed to fetch donation result');
+  } catch (error: any) {
+    console.error('Error fetching donation result:', error);
+
+    if (error.response?.status === 401) {
+      throw new Error('Authentication required. Please ensure you are logged in.');
+    }
+    if (error.response?.status === 404) {
+      throw new Error('Donation result not found');
+    }
+
+    throw error;
+  }
+};
+
 const createDonationRequest = async (payload: DonationRequestPayload): Promise<ApiResponse<any>> => {
   try {
     const response = await api.post<ApiResponse<any>>('/donations/requests', payload);
@@ -157,7 +212,17 @@ export const DonationService = {
   getMyDonationRequests,
   getDonationRequestById,
   cancelDonationRequest,
+  getDonationResultById,
 
+  useDonationResultById: (id: string) => {
+    return useQuery({
+      queryKey: ['donations', 'my-requests', id, 'result'],
+      queryFn: () => getDonationResultById(id),
+      enabled: !!id
+    });
+  },
+
+  
   useCreateDonationRequest: () => {
     const queryClient = useQueryClient();
 

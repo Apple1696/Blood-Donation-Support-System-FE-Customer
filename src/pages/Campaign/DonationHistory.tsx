@@ -3,8 +3,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Progress } from '@/components/ui/progress';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Calendar, MapPin, Award, Heart, Clock, Droplets, Loader2, Filter, Check } from 'lucide-react';
 import { DonationService } from '@/services/DonationService';
 import { format } from 'date-fns';
@@ -38,6 +38,14 @@ const BloodDonationHistory = () => {
   const [activeTab, setActiveTab] = useState('history');
   const [cancelRequestId, setCancelRequestId] = useState<string | null>(null);
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+
+   // State for result dialog
+  const [resultDialogOpen, setResultDialogOpen] = useState(false);
+  const [selectedDonationId, setSelectedDonationId] = useState<string | null>(null);
+
+  // Fetch donation result when dialog is open and id is set
+  const { data: donationResult, isLoading: isResultLoading, error: resultError } =
+    DonationService.useDonationResultById(selectedDonationId ?? '');
 
   // Status filters for each tab - initially include all statuses
   const allStatuses: DonationStatus[] = [
@@ -273,7 +281,7 @@ const BloodDonationHistory = () => {
               </DropdownMenu>
             </div>
 
-            {completedDonations.length > 0 ? (
+           {completedDonations.length > 0 ? (
               completedDonations.map((donation) => (
                 <Card key={donation.id} className="border-l-4 border-l-pink-500 hover:shadow-lg transition-shadow">
                   <CardHeader>
@@ -297,6 +305,20 @@ const BloodDonationHistory = () => {
                         <p className="font-semibold text-red-600">
                           {donation.donor.bloodType.group}{donation.donor.bloodType.rh}
                         </p>
+                        {/* Show "Xem kết quả" button if result is returned */}
+                        {donation.currentStatus === 'result_returned' && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="mt-2"
+                            onClick={() => {
+                              setSelectedDonationId(donation.id);
+                              setResultDialogOpen(true);
+                            }}
+                          >
+                            Xem kết quả
+                          </Button>
+                        )}
                       </div>
                     </div>
                   </CardContent>
@@ -313,6 +335,58 @@ const BloodDonationHistory = () => {
             )}
           </TabsContent>
 
+ {/* Result Dialog */}
+        <Dialog open={resultDialogOpen} onOpenChange={setResultDialogOpen}>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Kết quả hiến máu</DialogTitle>
+              <DialogDescription>
+                Thông tin chi tiết về lần hiến máu của bạn
+              </DialogDescription>
+            </DialogHeader>
+            {isResultLoading ? (
+              <div className="flex justify-center items-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-red-500" />
+                <span className="ml-2">Đang tải kết quả...</span>
+              </div>
+            ) : resultError ? (
+              <div className="text-center text-red-500 py-8">
+                {(resultError as Error).message || 'Không thể tải kết quả'}
+              </div>
+            ) : donationResult ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-2">
+                <div>
+                  <p className="text-gray-500 mb-1">Nhóm máu</p>
+                  <p className="font-bold text-xl text-red-600 mb-2">
+                    {donationResult.bloodGroup}{donationResult.bloodRh}
+                  </p>
+                  <p className="text-gray-500 mb-1">Thể tích</p>
+                  <p className="font-bold text-lg text-pink-600 mb-2">
+                    {donationResult.volumeMl} ml
+                  </p>
+                  <p className="text-gray-500 mb-1">Ghi chú</p>
+                  <p className="font-semibold text-gray-800 mb-2">
+                    {donationResult.notes || 'Không có ghi chú'}
+                  </p>
+                </div>
+                <div className="flex flex-col items-center justify-center">
+                  <p className="text-gray-500 mb-1">Người xử lý</p>
+                  <Avatar className="h-16 w-16 mb-2">
+                    <AvatarImage src={donationResult.processedBy.avatar} alt={donationResult.processedBy.firstName} />
+                    <AvatarFallback>
+                      {donationResult.processedBy.firstName[0]}
+                    </AvatarFallback>
+                  </Avatar>
+                  <p className="font-semibold text-gray-900">
+                    {donationResult.processedBy.firstName} {donationResult.processedBy.lastName}
+                  </p>
+                  <p className="text-sm text-gray-500">{donationResult.processedBy.role}</p>
+                </div>
+              </div>
+            ) : null}
+          </DialogContent>
+        </Dialog>
+        
           {/* Upcoming Appointments Tab */}
           <TabsContent value="upcoming" className="space-y-4">
             <div className="flex justify-end mb-4">
