@@ -69,7 +69,7 @@ const Navbar1 = ({
     title: "Blood Donation"
   },
   menu = [
-    { title: "Home", url: "/" },
+    { title: "Trang chủ", url: "/" },
     { title: "Thông tin nhóm máu",
       url: "/blood-types",
       items: [
