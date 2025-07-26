@@ -353,17 +353,7 @@ const BloodDonationHistory = () => {
                           <Info className="h-4 w-4 mr-1" />
                           Chi tiết
                         </Button>
-                        
-                        {/* Delete Button */}
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleCancelRequest(donation.id)}
-                          className="text-red-600 border-red-200 hover:bg-red-50"
-                        >
-                          <Trash2 className="h-4 w-4 mr-1" />
-                          Xóa
-                        </Button>
+
                         
                         {/* Show "Xem kết quả" button if result is returned */}
                         {donation.currentStatus === 'result_returned' && (
