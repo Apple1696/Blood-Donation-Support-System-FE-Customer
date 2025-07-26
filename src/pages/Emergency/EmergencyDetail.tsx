@@ -176,8 +176,19 @@ const EmergencyDetail: React.FC<EmergencyDetailProps> = ({ emergency, isOpen, on
           </div>
         </DialogHeader>
 
-        <div className="space-y-4 py-2">
-          <div className="bg-muted/50 p-4 rounded-lg">
+        {/* Add rejection reason card if status is rejected */}
+        {emergency.status === "rejected" && (
+          <div className="mt-2">
+            <div className="bg-white border rounded-lg shadow-sm p-4">
+              <h3 className="text-lg font-semibold mb-2 text-primary">Lý do từ chối</h3>
+              <p className="text-sm text-gray-700">{emergency.rejectionReason || "Không có lý do"}</p>
+            </div>
+          </div>
+        )}
+
+         <div className="space-y-4 py-2">
+          {/* Card: Thông Tin Máu Yêu Cầu */}
+          <div className="bg-white border rounded-lg shadow-sm p-4">
             <div className="flex justify-between items-center mb-3">
               <h3 className="text-lg font-semibold">Thông Tin Máu Yêu Cầu</h3>
               <div className="flex items-center gap-2">
@@ -185,7 +196,6 @@ const EmergencyDetail: React.FC<EmergencyDetailProps> = ({ emergency, isOpen, on
                 {getComponentBadge(emergency.bloodTypeComponent)}
               </div>
             </div>
-
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
                 <p className="text-sm text-muted-foreground">Lượng Máu Yêu Cầu</p>
@@ -200,7 +210,8 @@ const EmergencyDetail: React.FC<EmergencyDetailProps> = ({ emergency, isOpen, on
             </div>
           </div>
 
-          <div className="bg-muted/50 p-4 rounded-lg">
+          {/* Card: Địa Điểm */}
+          <div className="bg-white border rounded-lg shadow-sm p-4">
             <h3 className="text-lg font-semibold mb-3">Địa Điểm</h3>
             <div className="flex items-start gap-2">
               <MapPin className="h-5 w-5 text-muted-foreground mt-0.5" />
@@ -213,7 +224,8 @@ const EmergencyDetail: React.FC<EmergencyDetailProps> = ({ emergency, isOpen, on
             </div>
           </div>
 
-          <div className="bg-muted/50 p-4 rounded-lg">
+          {/* Card: Ngày Tạo */}
+          <div className="bg-white border rounded-lg shadow-sm p-4">
             <h3 className="text-lg font-semibold mb-3">Ngày Tạo</h3>
             <div className="flex items-center gap-2">
               <Calendar className="h-4 w-4 text-muted-foreground" />
@@ -221,9 +233,10 @@ const EmergencyDetail: React.FC<EmergencyDetailProps> = ({ emergency, isOpen, on
             </div>
           </div>
 
+          {/* Card: Danh Sách Người Liên Hệ Đề Xuất */}
           {emergency.status === "contacts_provided" && emergency.suggestedContacts && emergency.suggestedContacts.length > 0 && (
-            <div className="bg-muted/50 p-4 rounded-lg">
-              <h3 className="text-lg font-semibold mb-3">Danh Sách Người Liên Hệ Đề Xuất</h3>
+            <div className="bg-white border rounded-lg shadow-sm p-4">
+              <h3 className="text-lg font-semibold mb-3 text-primary">Danh Sách Người Liên Hệ Đề Xuất</h3>
               <div className="overflow-x-auto">
                 <table className="min-w-full border rounded-lg">
                   <thead>
@@ -251,8 +264,9 @@ const EmergencyDetail: React.FC<EmergencyDetailProps> = ({ emergency, isOpen, on
             </div>
           )}
 
+          {/* Card: Thông Tin Đơn Vị Máu */}
           {emergency.bloodUnit && (
-            <div className="bg-muted/50 p-4 rounded-lg">
+            <div className="bg-white border rounded-lg shadow-sm p-4">
               <h3 className="text-lg font-semibold mb-3">Thông Tin Đơn Vị Máu</h3>
               <div className="space-y-2">
                 <div>
