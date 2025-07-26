@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from 'sonner';
 import { useAuthContext } from '@/providers/AuthProvider';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-
+import { vi } from "date-fns/locale";
 
 export default function BookAppointment() {
   const { id } = useParams();
@@ -109,13 +109,13 @@ export default function BookAppointment() {
   return (
     <div className="min-h-screen container mx-auto pt-8 pb-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Đặt Lịch Hẹn</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-8 ">Đặt Lịch Hẹn</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Profile Information Column */}
           <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-0">
             <CardHeader>
-              <CardTitle>Thông Tin Cá Nhân</CardTitle>
+              <CardTitle className='text-primary'>Thông Tin Cá Nhân</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
@@ -197,7 +197,7 @@ export default function BookAppointment() {
                 <div className="bg-gray-50 p-3 rounded-md border flex items-center">
                   <Calendar className="w-4 h-4 mr-2 text-gray-500" />
                   <span className="text-gray-700">
-                    {collectionDate ? format(collectionDate, "PPP") : 'Đang tải ngày...'}
+                    {collectionDate ? format(collectionDate, "PPP", { locale: vi }) : 'Đang tải ngày...'}
                   </span>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
@@ -207,7 +207,7 @@ export default function BookAppointment() {
 
               {/* Add this block below "Ngày hẹn" */}
               <div className="space-y-2">
-                <Label htmlFor="volume">Lượng máu muốn hiến (ml)</Label>
+                <Label htmlFor="volume" className='text-primary'>Lượng máu muốn hiến (ml)</Label>
                 <Select value={volume.toString()} onValueChange={v => setVolume(Number(v))}>
                   <SelectTrigger id="volume" className="bg-gray-50">
                     <SelectValue placeholder="Chọn lượng máu" />
@@ -248,7 +248,7 @@ export default function BookAppointment() {
           <div className="space-y-6">
             <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-0">
               <CardHeader>
-                <CardTitle>Chi Tiết Chiến Dịch</CardTitle>
+                <CardTitle className='text-primary'>Chi Tiết Chiến Dịch</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 {campaign && (

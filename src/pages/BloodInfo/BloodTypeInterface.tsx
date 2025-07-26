@@ -194,7 +194,7 @@ const InformationPanel = ({ bloodType }) => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8 }}
         >
-          <CardTitle className="text-2xl font-bold">{data.name}</CardTitle>
+          <CardTitle className="text-2xl font-bold text-primary">{data.name}</CardTitle>
           <CardDescription className="text-base">Thành phần máu</CardDescription>
         </motion.div>
       </CardHeader>
