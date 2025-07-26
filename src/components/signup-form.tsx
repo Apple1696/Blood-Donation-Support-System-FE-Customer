@@ -78,40 +78,46 @@ export function SignupForm({ className, onSwitchToLogin, ...props }: SignupFormP
     return null;
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setError("");
 
-    // Validate form fields before proceeding
-    let isValid = true;
+  // Validate form fields before proceeding
+  let isValid = true;
 
-    // Password must be 8 characters or above
-    if (password.length < 8) {
-      toast.error("Mật khẩu phải có ít nhất 8 ký tự");
-      isValid = false;
-    }
+  // Password must be 8 characters or above
+  if (password.length < 8) {
+    toast.error("Mật khẩu phải có ít nhất 8 ký tự");
+    isValid = false;
+  }
 
-    // Citizenship ID must be 12 characters
-    if (citizenId.length !== 12) {
-      toast.error("CCCD/CMND phải có đúng 12 chữ số");
-      isValid = false;
-    }
+  // Citizenship ID must be 12 characters
+  if (citizenId.length !== 12) {
+    toast.error("CCCD/CMND phải có đúng 12 chữ số");
+    isValid = false;
+  }
 
-    // Date must be selected
-    if (!dateOfBirth) {
-      toast.error("Vui lòng chọn ngày sinh");
-      isValid = false;
-    }
+  // Date must be selected
+  if (!dateOfBirth) {
+    toast.error("Vui lòng chọn ngày sinh");
+    isValid = false;
+  }
 
-    // Confirm password must match
-    if (password !== confirmPassword) {
-      toast.error("Mật khẩu xác nhận không khớp");
-      isValid = false;
-    }
+  // Confirm password must match
+  if (password !== confirmPassword) {
+    toast.error("Mật khẩu xác nhận không khớp");
+    isValid = false;
+  }
 
-    if (!isValid) {
-      return;
-    }
+  // Address must be fully selected
+  if (!selectedProvinceId || !selectedDistrictId || !selectedWardId) {
+    toast.error("Vui lòng chọn địa chỉ đầy đủ");
+    isValid = false;
+  }
+
+  if (!isValid) {
+    return;
+  }
 
     // If validation passes, continue with registration
     setIsLoading(true);
