@@ -24,10 +24,13 @@ import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import DonationHistoryDetail from './DonationHistoryDetail';
 
-// All possible status values
-type DonationStatus = 'rejected' | 'completed' | 'result_returned' |
-  'appointment_confirmed' | 'appointment_cancelled' |
-  'customer_cancelled' | 'customer_checked_in' | 'not_qualified' | 'no_show_after_checkin';
+// Status types separated by purpose
+type HistoryStatus = 'rejected' | 'completed' | 'result_returned' | 
+  'appointment_cancelled' | 'customer_cancelled' | 'not_qualified' | 'no_show_after_checkin';
+
+type UpcomingStatus = 'appointment_confirmed' | 'customer_checked_in';
+
+type DonationStatus = HistoryStatus | UpcomingStatus;
 
 interface StatusBadgeProps {
   status: DonationStatus;
@@ -51,15 +54,20 @@ const BloodDonationHistory = () => {
   const { data: donationResult, isLoading: isResultLoading, error: resultError } =
     DonationService.useDonationResultById(selectedDonationId ?? '');
 
-  // Status filters for each tab - initially include all statuses
-  const allStatuses: DonationStatus[] = [
+  // Define statuses for each tab
+  const historyStatuses: HistoryStatus[] = [
     'rejected', 'completed', 'result_returned',
-    'appointment_confirmed', 'appointment_cancelled',
-    'customer_cancelled', 'customer_checked_in', 'not_qualified', 'no_show_after_checkin'
+    'appointment_cancelled', 'customer_cancelled', 
+    'not_qualified', 'no_show_after_checkin'
   ];
 
-  const [historyStatusFilters, setHistoryStatusFilters] = useState<DonationStatus[]>(allStatuses);
-  const [upcomingStatusFilters, setUpcomingStatusFilters] = useState<DonationStatus[]>(allStatuses);
+  const upcomingStatuses: UpcomingStatus[] = [
+    'appointment_confirmed', 'customer_checked_in'
+  ];
+
+  // Status filters for each tab - initially include all relevant statuses
+  const [historyStatusFilters, setHistoryStatusFilters] = useState<HistoryStatus[]>(historyStatuses);
+  const [upcomingStatusFilters, setUpcomingStatusFilters] = useState<UpcomingStatus[]>(upcomingStatuses);
 
   // Use React Query to fetch donation requests
   const { data: donationData, isLoading, error } = DonationService.useMyDonationRequests();
@@ -164,7 +172,6 @@ const BloodDonationHistory = () => {
     return appointmentDate.getTime() - now.getTime() > 24 * 60 * 60 * 1000;
   };
 
-
   const StatusBadge = ({ status }: StatusBadgeProps) => {
     const variants: Record<string, string> = {
       completed: 'bg-green-100 text-green-800',
@@ -208,43 +215,45 @@ const BloodDonationHistory = () => {
     );
   }
 
-  // Separate upcoming (pending/confirmed) and past (completed) donations with filters
+  // Improved filtering logic
   const today = new Date();
-  today.setHours(0, 0, 0, 0); // Set to beginning of today
+  today.setHours(0, 0, 0, 0);
 
-  const upcomingAppointments = donationData?.items.filter(
-    donation => {
-      // Check if status is in filter AND date is today or in the future
-      const appointmentDate = new Date(donation.appointmentDate);
-      appointmentDate.setHours(0, 0, 0, 0); // Normalize to beginning of day for comparison
+  // History Tab - Based on FINAL statuses (regardless of date)
+  const completedDonations = donationData?.items.filter(donation => {
+    const donationStatus = mapStatusToDonationStatus(donation.currentStatus);
+    return historyStatusFilters.includes(donationStatus as HistoryStatus) &&
+           historyStatuses.includes(donationStatus as HistoryStatus);
+  }) || [];
 
-      return upcomingStatusFilters.includes(donation.currentStatus as DonationStatus) &&
-        appointmentDate >= today &&
-        donation.currentStatus !== 'pending';
-    }
-  ) || [];
+  // Upcoming Tab - Based on ACTIVE statuses + future/today dates
+  const upcomingAppointments = donationData?.items.filter(donation => {
+    const donationStatus = mapStatusToDonationStatus(donation.currentStatus);
+    const appointmentDate = new Date(donation.appointmentDate);
+    appointmentDate.setHours(0, 0, 0, 0);
 
-  const completedDonations = donationData?.items.filter(
-    donation => {
-      // Check if status is in filter AND date is in the past
-      const appointmentDate = new Date(donation.appointmentDate);
-      appointmentDate.setHours(0, 0, 0, 0); // Normalize to beginning of day for comparison
-
-      // Show history if status is in filter AND (date is in the past OR status is 'result_returned')
-      return historyStatusFilters.includes(donation.currentStatus as DonationStatus) &&
-        (appointmentDate < today || donation.currentStatus === 'result_returned' || donation.currentStatus === 'not_qualified' || donation.currentStatus === 'no_show_after_checkin') &&
-        donation.currentStatus !== 'pending';
-    }
-  ) || [];
+    return upcomingStatusFilters.includes(donationStatus as UpcomingStatus) &&
+           upcomingStatuses.includes(donationStatus as UpcomingStatus) &&
+           appointmentDate >= today;
+  }) || [];
 
   // Status counts for badges in filter menu
-  const getStatusCount = (status: DonationStatus, isPast: boolean) => {
+  const getHistoryStatusCount = (status: HistoryStatus) => {
     return donationData?.items.filter(donation => {
+      const donationStatus = mapStatusToDonationStatus(donation.currentStatus);
+      return donationStatus === status && historyStatuses.includes(donationStatus as HistoryStatus);
+    }).length || 0;
+  };
+
+  const getUpcomingStatusCount = (status: UpcomingStatus) => {
+    return donationData?.items.filter(donation => {
+      const donationStatus = mapStatusToDonationStatus(donation.currentStatus);
       const appointmentDate = new Date(donation.appointmentDate);
       appointmentDate.setHours(0, 0, 0, 0);
 
-      return donation.currentStatus === status &&
-        (isPast ? appointmentDate < today : appointmentDate >= today)
+      return donationStatus === status && 
+             upcomingStatuses.includes(donationStatus as UpcomingStatus) &&
+             appointmentDate >= today;
     }).length || 0;
   };
 
@@ -277,7 +286,7 @@ const BloodDonationHistory = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
-                  {allStatuses.map((status) => (
+                  {historyStatuses.map((status) => (
                     <DropdownMenuItem
                       key={status}
                       onClick={() => {
@@ -292,7 +301,7 @@ const BloodDonationHistory = () => {
                       <span className="flex items-center">
                         {statusLabels[status]}
                         <Badge variant="outline" className="ml-2 text-xs">
-                          {getStatusCount(status, true)}
+                          {getHistoryStatusCount(status)}
                         </Badge>
                       </span>
                       {historyStatusFilters.includes(status) && (
@@ -311,16 +320,6 @@ const BloodDonationHistory = () => {
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
                         <CardTitle className="text-lg mb-2">{donation.campaign.name}</CardTitle>
-                        {/* Campaign Banner */}
-                        {/* {donation.campaign.banner && (
-                          <div className="mb-3">
-                            <img 
-                              src={donation.campaign.banner} 
-                              alt={donation.campaign.name}
-                              className="w-full h-32 object-cover rounded-lg"
-                            />
-                          </div>
-                        )} */}
                         <CardDescription className="flex items-center space-x-4">
                           <div className="flex items-center space-x-1">
                             <Calendar className="h-4 w-4" />
@@ -354,7 +353,6 @@ const BloodDonationHistory = () => {
                           Chi tiết
                         </Button>
 
-                        
                         {/* Show "Xem kết quả" button if result is returned */}
                         {donation.currentStatus === 'result_returned' && (
                           <Button
@@ -454,7 +452,7 @@ const BloodDonationHistory = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
-                  {allStatuses.map((status) => (
+                  {upcomingStatuses.map((status) => (
                     <DropdownMenuItem
                       key={status}
                       onClick={() => {
@@ -469,7 +467,7 @@ const BloodDonationHistory = () => {
                       <span className="flex items-center">
                         {statusLabels[status]}
                         <Badge variant="outline" className="ml-2 text-xs">
-                          {getStatusCount(status, false)}
+                          {getUpcomingStatusCount(status)}
                         </Badge>
                       </span>
                       {upcomingStatusFilters.includes(status) && (
@@ -488,16 +486,6 @@ const BloodDonationHistory = () => {
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
                         <CardTitle className="text-lg mb-2">{appointment.campaign.name}</CardTitle>
-                        {/* Campaign Banner */}
-                        {/* {appointment.campaign.banner && (
-                          <div className="mb-3">
-                            <img 
-                              src={appointment.campaign.banner} 
-                              alt={appointment.campaign.name}
-                              className="w-full h-32 object-cover rounded-lg"
-                            />
-                          </div>
-                        )} */}
                         <CardDescription className="flex items-center space-x-4">
                           <div className="flex items-center space-x-1">
                             <Calendar className="h-4 w-4" />
@@ -531,39 +519,31 @@ const BloodDonationHistory = () => {
                           Chi tiết
                         </Button>
                         
-                        {/* Hide "Hủy lịch hẹn" button for certain statuses */}
-                        {!(
-                          appointment.currentStatus === 'customer_checked_in' ||
-                          appointment.currentStatus === 'completed' ||
-                          appointment.currentStatus === 'result_returned' ||
-                          appointment.currentStatus === 'customer_cancelled' ||
-                          appointment.currentStatus === 'appointment_cancelled' ||
-                          appointment.currentStatus === 'not_qualified' ||
-                          appointment.currentStatus === 'no_show_after_checkin'
-                        ) && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleCancelRequest(appointment.id)}
-                              disabled={
-                                appointment.currentStatus === 'appointment_confirmed' && !canCancelAppointment(appointment)
-                                || (isCancelling && cancelRequestId === appointment.id)
-                              }
-                              className="text-red-600 border-red-200 hover:bg-red-50"
-                            >
-                              {isCancelling && cancelRequestId === appointment.id ? (
-                                <>
-                                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                  Đang hủy...
-                                </>
-                              ) : (
-                                <>
-                                  <Trash2 className="h-4 w-4 mr-1" />
-                                  Hủy lịch hẹn
-                                </>
-                              )}
-                            </Button>
-                          )}
+                        {/* Show cancel button only for appointment_confirmed status */}
+                        {appointment.currentStatus === 'appointment_confirmed' && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleCancelRequest(appointment.id)}
+                            disabled={
+                              !canCancelAppointment(appointment) ||
+                              (isCancelling && cancelRequestId === appointment.id)
+                            }
+                            className="text-red-600 border-red-200 hover:bg-red-50"
+                          >
+                            {isCancelling && cancelRequestId === appointment.id ? (
+                              <>
+                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                Đang hủy...
+                              </>
+                            ) : (
+                              <>
+                                <Trash2 className="h-4 w-4 mr-1" />
+                                Hủy lịch hẹn
+                              </>
+                            )}
+                          </Button>
+                        )}
                       </div>
                     </div>
                   </CardContent>
