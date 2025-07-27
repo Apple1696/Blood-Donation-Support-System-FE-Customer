@@ -3,7 +3,7 @@ import { SignedIn, SignedOut } from "@clerk/clerk-react"
 import { Navigate } from 'react-router-dom'
 import CustomerLayout from '@/layouts/CustomerLayout'
 import Home from '@/pages/Home'
-import LoginPage from '@/pages/Login'
+import LoginPage from '@/pages/Authentication/Login'
 import Profile from './pages/Profile/Profile'
 import CardCampaign from './pages/Campaign/CardCampaign'
 import CampaignDetail from './pages/Campaign/CampaignDetail'

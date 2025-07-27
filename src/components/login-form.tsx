@@ -12,9 +12,15 @@ import { toast } from "sonner"
 
 interface LoginFormProps extends React.ComponentPropsWithoutRef<"form"> {
   onSwitchToSignup?: () => void
+  onSwitchToResetRequest?: () => void
 }
 
-export function LoginForm({ className, onSwitchToSignup, ...props }: LoginFormProps) {
+export function LoginForm({ 
+  className, 
+  onSwitchToSignup, 
+  onSwitchToResetRequest,
+  ...props 
+}: LoginFormProps) {
   const { isLoaded, signIn, setActive } = useSignIn();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -101,9 +107,13 @@ export function LoginForm({ className, onSwitchToSignup, ...props }: LoginFormPr
         <div className="grid gap-2">
           <div className="flex items-center">
             <Label htmlFor="password">Mật khẩu</Label>
-            <a href="#" className="ml-auto text-sm underline-offset-4 hover:underline">
+            <button 
+              type="button"
+              onClick={onSwitchToResetRequest}
+              className="ml-auto text-sm underline-offset-4 hover:underline"
+            >
               Quên mật khẩu?
-            </a>
+            </button>
           </div>
           <Input 
             id="password" 
