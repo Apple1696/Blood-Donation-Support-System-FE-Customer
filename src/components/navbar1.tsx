@@ -76,7 +76,7 @@ const Navbar1 = ({
       url: "/blood-types",
       items: [
         {
-          title: "Thông tin chung và máu và nhóm máu",
+          title: "Thông tin chung về máu và nhóm máu",
           description: "Tìm hiểu về máu, nhóm máu và các yếu tố liên quan.",
           icon: <Trees className="size-5 shrink-0" />,
           url: "/blood-info",
@@ -212,59 +212,66 @@ const Navbar1 = ({
     const { user } = useUser();
     // Fetch profile data (including avatar) from ProfileService
     const { data: profile } = ProfileService.useProfile(!!user, !!user);
+    const { data: hospitalProfile } = ProfileService.useHospitalProfile(!!user, !!user);
 
-    if (!user) return null;
+   if (!user) return null;
 
-    const initials = user.firstName && user.lastName
-      ? `${user.firstName[0]}${user.lastName[0]}`
-      : user.emailAddresses[0].emailAddress[0].toUpperCase();
+      const initials = user.firstName && user.lastName
+        ? `${user.firstName[0]}${user.lastName[0]}`
+        : user.emailAddresses[0].emailAddress[0].toUpperCase();
 
-    const isHospital = user?.publicMetadata?.role === "hospital";
+      const isHospital = user?.publicMetadata?.role === "hospital";
 
-    return (
-      <div className="flex items-center gap-6">
-        {/* Bell icon for notifications */}
-        <ReminderSheet />
+      return (
+        <div className="flex items-center gap-6">
+          {/* Bell icon for notifications */}
+          <ReminderSheet />
 
-        {/* User Avatar Dropdown */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Avatar className="cursor-pointer">
-              <AvatarImage src={profile?.avatar || user.imageUrl} />
-              <AvatarFallback className="bg-primary text-primary-foreground">
-                {initials}
-              </AvatarFallback>
-            </Avatar>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem className="gap-2">
-              <span className="font-medium">{`${user.firstName} ${user.lastName}`}</span>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <a
-                href={
-                  isHospital
-                    ? "/hospital-profile"
-                    : "/profile"
-                }
-              >
-                Hồ sơ
-              </a>
-            </DropdownMenuItem>
-            {!isHospital && (
+          {/* User Avatar Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Avatar className="cursor-pointer">
+                <AvatarImage src={isHospital ? hospitalProfile?.avatar : profile?.avatar || user.imageUrl} />
+                <AvatarFallback className="bg-primary text-primary-foreground">
+                  {initials}
+                </AvatarFallback>
+              </Avatar>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {isHospital ? (
+                <DropdownMenuItem className="gap-2">
+                  <span className="font-medium">{hospitalProfile?.name || "Bệnh viện"}</span>
+                </DropdownMenuItem>
+              ) : (
+                <DropdownMenuItem className="gap-2">
+                  <span className="font-medium">{`${user.firstName} ${user.lastName}`}</span>
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <a href="/donation-history">Lịch sử hiến máu </a>
+                <a
+                  href={
+                    isHospital
+                      ? "/hospital-profile"
+                      : "/profile"
+                  }
+                >
+                  Hồ sơ
+                </a>
               </DropdownMenuItem>
-            )}
-            <DropdownMenuItem onClick={handleSignOut}>
-              Đăng xuất
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    );
-  };
+              {!isHospital && (
+                <DropdownMenuItem asChild>
+                  <a href="/donation-history">Lịch sử hiến máu </a>
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuItem onClick={handleSignOut}>
+                Đăng xuất
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      );
+    };
 
   return (
     <section className="py-4" style={{ backgroundColor: '#B03F4A', position: 'sticky', top: 0, zIndex: 50, boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }}>

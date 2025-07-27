@@ -34,6 +34,12 @@ export interface HospitalProfile {
   status: string;
   avatar: string | null;
 }
+
+interface UpdateHospitalAvatarRequest {
+  avatar: string; // base64 or binary string
+}
+
+
 import api from "@/config/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -147,6 +153,25 @@ const uploadImage = async (imageFile: File | Blob): Promise<UploadImageResponse>
 };
 
 export const ProfileService = {
+
+  /**
+   * Uploads an avatar for the hospital profile.
+   * @param avatarData - { avatar: string } where avatar is a binary/base64 string
+   * @returns Updated HospitalProfile
+   */
+  updateHospitalAvatar: async (avatarData: UpdateHospitalAvatarRequest): Promise<HospitalProfile> => {
+    try {
+      const response = await api.post<ApiResponse<HospitalProfile>>('/hospitals/avatar', avatarData);
+      if (response.data.success) {
+        return response.data.data;
+      }
+      throw new Error(response.data.message || 'Failed to update hospital avatar');
+    } catch (error) {
+      console.error('Error updating hospital avatar:', error);
+      throw error;
+    }
+  },
+
   updateHospitalProfile: async (profileData: UpdateHospitalProfileRequest): Promise<HospitalProfile> => {
     try {
       const response = await api.patch<ApiResponse<HospitalProfile>>('/hospitals/me', profileData);
@@ -243,6 +268,27 @@ export const ProfileService = {
   },
 
   // React Query Hooks
+
+  /**
+  * React Query mutation hook for updating hospital avatar.
+  * @param onSuccessCallback - Called on success
+  * @param onErrorCallback - Called on error
+  */
+  useUpdateHospitalAvatar: (onSuccessCallback?: () => void, onErrorCallback?: (error: Error) => void) => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+      mutationFn: ProfileService.updateHospitalAvatar,
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["hospitalProfile"] });
+        onSuccessCallback?.();
+      },
+      onError: (error) => {
+        onErrorCallback?.(error as Error);
+      }
+    });
+  },
+
   useUpdateHospitalProfile: (onSuccessCallback?: () => void, onErrorCallback?: (error: Error) => void) => {
     const queryClient = useQueryClient();
 
