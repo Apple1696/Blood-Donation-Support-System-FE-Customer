@@ -486,7 +486,7 @@ const Profile = () => {
               </Select>
             </div>
             <p className="text-xs text-muted-foreground mt-2 text-primary">
-              Lưu ý: Sau khi chúng tôi đã xác định được nhóm máu của bạn, bạn sẽ không đc chỉnh sửa nhóm máu nữa
+              Lưu ý: Sau khi chúng tôi đã xác định được nhóm máu của bạn, bạn sẽ không được chỉnh sửa nhóm máu nữa
             </p>
           </div>
 
