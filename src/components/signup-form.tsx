@@ -42,6 +42,8 @@ export function SignupForm({ className, onSwitchToLogin, ...props }: SignupFormP
   const [selectedDistrictId, setSelectedDistrictId] = useState<string>("");
   const [selectedWardId, setSelectedWardId] = useState<string>("");
 
+    const [address, setAddress] = useState(""); // 1. Add address state
+
   // Fetch provinces
   const { data: provinces, isLoading: isLoadingProvinces } = useQuery({
     queryKey: ["provinces"],
@@ -130,27 +132,28 @@ export function SignupForm({ className, onSwitchToLogin, ...props }: SignupFormP
     const district = districts?.find(d => d.id === selectedDistrictId);
     const ward = wards?.find(w => w.id === selectedWardId);
 
-    try {
-      await signUp.create({
-        firstName,
-        lastName,
-        emailAddress: email,
-        password,
-        unsafeMetadata: {
-          gender,
-          dateOfBirth: formattedDateOfBirth,
-          phone,
-          citizenId,
-          provinceId: selectedProvinceId,
-          districtId: selectedDistrictId,
-          wardId: selectedWardId,
-          provinceName: province?.name || null,
-          districtName: district?.name || null,
-          wardName: ward?.name || null,
-          longitude: ward?.longitude || null,
-          latitude: ward?.latitude || null
-        }
-      });
+   try {
+    await signUp.create({
+      firstName,
+      lastName,
+      emailAddress: email,
+      password,
+      unsafeMetadata: {
+        gender,
+        dateOfBirth: formattedDateOfBirth,
+        phone,
+        citizenId,
+        provinceId: selectedProvinceId,
+        districtId: selectedDistrictId,
+        wardId: selectedWardId,
+        provinceName: province?.name || null,
+        districtName: district?.name || null,
+        wardName: ward?.name || null,
+        longitude: ward?.longitude || null,
+        latitude: ward?.latitude || null,
+        address // 3. Add address here
+      }
+    });
 
       // Send verification email
       await signUp.prepareEmailAddressVerification({
@@ -209,6 +212,7 @@ export function SignupForm({ className, onSwitchToLogin, ...props }: SignupFormP
               provinceId: string;
               districtId: string;
               wardId: string;
+              address: string | null;
             };
 
             // Find location details from provinces, districts, and wards
@@ -232,7 +236,8 @@ export function SignupForm({ className, onSwitchToLogin, ...props }: SignupFormP
                 provinceName: province.name,
                 gender: userMetadata.gender,
                 dateOfBirth: userMetadata.dateOfBirth,
-                citizenId: userMetadata.citizenId
+                citizenId: userMetadata.citizenId,
+                address: userMetadata.address 
               });
 
               toast.success("Hồ sơ đã được tạo thành công");
@@ -395,6 +400,7 @@ export function SignupForm({ className, onSwitchToLogin, ...props }: SignupFormP
               </SelectContent>
             </Select>
           </div>
+
           <div className="grid gap-2">
             <Label htmlFor="ward">Phường/Xã</Label>
             <Select
@@ -418,6 +424,21 @@ export function SignupForm({ className, onSwitchToLogin, ...props }: SignupFormP
               </SelectContent>
             </Select>
           </div>
+
+
+        </div>
+
+        
+        <div className="grid gap-2">
+          <Label htmlFor="address">Địa chỉ chi tiết</Label>
+          <Input
+            id="address"
+            type="text"
+            required
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            placeholder="Nhập địa chỉ chi tiết (số nhà, tên đường, v.v.)"
+          />
         </div>
 
         <div className="grid grid-cols-2 gap-4">

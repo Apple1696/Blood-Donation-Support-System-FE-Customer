@@ -64,6 +64,7 @@ export interface CustomerProfile {
     rh: string;
   };
   status: string;
+  address: string | null;
   gender: string | null;
   dateOfBirth: string | null;
   citizenId: string | null;
@@ -84,6 +85,7 @@ interface UpdateProfileRequest {
   wardName: string;
   districtName: string;
   provinceName: string;
+  address: string
   // Replace bloodType object with separate fields
   bloodGroup?: string | null;
   bloodRh?: string | null;

@@ -40,6 +40,8 @@ const Profile = () => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
 
+  const [address, setAddress] = useState(""); // Add address state
+
   // Function to handle opening the phone change dialog
   const handleOpenPhoneDialog = () => {
     setNewPhone(profile?.phone || "");
@@ -103,6 +105,7 @@ const Profile = () => {
         wardName: profile?.wardName || "",
         districtName: profile?.districtName || "",
         provinceName: profile?.provinceName || "",
+        address: profile?.address || "",
         bloodGroup: selectedBloodGroup,
         bloodRh: selectedBloodRh,
         gender: profile?.gender || "",
@@ -162,6 +165,7 @@ const Profile = () => {
     if (profile) {
       setFirstName(profile.firstName || "");
       setLastName(profile.lastName || "");
+      setAddress(profile.address || ""); // Set address from profile
 
       // Set blood type if available
       if (profile.bloodType) {
@@ -231,6 +235,7 @@ const Profile = () => {
         wardName: selectedWard.name,
         districtName: districts?.find(d => d.id === selectedDistrictId)?.name || "",
         provinceName: provinces?.find(p => p.id === selectedProvinceId)?.name || "",
+        address,
         bloodGroup: selectedBloodGroup,
         bloodRh: selectedBloodRh,
         gender: profile?.gender || "",
@@ -265,6 +270,7 @@ const Profile = () => {
       wardCode: selectedWardId,
       districtCode: selectedDistrictId,
       provinceCode: selectedProvinceId,
+      address,
       wardName: selectedWard.name,
       districtName: selectedDistrict.name,
       provinceName: selectedProvince.name,
@@ -422,7 +428,17 @@ const Profile = () => {
                 </SelectContent>
               </Select>
             </div>
+          </div>
 
+ {/* Address input field */}
+          <div className="mt-6">
+            <label className="text-sm font-medium">Địa chỉ chi tiết</label>
+            <Input
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              className="mt-1"
+              placeholder="Nhập địa chỉ chi tiết (số nhà, tên đường, v.v.)"
+            />
           </div>
 
           <div className="mt-6">
