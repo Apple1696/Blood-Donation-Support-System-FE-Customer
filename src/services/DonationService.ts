@@ -38,7 +38,7 @@ export interface Donor {
   bloodType: {
     group: string;
     rh: string;
-  };
+  } | null;
   firstName: string;
   lastName: string;
   gender: string | null;

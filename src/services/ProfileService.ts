@@ -203,7 +203,7 @@ export const ProfileService = {
     }
   },
 
-   updateAvatar: async (avatarData: UpdateAvatarRequest): Promise<CustomerProfile> => {
+  updateAvatar: async (avatarData: UpdateAvatarRequest): Promise<CustomerProfile> => {
     try {
       const response = await api.put<ApiResponse<CustomerProfile>>('/customers/me/avatar', avatarData);
       if (response.data.success) {
@@ -226,12 +226,10 @@ export const ProfileService = {
         throw new Error("Radius cannot exceed 100 kilometers");
       }
 
-      const response = await api.get<ApiResponse<FindNearbyResponse>>('/customers/find-nearby', {
-        params: {
-          radius,
-          bloodRh,
-          bloodGroup
-        }
+      const response = await api.post<ApiResponse<FindNearbyResponse>>('/customers/find-by-blood-type', {
+        bloodGroup,
+        bloodRh,
+        radius
       });
 
       if (response.data.success) {

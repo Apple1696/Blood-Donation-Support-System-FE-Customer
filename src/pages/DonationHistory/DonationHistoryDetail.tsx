@@ -101,16 +101,16 @@ const DonationHistoryDetail = ({ donation, open, onOpenChange }: DonationHistory
                   <p className="text-sm font-medium text-gray-600">Tên chiến dịch</p>
                   <p className="text-base font-semibold text-gray-900">{donation.campaign.name}</p>
                 </div>
-                
+
                 <Separator />
-                
+
                 <div>
                   <p className="text-sm font-medium text-gray-600">Mô tả</p>
                   <p className="text-sm text-gray-800">{donation.campaign.description}</p>
                 </div>
-                
+
                 <Separator />
-                
+
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm font-medium text-gray-600">Ngày bắt đầu</p>
@@ -125,9 +125,9 @@ const DonationHistoryDetail = ({ donation, open, onOpenChange }: DonationHistory
                     </p>
                   </div>
                 </div>
-                
+
                 <Separator />
-                
+
                 <div>
                   <p className="text-sm font-medium text-gray-600 flex items-center gap-1">
                     <MapPin className="h-4 w-4" />
@@ -153,19 +153,21 @@ const DonationHistoryDetail = ({ donation, open, onOpenChange }: DonationHistory
                     {donation.donor.firstName} {donation.donor.lastName}
                   </p>
                 </div>
-                
+
                 <Separator />
-                
+
                 <div>
                   <p className="text-sm font-medium text-gray-600 flex items-center gap-1">
                     <Droplets className="h-4 w-4 text-red-500" />
                     Nhóm máu
                   </p>
                   <p className="text-base font-semibold text-red-600">
-                    {donation.donor.bloodType.group}{donation.donor.bloodType.rh}
+                    {donation.donor.bloodType
+                      ? `${donation.donor.bloodType.group}${donation.donor.bloodType.rh}`
+                      : "Không xác định"}
                   </p>
                 </div>
-                                
+
                 <div>
                   <p className="text-sm font-medium text-gray-600 flex items-center gap-1">
                     <Phone className="h-4 w-4" />
@@ -173,9 +175,9 @@ const DonationHistoryDetail = ({ donation, open, onOpenChange }: DonationHistory
                   </p>
                   <p className="text-sm text-gray-800">{donation.donor.phone}</p>
                 </div>
-                
+
                 <Separator />
-                
+
                 <div>
                   <p className="text-sm font-medium text-gray-600 flex items-center gap-1">
                     <MapPin className="h-4 w-4" />
