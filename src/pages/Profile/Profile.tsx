@@ -12,10 +12,11 @@ import {
 } from "@/components/ui/select";
 import { AddressService } from "@/services/AddressService";
 import { ProfileService } from "@/services/ProfileService";
-import { useState, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useUser } from "@clerk/clerk-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useDropzone } from "react-dropzone";
 
 const Profile = () => {
   const { isAuthenticated, getToken } = useAuthContext();
@@ -35,11 +36,50 @@ const Profile = () => {
   const [selectedBloodGroup, setSelectedBloodGroup] = useState<string | null>(null);
   const [selectedBloodRh, setSelectedBloodRh] = useState<string | null>(null);
 
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
+
   // Function to handle opening the phone change dialog
   const handleOpenPhoneDialog = () => {
     setNewPhone(profile?.phone || "");
     setIsPhoneDialogOpen(true);
   };
+
+  // React Query hook for uploading image
+  const uploadImageMutation = ProfileService.useUploadImage(
+    (data) => {
+      // After successful upload, update avatar
+      updateAvatarMutation.mutate({ avatarUrl: data.imageUrl });
+      toast.success("Tải ảnh lên thành công");
+      setIsUploadDialogOpen(false);
+      setSelectedImage(null);
+      setPreviewUrl(null);
+    },
+    (error) => {
+      toast.error("Không thể tải ảnh lên: " + error.message);
+    }
+  );
+
+  // React Query hook for updating avatar
+  const updateAvatarMutation = ProfileService.useUpdateAvatar(
+    () => toast.success("Cập nhật ảnh đại diện thành công"),
+    (error) => toast.error("Không thể cập nhật ảnh đại diện: " + error.message)
+  );
+
+  // Dropzone setup
+  const onDrop = (acceptedFiles: File[]) => {
+    if (acceptedFiles && acceptedFiles.length > 0) {
+      setSelectedImage(acceptedFiles[0]);
+      setPreviewUrl(URL.createObjectURL(acceptedFiles[0]));
+    }
+  };
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: { "image/*": [] },
+    multiple: false,
+    maxFiles: 1
+  });
 
   // Function to handle phone number update
   const handleUpdatePhone = async () => {
@@ -284,10 +324,17 @@ const Profile = () => {
         <CardContent className="pt-6">
           <div className="flex flex-col items-center mb-6">
             <Avatar className="w-24 h-24 mb-4">
-              <AvatarImage src={user.imageUrl} />
+              {/* Use avatar from profile if available, fallback to user.imageUrl */}
+              <AvatarImage src={profile.avatar || user.imageUrl} />
               <AvatarFallback className="text-xl">{initials}</AvatarFallback>
             </Avatar>
-
+            <Button
+              className="mt-2"
+              variant="outline"
+              onClick={() => setIsUploadDialogOpen(true)}
+            >
+              Tải ảnh lên
+            </Button>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
@@ -423,7 +470,7 @@ const Profile = () => {
               </Select>
             </div>
             <p className="text-xs text-muted-foreground mt-2 text-primary">
-              Sau khi chúng tôi đã xác định được nhóm máu của bạn, bạn sẽ không đc chỉnh sửa nhóm máu nữa
+              Lưu ý: Sau khi chúng tôi đã xác định được nhóm máu của bạn, bạn sẽ không đc chỉnh sửa nhóm máu nữa
             </p>
           </div>
 
@@ -518,6 +565,55 @@ const Profile = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Image upload dialog */}
+      <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Upload Ảnh Đại Diện</DialogTitle>
+            <DialogDescription>
+              Chọn ảnh từ máy tính của bạn để làm ảnh đại diện.
+            </DialogDescription>
+          </DialogHeader>
+          <div {...getRootProps()} className="border-dashed border-2 border-gray-300 rounded-md p-4 flex flex-col items-center cursor-pointer mb-4">
+            <input {...getInputProps()} />
+            {isDragActive ? (
+              <p>Kéo và thả ảnh vào đây...</p>
+            ) : (
+              <p>Nhấn hoặc kéo thả ảnh vào đây để chọn ảnh</p>
+            )}
+            {previewUrl && (
+              <img src={previewUrl} alt="Preview" className="mt-4 w-32 h-32 object-cover rounded-full" />
+            )}
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsUploadDialogOpen(false);
+                setSelectedImage(null);
+                setPreviewUrl(null);
+              }}
+              disabled={uploadImageMutation.isPending}
+            >
+              Hủy
+            </Button>
+            <Button
+              onClick={() => {
+                if (selectedImage) {
+                  uploadImageMutation.mutate(selectedImage);
+                } else {
+                  toast.error("Vui lòng chọn ảnh để tải lên");
+                }
+              }}
+              disabled={!selectedImage || uploadImageMutation.isPending}
+            >
+              {uploadImageMutation.isPending ? "Đang tải lên..." : "Tải lên"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
     </div>
   );
 };

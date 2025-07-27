@@ -92,6 +92,15 @@ interface UpdateProfileRequest {
   citizenId: string;
 }
 
+interface UpdateAvatarRequest {
+  avatarUrl: string;
+}
+
+interface UploadImageResponse {
+  imageUrl: string;
+}
+
+
 interface ApiResponse<T> {
   success: boolean;
   message: string;
@@ -109,6 +118,31 @@ interface FindNearbyParams {
   bloodGroup: "A" | "B" | "AB" | "O";
 }
 
+/**
+ * Uploads an image file and returns the image URL.
+ * @param imageFile - The image file to upload (File or Blob).
+ * @returns The uploaded image URL.
+ */
+const uploadImage = async (imageFile: File | Blob): Promise<UploadImageResponse> => {
+  try {
+    const formData = new FormData();
+    formData.append("imageFile", imageFile);
+
+    const response = await api.post<ApiResponse<UploadImageResponse>>("/image/upload", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    });
+
+    if (response.data.success) {
+      return response.data.data;
+    }
+    throw new Error(response.data.message || "Failed to upload image");
+  } catch (error) {
+    console.error("Error uploading image:", error);
+    throw error;
+  }
+};
 
 export const ProfileService = {
   updateHospitalProfile: async (profileData: UpdateHospitalProfileRequest): Promise<HospitalProfile> => {
@@ -166,6 +200,21 @@ export const ProfileService = {
       throw error;
     }
   },
+
+   updateAvatar: async (avatarData: UpdateAvatarRequest): Promise<CustomerProfile> => {
+    try {
+      const response = await api.put<ApiResponse<CustomerProfile>>('/customers/me/avatar', avatarData);
+      if (response.data.success) {
+        return response.data.data;
+      }
+      throw new Error(response.data.message || 'Failed to update avatar');
+    } catch (error) {
+      console.error('Error updating avatar:', error);
+      throw error;
+    }
+  },
+
+  uploadImage,
 
   findNearbyDonors: async (params: FindNearbyParams): Promise<FindNearbyResponse> => {
     try {
@@ -233,6 +282,34 @@ export const ProfileService = {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["profile"] });
         onSuccessCallback?.();
+      },
+      onError: (error) => {
+        onErrorCallback?.(error as Error);
+      }
+    });
+  },
+
+  useUpdateAvatar: (onSuccessCallback?: () => void, onErrorCallback?: (error: Error) => void) => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+      mutationFn: ProfileService.updateAvatar,
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["profile"] });
+        onSuccessCallback?.();
+      },
+      onError: (error) => {
+        onErrorCallback?.(error as Error);
+      }
+    });
+  },
+
+  // Optional: React Query hook for image upload
+  useUploadImage: (onSuccessCallback?: (data: UploadImageResponse) => void, onErrorCallback?: (error: Error) => void) => {
+    return useMutation({
+      mutationFn: (imageFile: File | Blob) => ProfileService.uploadImage(imageFile),
+      onSuccess: (data) => {
+        onSuccessCallback?.(data);
       },
       onError: (error) => {
         onErrorCallback?.(error as Error);

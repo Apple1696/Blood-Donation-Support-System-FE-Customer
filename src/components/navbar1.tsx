@@ -1,7 +1,8 @@
 import { Menu, Sunset, Trees, Zap } from "lucide-react";
 import { useUser, useClerk } from "@clerk/clerk-react";
 import { ReminderSheet } from "@/pages/Reminder";
-
+import { ProfileService } from "@/services/ProfileService";
+import { useQuery } from "@tanstack/react-query";
 import {
   Accordion,
   AccordionContent,
@@ -70,11 +71,12 @@ const Navbar1 = ({
   },
   menu = [
     { title: "Trang chủ", url: "/" },
-    { title: "Thông tin nhóm máu",
+    {
+      title: "Thông tin nhóm máu",
       url: "/blood-types",
       items: [
-         {
-          title:  "Thông tin chung và máu và nhóm máu",
+        {
+          title: "Thông tin chung và máu và nhóm máu",
           description: "Tìm hiểu về máu, nhóm máu và các yếu tố liên quan.",
           icon: <Trees className="size-5 shrink-0" />,
           url: "/blood-info",
@@ -91,9 +93,9 @@ const Navbar1 = ({
           icon: <Sunset className="size-5 shrink-0" />,
           url: "/blood-components",
         },
-       
+
       ]
-     },
+    },
     // {
     //   title: "Eligibility ",
     //   url: "#",
@@ -155,7 +157,7 @@ const Navbar1 = ({
         // },
       ],
     },
-     {
+    {
       title: "Khẩn Cấp",
       url: "/",
       items: [
@@ -173,16 +175,16 @@ const Navbar1 = ({
         },
       ],
     },
-  
+
     {
       title: "FAQ",
       url: "/faq",
     },
-     {
+    {
       title: "Blog",
       url: "/blog",
     },
-   
+
   ],
   auth = {
     login: { title: "Đăng nhập", url: "/login" },
@@ -201,12 +203,16 @@ const Navbar1 = ({
     if (!user || user?.publicMetadata?.role !== "hospital") {
       return menu;
     }
-    
+
     // Filter out "Đặt lịch hẹn" menu for hospital users
     return menu.filter(item => item.title !== "Đặt lịch hẹn");
   };
 
   const UserAvatar = () => {
+    const { user } = useUser();
+    // Fetch profile data (including avatar) from ProfileService
+    const { data: profile } = ProfileService.useProfile(!!user, !!user);
+
     if (!user) return null;
 
     const initials = user.firstName && user.lastName
@@ -219,12 +225,12 @@ const Navbar1 = ({
       <div className="flex items-center gap-6">
         {/* Bell icon for notifications */}
         <ReminderSheet />
-        
+
         {/* User Avatar Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Avatar className="cursor-pointer">
-              <AvatarImage src={user.imageUrl} />
+              <AvatarImage src={profile?.avatar || user.imageUrl} />
               <AvatarFallback className="bg-primary text-primary-foreground">
                 {initials}
               </AvatarFallback>
@@ -232,7 +238,6 @@ const Navbar1 = ({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem className="gap-2">
-              {/* <span>Signed in as</span> */}
               <span className="font-medium">{`${user.firstName} ${user.lastName}`}</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
@@ -247,14 +252,13 @@ const Navbar1 = ({
                 Hồ sơ
               </a>
             </DropdownMenuItem>
-            {/* Only show donation history for non-hospital users */}
             {!isHospital && (
               <DropdownMenuItem asChild>
                 <a href="/donation-history">Lịch sử hiến máu </a>
               </DropdownMenuItem>
             )}
             <DropdownMenuItem onClick={handleSignOut}>
-              Đăng xuất 
+              Đăng xuất
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -273,7 +277,7 @@ const Navbar1 = ({
               <img src={logo.src} className="max-h-12 transform scale-350" alt={logo.alt} />
             </a>
           </div>
-          
+
           {/* Centered Navigation Menu */}
           <div className="flex items-center justify-center flex-1">
             <NavigationMenu>
@@ -282,7 +286,7 @@ const Navbar1 = ({
               </NavigationMenuList>
             </NavigationMenu>
           </div>
-          
+
           {/* Auth buttons */}
           <div className="flex gap-2 items-center">
             {user ? (
